@@ -4,7 +4,19 @@ const app: Express = express();
 const port = 3000;
 
 app.get('/', (req: Request, res: Response) => {
-  res.send('Typescript + Node.js + Express Server');
+  // business logic
+  
+  res.send('Express Server');
+});
+app.post('/', (req: Request, res: Response) => {
+  // business logic
+  
+  res.send('Express Server');
+});
+app.put('/', (req: Request, res: Response) => {
+  // business logic
+  
+  res.send('Express Server');
 });
 
 app.listen(port, () => {
