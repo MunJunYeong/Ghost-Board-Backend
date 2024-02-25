@@ -1,35 +1,37 @@
-// models/User.ts
 import { Model, DataTypes, Sequelize } from "sequelize";
 
-class User extends Model {
+import User from "./user";
+
+class Post extends Model {
     public id!: number;
-    public username!: string;
-    public email!: string;
+    public title!: string;
+    public content!: string;
 }
 
-export const initUser = (sequelize: Sequelize) => {
-    User.init(
+export const initPost = (sequelize: Sequelize) => {
+    Post.init(
         {
             id: {
                 type: DataTypes.INTEGER,
                 autoIncrement: true,
                 primaryKey: true,
             },
-            username: {
+            title: {
                 type: DataTypes.STRING,
                 allowNull: false,
             },
-            email: {
-                type: DataTypes.STRING,
+            content: {
+                type: DataTypes.TEXT,
                 allowNull: false,
-                unique: true,
             },
-        },
+        }, 
         {
             sequelize,
-            tableName: "users",
+            tableName: "posts",
         }
     );
+    // 관계 설정
+    Post.belongsTo(User, { foreignKey: "userId" });
 };
 
-export default User;
+export default Post;
