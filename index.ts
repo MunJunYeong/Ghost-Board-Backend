@@ -1,24 +1,32 @@
 import express, { Express, Request, Response } from "express";
+import { GetEnvPath } from "./src/utils/path";
 import cors from "cors";
-import { GetEnvPath } from "./src/configs/common";
 import * as dotenv from "dotenv";
 dotenv.config({ path: GetEnvPath() });
+
 import { initializeDB } from "./src/configs/database";
 import { logger } from "./src/configs/logger";
+import { morganMiddleware } from "./src/middlewares/morgan";
 
 const app: Express = express();
 app.use(cors());
 app.use(express.json());
+app.use(morganMiddleware);
 
 const start = async () => {
   try {
     const port = process.env.PORT || 3000;
 
+    logger.error("error");
+    logger.warn("warn");
+    logger.info("info");
+    logger.debug("debug");
+
     await initializeDB();
 
-    app.get("/", (req: Request, res: Response) => {
+    app.get("/test", (req: Request, res: Response) => {
       // business logic
-      res.send("Express Server");
+      res.status(200).send("Express Server");
     });
 
     app.listen(port, () => {
