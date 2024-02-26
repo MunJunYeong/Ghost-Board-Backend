@@ -1,5 +1,6 @@
 import winston from "winston";
 import winstonDaily from "winston-daily-rotate-file";
+import { GetEnvPath, ProdEnvPath } from "../utils/path";
 
 const levels = {
   error: 0,
@@ -9,11 +10,11 @@ const levels = {
   debug: 4,
 };
 
+// production level 일 경우 `warn` level 이상만 log 저장함.
 const level = () => {
-  const env = process.env.NODE_ENV || "development";
-  const isDevelopment = env === "development";
-  return isDevelopment ? "debug" : "warn";
+  return GetEnvPath() === ProdEnvPath ? "warn" : "debug";
 };
+
 // error
 winston.addColors({
   error: "red",
