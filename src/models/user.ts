@@ -18,6 +18,16 @@ export const initUser = (sequelize: Sequelize) => {
             username: {
                 type: DataTypes.STRING,
                 allowNull: false,
+                unique: true,
+            },
+            user_id: {
+                type: DataTypes.STRING,
+                allowNull: false,
+                unique: true,
+            },
+            password: {
+                type: DataTypes.STRING,
+                allowNull: false,
             },
             email: {
                 type: DataTypes.STRING,
