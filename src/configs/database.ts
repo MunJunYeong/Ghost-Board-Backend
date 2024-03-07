@@ -1,6 +1,6 @@
 import { Sequelize, Dialect } from "sequelize";
-import { initUser } from "../models/user";
-import { initPost } from "../models/post";
+import { initUser } from "@models/user";
+import { initPost } from "@models/post";
 
 const DBConfigs = {
     username: process.env.DB_USERNAME || "postgres",
@@ -16,15 +16,10 @@ let sequelizeInstance: Sequelize | null = null;
 const initializeDB = async () => {
     try {
         if (!sequelizeInstance) {
-            sequelizeInstance = new Sequelize(
-                DBConfigs.database,
-                DBConfigs.username,
-                DBConfigs.password,
-                {
-                    host: DBConfigs.host,
-                    dialect: DBConfigs.dialect as Dialect,
-                }
-            );
+            sequelizeInstance = new Sequelize(DBConfigs.database, DBConfigs.username, DBConfigs.password, {
+                host: DBConfigs.host,
+                dialect: DBConfigs.dialect as Dialect,
+            });
         }
 
         initUser(sequelizeInstance);

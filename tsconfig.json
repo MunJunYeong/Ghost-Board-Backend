@@ -2,7 +2,14 @@
     "compilerOptions": {
         "baseUrl": ".",
         "paths": {
-          "@services/*": ["src/services/*"],
+            "@configs/*": ["src/configs/*"],
+            "@dtos/*": ["src/dtos/*"],
+            "@middlewares/*": ["src/middlewares/*"],
+            "@models/*": ["src/models/*"],
+            "@routes/*": ["src/routes/*"],
+            "@controllers/*": ["src/controllers/*"],
+            "@services/*": ["src/services/*"],
+            "@utils/*": ["src/utils/*"]
         },
         "outDir": "./dist",
         "target": "es2016",
@@ -12,5 +19,4 @@
         "strict": true,
         "skipLibCheck": true
     },
-    "extends": "./tsconfig.paths.json",
 }

@@ -1,6 +1,6 @@
 import morgan from "morgan";
-import { logger } from "../configs/logger";
-import { GetEnvPath, ProdEnvPath } from "../utils/path";
+import { logger } from "@configs/logger";
+import { GetEnvPath, ProdEnvPath } from "@utils/path";
 
 const format = () => {
   // production 환경이라면 combined format 사용 (be more specific)

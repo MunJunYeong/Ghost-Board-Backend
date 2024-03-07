@@ -1,6 +1,6 @@
 import winston from "winston";
 import winstonDaily from "winston-daily-rotate-file";
-import { GetEnvPath, ProdEnvPath } from "../utils/path";
+import { GetEnvPath, ProdEnvPath } from "@utils/path";
 
 const levels = {
   error: 0,
