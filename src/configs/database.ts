@@ -1,6 +1,7 @@
 import { Sequelize, Dialect } from "sequelize";
 import { initUser } from "@models/user";
 import { initPost } from "@models/post";
+import { logger } from "./logger";
 
 const DBConfigs = {
     username: process.env.DB_USERNAME || "postgres",
@@ -11,32 +12,44 @@ const DBConfigs = {
     dialect: "postgres",
 };
 
-let sequelizeInstance: Sequelize | null = null;
+export default class Database {
+    private static instance: Database;
+    private sequelizeInstance: Sequelize | null;
 
-const initializeDB = async () => {
-    try {
-        if (!sequelizeInstance) {
-            sequelizeInstance = new Sequelize(DBConfigs.database, DBConfigs.username, DBConfigs.password, {
-                host: DBConfigs.host,
-                dialect: DBConfigs.dialect as Dialect,
-            });
+    private constructor() {
+        this.sequelizeInstance = null;
+    }
+
+    public async initializeDB(): Promise<void> {
+        try {
+            if (!this.sequelizeInstance) {
+                this.sequelizeInstance = new Sequelize(DBConfigs.database, DBConfigs.username, DBConfigs.password, {
+                    host: DBConfigs.host,
+                    dialect: DBConfigs.dialect as Dialect,
+                });
+            }
+
+            initUser(this.sequelizeInstance);
+            initPost(this.sequelizeInstance);
+
+            // await this.sequelizeInstance.sync();
+            await this.sequelizeInstance.sync({ logging: false });
+        } catch (err: any) {
+            throw err;
         }
-
-        initUser(sequelizeInstance);
-        initPost(sequelizeInstance);
-
-        await sequelizeInstance.sync({ logging: false });
-    } catch (err) {
-        // TODO: logging
-        console.error(err);
     }
-};
 
-const getSequelize = (): Sequelize => {
-    if (!sequelizeInstance) {
-        throw new Error("Sequelize instance has not been initialized.");
+    public static getInstance(): Database {
+        if (!Database.instance) {
+            Database.instance = new Database();
+        }
+        return Database.instance;
     }
-    return sequelizeInstance;
-};
 
-export { initializeDB, getSequelize };
+    public getSequelize(): Sequelize {
+        if (!this.sequelizeInstance) {
+            throw new Error("Sequelize instance has not been initialized.");
+        }
+        return this.sequelizeInstance;
+    }
+}
