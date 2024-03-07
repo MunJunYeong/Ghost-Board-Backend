@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import { promisify } from "util";
-import redis from "../configs/redis";
-import { logger } from "../configs/logger";
+import redis from "@configs/redis";
+import { logger } from "@configs/logger";
 
 const issueAccessToken = (payload: object, expiresIn: string | number) => {
     return jwt.sign(payload, process.env.JWT_SECRET_KEY!, {

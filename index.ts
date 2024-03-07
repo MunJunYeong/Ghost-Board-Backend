@@ -1,13 +1,13 @@
 import express, { Express } from "express";
-import { GetEnvPath } from "./src/utils/path";
+import { GetEnvPath } from "@utils/path";
 import cors from "cors";
 import * as dotenv from "dotenv";
 dotenv.config({ path: GetEnvPath() });
 
-import { initializeDB } from "./src/configs/database";
-import { logger } from "./src/configs/logger";
-import { morganMiddleware } from "./src/middlewares/morgan";
-import router from "./src/routes";
+import { initializeDB } from "@configs/database";
+import { logger } from "@configs/logger";
+import { morganMiddleware } from "@middlewares/morgan";
+import router from "@routes/index";
 
 const app: Express = express();
 app.use(cors());

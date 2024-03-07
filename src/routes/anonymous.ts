@@ -1,5 +1,5 @@
 import express from "express";
-import * as controller from "../controllers/anonymous";
+import * as controller from "@controllers/anonymous";
 
 const anonymousRouter = express.Router();
 

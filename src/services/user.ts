@@ -1,5 +1,5 @@
-import { LoginResponse } from "../dtos/anonymous";
-import { issueAccessToken, issueRefreshToken } from "../utils/jwt";
+import { LoginResponse } from "@dtos/anonymous";
+import { issueAccessToken, issueRefreshToken } from "@utils/jwt";
 
 interface AccessTokenPayload {
     // 알아서 추가할 것

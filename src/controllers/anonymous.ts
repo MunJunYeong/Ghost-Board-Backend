@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import * as dto from "../dtos/anonymous";
-import * as service from "../services/user";
-import redis from "../configs/redis";
+import * as dto from "@dtos/anonymous";
+import * as service from "@services/user";
+import redis from "@configs/redis";
 
 export const login = async (req: Request, res: Response) => {
     const loginBody: dto.LoginRequest = req.body;
