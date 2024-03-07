@@ -1,10 +1,10 @@
-import express from "express";
-import anonymousRouter from "./anonymous";
+import { Application } from "express";
+import anonymousRouter from "@routes/anonymous";
 import userRouter from "@routes/user";
 
-const router = express.Router();
-
-router.use("/", anonymousRouter);
-router.use("/users", userRouter);
-
-export default router;
+export default class Routes {
+    constructor(app: Application) {
+        app.use("/api/", anonymousRouter);
+        app.use("/api/users", userRouter);
+    }
+}

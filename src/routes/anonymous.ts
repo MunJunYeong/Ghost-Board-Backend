@@ -1,8 +1,17 @@
-import express from "express";
-import * as controller from "@controllers/anonymous";
+import { Router } from "express";
+import anonymousController from "@controllers/anonymous";
 
-const anonymousRouter = express.Router();
+class AnonymousRoutes {
+    router = Router();
+    controller = new anonymousController();
 
-anonymousRouter.post("/login", controller.login);
+    constructor() {
+        this.intializeRoutes();
+    }
 
-export default anonymousRouter;
+    intializeRoutes() {
+        this.router.post("/login", this.controller.login);
+    }
+}
+
+export default new AnonymousRoutes().router;
