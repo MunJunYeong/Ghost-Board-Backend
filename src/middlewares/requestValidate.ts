@@ -1,5 +1,5 @@
 import { logger } from "@configs/logger";
-import { validationPipe } from "@utils/validators/validation";
+import { validationPipe } from "@utils/validation";
 import { NextFunction, Request, Response } from "express";
 
 export const validationMiddleware =

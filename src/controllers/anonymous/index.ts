@@ -1,17 +1,14 @@
 import { Request, Response } from "express";
-import * as dto from "@dtos/anonymous";
+import * as dto from "@controllers/anonymous/dto";
 import * as service from "@services/user";
 import redis from "@configs/redis";
 
 export default class AnonymousController {
     async login(req: Request, res: Response) {
-        const loginBody: dto.LoginRequest = req.body;
-        if (!loginBody.id || !loginBody.password) {
-            // TODO: validation
-        }
+        const loginBody: dto.LoginReqDTO = req.body;
 
         try {
-            const result: dto.LoginResponse = await service.login(loginBody.id, loginBody.password);
+            const result: dto.LoginResDTO = await service.login(loginBody.id, loginBody.password);
 
             redis.set(loginBody.id, result.refreshToken);
 
