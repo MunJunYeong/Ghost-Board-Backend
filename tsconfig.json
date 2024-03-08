@@ -6,6 +6,7 @@
             "@dtos/*": ["src/dtos/*"],
             "@middlewares/*": ["src/middlewares/*"],
             "@models/*": ["src/models/*"],
+            "@repo/*": ["src/repository/*"],
             "@routes/*": ["src/routes/*"],
             "@controllers/*": ["src/controllers/*"],
             "@services/*": ["src/services/*"],

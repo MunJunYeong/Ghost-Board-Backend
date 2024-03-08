@@ -1,4 +1,4 @@
-import { LoginResDTO } from "@controllers/anonymous/dto";
+import { LoginResDTO } from "@controllers/anonymous/dto/anonymous.dto";
 import { issueAccessToken, issueRefreshToken } from "@utils/jwt";
 
 interface AccessTokenPayload {
