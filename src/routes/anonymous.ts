@@ -1,5 +1,8 @@
 import { Router } from "express";
+
 import anonymousController from "@controllers/anonymous";
+import { validationMiddleware } from "@middlewares/requestValidate";
+import { LoginReqDTO } from "@controllers/anonymous/dto";
 
 class AnonymousRoutes {
     router = Router();
@@ -10,7 +13,7 @@ class AnonymousRoutes {
     }
 
     intializeRoutes() {
-        this.router.post("/login", this.controller.login);
+        this.router.post("/login", validationMiddleware(LoginReqDTO), this.controller.login);
     }
 }
 

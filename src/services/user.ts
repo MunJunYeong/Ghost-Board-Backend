@@ -1,4 +1,4 @@
-import { LoginResponse } from "@dtos/anonymous";
+import { LoginResDTO } from "@controllers/anonymous/dto";
 import { issueAccessToken, issueRefreshToken } from "@utils/jwt";
 
 interface AccessTokenPayload {
@@ -7,7 +7,7 @@ interface AccessTokenPayload {
     etc: string;
 }
 
-export const login = (userID: string, pw: string): LoginResponse => {
+export const login = async (userID: string, pw: string): Promise<LoginResDTO> => {
     //  user login 로직 - DB에 접근하여 id pw 대조
     // 아래는 예시용 payload. 실제로는 user 정보를 넣어야 함.
     const tempPayload: AccessTokenPayload = { name: "aa", etc: "bb" };
