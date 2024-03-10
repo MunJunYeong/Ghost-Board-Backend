@@ -3,6 +3,7 @@ import * as dto from "@controllers/anonymous/dto/anonymous.dto";
 import * as service from "@services/user.service";
 import redis from "@configs/redis";
 import AnonymousService from "@services/anonymous.service";
+import { logger } from "@configs/logger";
 
 export default class AnonymousController {
     private anonymouseService: AnonymousService;
@@ -14,10 +15,12 @@ export default class AnonymousController {
     async signup(req: Request, res: Response) {
         const body: dto.SignupReqDTO = req.body;
 
-        this.anonymouseService.signup(body);
+        await this.anonymouseService.signup(body);
 
         try {
-        } catch (error) {}
+        } catch (error) {
+            logger.error(`error`);
+        }
     }
 
     async login(req: Request, res: Response) {

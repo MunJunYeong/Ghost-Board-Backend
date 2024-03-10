@@ -5,6 +5,7 @@ dotenv.config({ path: GetEnvPath() });
 
 import express, { Application } from "express";
 import cors, { CorsOptions } from "cors";
+import "express-async-errors";
 
 import { morganMiddleware } from "@middlewares/morgan";
 import Routes from "@routes/index";

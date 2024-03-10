@@ -10,7 +10,8 @@
             "@routes/*": ["src/routes/*"],
             "@controllers/*": ["src/controllers/*"],
             "@services/*": ["src/services/*"],
-            "@utils/*": ["src/utils/*"]
+            "@errors/*": ["src/common/error/*"],
+            "@utils/*": ["src/common/utils/*"]
         },
         "outDir": "./dist",
         "target": "es2016",
