@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
+
 import * as dto from "@controllers/anonymous/dto/anonymous.dto";
-import * as service from "@services/user.service";
 import redis from "@configs/redis";
 import AnonymousService from "@services/anonymous.service";
 import { logger } from "@configs/logger";
@@ -9,25 +9,24 @@ export default class AnonymousController {
     private anonymouseService: AnonymousService;
 
     constructor() {
-        this.anonymouseService = new AnonymousService(); // UserService 인스턴스를 생성합니다.
+        this.anonymouseService = new AnonymousService();
     }
 
-    async signup(req: Request, res: Response) {
+    signup = async (req: Request, res: Response) => {
         const body: dto.SignupReqDTO = req.body;
-
-        await this.anonymouseService.signup(body);
-
+        await this.anonymouseService.test();
         try {
+            res.send({ message: "aaa" });
         } catch (error) {
             logger.error(`error`);
         }
-    }
+    };
 
-    async login(req: Request, res: Response) {
+    login = async (req: Request, res: Response) => {
         const loginBody: dto.LoginReqDTO = req.body;
 
         try {
-            const result: dto.LoginResDTO = await service.login(loginBody.id, loginBody.password);
+            const result: dto.LoginResDTO = await this.anonymouseService.login(loginBody.id, loginBody.password);
 
             redis.set(loginBody.id, result.refreshToken);
 
@@ -41,5 +40,5 @@ export default class AnonymousController {
                 message: "invalid account",
             });
         }
-    }
+    };
 }
