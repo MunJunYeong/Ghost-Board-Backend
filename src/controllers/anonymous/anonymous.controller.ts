@@ -3,7 +3,8 @@ import { Request, Response } from "express";
 import * as dto from "@controllers/anonymous/dto/anonymous.dto";
 import redis from "@configs/redis";
 import AnonymousService from "@services/anonymous.service";
-import { logger } from "@configs/logger";
+import InternalError from "@errors/internal_server";
+import BadRequestError from "@errors/bad_request";
 
 export default class AnonymousController {
     private anonymouseService: AnonymousService;
@@ -14,11 +15,11 @@ export default class AnonymousController {
 
     signup = async (req: Request, res: Response) => {
         const body: dto.SignupReqDTO = req.body;
-        await this.anonymouseService.test();
         try {
+            await this.anonymouseService.test();
             res.send({ message: "aaa" });
-        } catch (error) {
-            logger.error(`error`);
+        } catch (err: any) {
+            throw new InternalError({ error: err });
         }
     };
 
@@ -33,12 +34,9 @@ export default class AnonymousController {
             res.status(200).send({
                 data: result,
             });
-        } catch (error) {
+        } catch (error: any) {
             // status code같은 경우에는 한 파일에서 define 하는 것도 좋음
-            const unauthorized = 401;
-            res.status(unauthorized).send({
-                message: "invalid account",
-            });
+            throw new InternalError(error);
         }
     };
 }
