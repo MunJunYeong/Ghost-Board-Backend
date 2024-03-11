@@ -6,10 +6,12 @@
             "@dtos/*": ["src/dtos/*"],
             "@middlewares/*": ["src/middlewares/*"],
             "@models/*": ["src/models/*"],
+            "@repo/*": ["src/repository/*"],
             "@routes/*": ["src/routes/*"],
             "@controllers/*": ["src/controllers/*"],
             "@services/*": ["src/services/*"],
-            "@utils/*": ["src/utils/*"]
+            "@errors/*": ["src/common/errors/*"],
+            "@utils/*": ["src/common/utils/*"]
         },
         "outDir": "./dist",
         "target": "es2016",
