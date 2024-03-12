@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 
 import * as dto from "@controllers/anonymous/dto/anonymous.dto";
 import redis from "@configs/redis";
-import AnonymousService from "@services/anonymous.service";
+import AnonymousService from "@services/anonymous/anonymous.service";
 import InternalError from "@errors/internal_server";
 import BadRequestError from "@errors/bad_request";
 
@@ -16,7 +16,8 @@ export default class AnonymousController {
     signup = async (req: Request, res: Response) => {
         const body: dto.SignupReqDTO = req.body;
         try {
-            await this.anonymouseService.test();
+            const result = this.anonymouseService.signup(body);
+
             res.send({ message: "aaa" });
         } catch (err: any) {
             throw new InternalError({ error: err });

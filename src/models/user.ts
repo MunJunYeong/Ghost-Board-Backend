@@ -3,6 +3,8 @@ import { Model, DataTypes, Sequelize } from "sequelize";
 
 class User extends Model {
     public id!: number;
+    public userID!: string;
+    public password!: string;
     public username!: string;
     public email!: string;
 }
@@ -15,12 +17,7 @@ export const initUser = (sequelize: Sequelize) => {
                 autoIncrement: true,
                 primaryKey: true,
             },
-            username: {
-                type: DataTypes.STRING,
-                allowNull: false,
-                unique: true,
-            },
-            user_id: {
+            userID: {
                 type: DataTypes.STRING,
                 allowNull: false,
                 unique: true,
@@ -28,6 +25,11 @@ export const initUser = (sequelize: Sequelize) => {
             password: {
                 type: DataTypes.STRING,
                 allowNull: false,
+            },
+            username: {
+                type: DataTypes.STRING,
+                allowNull: false,
+                unique: true,
             },
             email: {
                 type: DataTypes.STRING,

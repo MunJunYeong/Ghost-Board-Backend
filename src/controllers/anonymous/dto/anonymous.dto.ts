@@ -17,6 +17,7 @@ export class SignupReqDTO {
     @IsNotEmpty()
     email!: string;
 }
+
 export class LoginReqDTO {
     @IsString()
     @MinLength(3, { message: "ID is too short" })

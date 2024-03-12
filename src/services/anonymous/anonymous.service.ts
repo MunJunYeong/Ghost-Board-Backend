@@ -1,6 +1,7 @@
-import { SignupReqDTO } from "@controllers/anonymous/dto/anonymous.dto";
+
 import AnonymousRepo from "@repo/anonymous.repo";
 import { issueAccessToken, issueRefreshToken } from "@utils/jwt";
+import * as dto from "@controllers/anonymous/dto/anonymous.dto";
 
 interface AccessTokenPayload {
     // 알아서 추가할 것
@@ -15,10 +16,10 @@ export default class AnonymousService {
         this.anonymousRepo = new AnonymousRepo();
     }
 
-    test = async () => {
-        // unique한지 확인 과정
-        return true;
-    };
+    signup = async (userDTO: dto.SignupReqDTO) => {
+        
+    }
+
 
     login = async (userID: string, pw: string) => {
         //  user login 로직 - DB에 접근하여 id pw 대조
