@@ -1,6 +1,8 @@
-import { SignupReqDTO } from "@controllers/anonymous/dto/anonymous.dto";
 import AnonymousRepo from "@repo/anonymous.repo";
 import { issueAccessToken, issueRefreshToken } from "@utils/jwt";
+import * as dto from "@controllers/anonymous/dto/anonymous.dto";
+import { convSignupToUser } from "./anonymous.conv";
+import { ErrAlreadyExist } from "@errors/custom";
 
 interface AccessTokenPayload {
     // 알아서 추가할 것
@@ -15,9 +17,22 @@ export default class AnonymousService {
         this.anonymousRepo = new AnonymousRepo();
     }
 
-    test = async () => {
-        // unique한지 확인 과정
-        return true;
+    signup = async (userDTO: dto.SignupReqDTO) => {
+        const user = convSignupToUser(userDTO);
+
+        try {
+            // userID / email duplicate check
+            if (
+                (await this.anonymousRepo.findUserByUserID(user.userID)) ||
+                (await this.anonymousRepo.findUserByEmail(user.email))
+            ) {
+                throw new Error(ErrAlreadyExist);
+            }
+
+            return await this.anonymousRepo.createUser(user);
+        } catch (err) {
+            throw err;
+        }
     };
 
     login = async (userID: string, pw: string) => {

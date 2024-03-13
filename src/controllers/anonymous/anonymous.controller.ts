@@ -2,9 +2,10 @@ import { Request, Response } from "express";
 
 import * as dto from "@controllers/anonymous/dto/anonymous.dto";
 import redis from "@configs/redis";
-import AnonymousService from "@services/anonymous.service";
+import AnonymousService from "@services/anonymous/anonymous.service";
 import InternalError from "@errors/internal_server";
 import BadRequestError from "@errors/bad_request";
+import { CustomError, ErrAlreadyExist } from "@errors/custom";
 
 export default class AnonymousController {
     private anonymouseService: AnonymousService;
@@ -16,9 +17,17 @@ export default class AnonymousController {
     signup = async (req: Request, res: Response) => {
         const body: dto.SignupReqDTO = req.body;
         try {
-            await this.anonymouseService.test();
-            res.send({ message: "aaa" });
+            const u = await this.anonymouseService.signup(body);
+
+            if (!u) {
+                throw new InternalError({ error: new Error("cant find user but created") });
+            }
+
+            res.send({ message: "success created user", data: u.dataValues });
         } catch (err: any) {
+            if (err.message === ErrAlreadyExist) {
+                throw new BadRequestError({ error: err });
+            }
             throw new InternalError({ error: err });
         }
     };
