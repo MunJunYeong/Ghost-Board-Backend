@@ -5,8 +5,9 @@ dotenv.config({ path: GetEnvPath() });
 
 import express, { Application } from "express";
 import cors, { CorsOptions } from "cors";
-
+import helmet from "helmet";
 import "express-async-errors";
+
 import { morganMiddleware } from "@middlewares/morgan";
 import Routes from "@routes/index";
 import Database from "@configs/database";
@@ -31,6 +32,7 @@ export default class Server {
         app.use(express.json());
         app.use(express.urlencoded({ extended: true }));
         app.use(morganMiddleware);
+        app.use(helmet());
     }
 
     private async initDB(): Promise<void> {
