@@ -1,12 +1,12 @@
 // models/User.ts
-import { Model, DataTypes, Sequelize } from "sequelize";
+import { Model, DataTypes, Sequelize, InferCreationAttributes, InferAttributes, CreationOptional } from "sequelize";
 
-class User extends Model {
-    public id!: number;
-    public userID!: string;
-    public password!: string;
-    public username!: string;
-    public email!: string;
+class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
+    declare id: CreationOptional<number>;
+    declare userID: string;
+    declare password: string;
+    declare username: string;
+    declare email: string;
 }
 
 export const initUser = (sequelize: Sequelize) => {

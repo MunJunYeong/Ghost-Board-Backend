@@ -1,7 +1,6 @@
 import { Sequelize, Dialect } from "sequelize";
 import { initUser } from "@models/user";
 import { initPost } from "@models/post";
-import { logger } from "./logger";
 
 const DBConfigs = {
     username: process.env.DB_USERNAME || "postgres",
