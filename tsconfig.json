@@ -2,6 +2,7 @@
     "compilerOptions": {
         "baseUrl": ".",
         "paths": {
+            "@src/*": ["src/*"],
             "@configs/*": ["src/configs/*"],
             "@dtos/*": ["src/dtos/*"],
             "@middlewares/*": ["src/middlewares/*"],
@@ -20,6 +21,7 @@
         "forceConsistentCasingInFileNames": true,
         "strict": true,
         "skipLibCheck": true,
-        "experimentalDecorators": true
+        "experimentalDecorators": true,
+        "allowJs": true,
     }
 }
