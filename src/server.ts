@@ -12,6 +12,7 @@ import { morganMiddleware } from "@middlewares/morgan";
 import Routes from "@routes/index";
 import Database from "@configs/database";
 import { logger } from "@configs/logger";
+import RedisClient from "./configs/redis";
 
 export default class Server {
     private app: Application;
@@ -28,6 +29,9 @@ export default class Server {
 
         // init db
         this.initDB();
+
+        // init redis
+        this.initRedis();
     }
 
     private config(app: Application): void {
@@ -40,6 +44,11 @@ export default class Server {
         app.use(express.urlencoded({ extended: true }));
         app.use(morganMiddleware);
         app.use(helmet());
+    }
+
+    private async initRedis(): Promise<void> {
+        const redis = RedisClient.getInstance();
+        redis.initialize();
     }
 
     private async initDB(): Promise<void> {

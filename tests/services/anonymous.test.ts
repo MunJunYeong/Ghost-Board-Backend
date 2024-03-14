@@ -1,10 +1,6 @@
 import request from "supertest";
 import app from "../setup";
 
-afterAll(async () => {
-    await new Promise<void>((resolve) => setTimeout(() => resolve(), 500));
-});
-
 describe("회원가입 API", () => {
     beforeAll(() => {
         //
@@ -14,8 +10,8 @@ describe("회원가입 API", () => {
         //
     });
 
-    describe("서버 상태 확인", () => {
-        test("기록 체크", async () => {
+    describe("Anonymous Service", () => {
+        test("signup", async () => {
             const response: any = await request(app).post("/api/signup"); // 알맞은 URL을 여기에 입력하세요.
 
             // console.log(response);

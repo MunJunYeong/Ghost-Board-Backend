@@ -1,16 +1,20 @@
 import { Request, Response } from "express";
 
 import * as dto from "@controllers/anonymous/dto/anonymous.dto";
-import redis from "@configs/redis";
+import RedisClient, { Redis } from "@configs/redis";
 import AnonymousService from "@services/anonymous/anonymous.service";
 import InternalError from "@errors/internal_server";
 import BadRequestError from "@errors/bad_request";
-import { CustomError, ErrAlreadyExist } from "@errors/custom";
+import { ErrAlreadyExist } from "@errors/custom";
 
 export default class AnonymousController {
+    private redis: Redis;
     private anonymouseService: AnonymousService;
 
     constructor() {
+        const redisInstance = RedisClient.getInstance();
+        this.redis = redisInstance.getRedisInstance();
+
         this.anonymouseService = new AnonymousService();
     }
 
@@ -38,7 +42,7 @@ export default class AnonymousController {
         try {
             const result: dto.LoginResDTO = await this.anonymouseService.login(loginBody.id, loginBody.password);
 
-            redis.set(loginBody.id, result.refreshToken);
+            this.redis.set(loginBody.id, result.refreshToken);
 
             res.status(200).send({
                 data: result,
