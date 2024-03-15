@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsString, MinLength } from "@utils/validation";
+import { IsEmail, IsNotEmpty, IsString, MaxLength, MinLength } from "@utils/validation";
 
 export class SignupReqDTO {
     @IsString()
@@ -7,10 +7,14 @@ export class SignupReqDTO {
 
     @IsString()
     @IsNotEmpty()
+    @MinLength(3, { message: "ID is too short" })
+    @MaxLength(15, { message: "ID is too long" })
     userID!: string;
 
     @IsString()
     @IsNotEmpty()
+    @MinLength(6, { message: "Password is too short" })
+    @MaxLength(20, { message: "Password is too long" })
     password!: string;
 
     @IsEmail()
@@ -20,13 +24,15 @@ export class SignupReqDTO {
 
 export class LoginReqDTO {
     @IsString()
-    @MinLength(3, { message: "ID is too short" })
     @IsNotEmpty()
+    @MinLength(3, { message: "ID is too short" })
+    @MaxLength(15, { message: "ID is too long" })
     id!: string;
 
     @IsString()
-    @MinLength(6, { message: "Password is too short" })
     @IsNotEmpty()
+    @MinLength(6, { message: "Password is too short" })
+    @MaxLength(20, { message: "Password is too long" })
     password!: string;
 }
 
