@@ -12,6 +12,16 @@ jest.mock("@configs/redis", () => {
     };
 });
 
+// mock - logger
+jest.mock("@configs/logger", () => ({
+    logger: {
+        info: jest.fn(),
+        error: jest.fn(),
+        warn: jest.fn(),
+        debug: jest.fn(),
+    },
+}));
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 import Server from "@src/server";

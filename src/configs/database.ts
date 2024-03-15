@@ -25,6 +25,7 @@ export default class Database {
                 this.sequelizeInstance = new Sequelize(DBConfigs.database, DBConfigs.username, DBConfigs.password, {
                     host: DBConfigs.host,
                     dialect: DBConfigs.dialect as Dialect,
+                    logging: false,
                 });
             }
 
