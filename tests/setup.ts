@@ -1,7 +1,21 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// mock - redis
+import redis from "redis-mock";
+jest.mock("@configs/redis", () => {
+    return {
+        // RedisClient 클래스를 mocking합니다.
+        getInstance: jest.fn(() => ({
+            initialize: jest.fn(),
+            // getInstance 메서드를 모킹하여 RedisClient 인스턴스를 반환합니다.
+            getRedisInstance: jest.fn(() => redis),
+        })),
+    };
+});
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 import Server from "@src/server";
 import express from "express";
-
-jest.mock("redis", () => jest.requireActual("redis-mock"));
 
 const app = express();
 const server = new Server(app);
