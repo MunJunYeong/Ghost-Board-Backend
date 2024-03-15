@@ -3,6 +3,7 @@ import { issueAccessToken, issueRefreshToken } from "@utils/jwt";
 import * as dto from "@controllers/anonymous/dto/anonymous.dto";
 import { convSignupToUser } from "./anonymous.conv";
 import { ErrAlreadyExist } from "@errors/custom";
+import { hashing } from "@src/common/utils/encryption";
 
 interface AccessTokenPayload {
     // 알아서 추가할 것
@@ -28,6 +29,9 @@ export default class AnonymousService {
             ) {
                 throw new Error(ErrAlreadyExist);
             }
+
+            // encryption password
+            user.password = await hashing(user.password);
 
             return await this.userRepo.createUser(user);
         } catch (err) {
