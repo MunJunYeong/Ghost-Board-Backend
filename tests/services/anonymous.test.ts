@@ -72,20 +72,26 @@ describe("Signup API", () => {
     });
 });
 
-// describe("Get User API", () => {
-//     describe("성공", () => {
-//         test("Get - /api/users/{id}", async () => {
-//             const response: any = await request(app).get(`api/users/{id}`);
-//             expect(response.statusCode).toBe(200);
-//         });
-//     });
-//     describe("Exception", () => {
-//         test("not found user", async () => {
-//             const response: any = await request(app).get(`api/users/{id}`);
-//             expect(response.statusCode).toBe(200);
-//         });
-//     });
-// });
+describe("Get User API", () => {
+    describe("성공", () => {
+        test("Get - /api/users/{id}", async () => {
+            const response: any = await request(app).get(`/api/users/${createdUser.id}`);
+            expect(response.statusCode).toBe(200);
+
+            const result: userBody = response.body.data;
+            expect(result.userID).toEqual(createdUser.userID);
+            expect(result.password).toEqual(createdUser.password);
+            expect(result.username).toEqual(createdUser.username);
+            expect(result.email).toEqual(createdUser.email);
+        });
+    });
+    describe("Exception", () => {
+        test("not found user", async () => {
+            const response: any = await request(app).get(`/api/users/${createdUser.id + 100}`);
+            expect(response.statusCode).toBe(404);
+        });
+    });
+});
 
 describe("Delete User API", () => {
     describe("성공", () => {

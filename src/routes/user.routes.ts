@@ -10,6 +10,7 @@ class UserRoutes {
     }
 
     intializeRoutes() {
+        this.router.get("/:id", this.controller.getUser);
         this.router.delete("/:id", this.controller.deleteUser);
     }
 }
