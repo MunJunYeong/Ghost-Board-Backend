@@ -1,14 +1,26 @@
 import { Application } from "express";
+
 import anonymousRouter from "@routes/anonymous.routes";
 import userRouter from "@routes/user.routes";
+
 import { errorMiddleware } from "@middlewares/error";
+import RedisClient from "@configs/redis";
 
 export default class Routes {
+    private app: Application | null;
+
     constructor(app: Application) {
-        app.use("/api/", anonymousRouter);
-        app.use("/api/users", userRouter);
+        this.app = app;
+    }
+
+    public initialize = () => {
+        if (!this.app) {
+            throw new Error("Cant initialize routes");
+        }
+        this.app.use("/api/", anonymousRouter);
+        this.app.use("/api/users", userRouter);
 
         // error middleware가 가장 마지막에 있어야 함.
-        app.use(errorMiddleware);
-    }
+        this.app.use(errorMiddleware);
+    };
 }

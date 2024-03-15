@@ -12,8 +12,7 @@ export default class AnonymousController {
     private anonymouseService: AnonymousService;
 
     constructor() {
-        const redisInstance = RedisClient.getInstance();
-        this.redis = redisInstance.getRedisInstance();
+        this.redis = RedisClient.getInstance();
 
         this.anonymouseService = new AnonymousService();
     }

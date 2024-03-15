@@ -9,10 +9,9 @@ import helmet from "helmet";
 import "express-async-errors";
 
 import { morganMiddleware } from "@middlewares/morgan";
-import Routes from "@routes/index";
-import Database from "@configs/database";
 import { logger } from "@configs/logger";
-import RedisClient from "./configs/redis";
+import Database from "@configs/database";
+import Routes from "@routes/index";
 
 export default class Server {
     private app: Application;
@@ -22,36 +21,28 @@ export default class Server {
         this.app = app;
 
         // init config
-        this.config(app);
-
-        // init route
-        new Routes(app);
+        this.initConfig();
 
         // init db
-        this.initDB();
+        this.initDatabase();
 
-        // init redis
-        this.initRedis();
+        // init route
+        this.initRoutes();
     }
 
-    private config(app: Application): void {
+    private initConfig = (): void => {
         const corsOptions: CorsOptions = {
             origin: "*",
         };
 
-        app.use(cors(corsOptions));
-        app.use(express.json());
-        app.use(express.urlencoded({ extended: true }));
-        app.use(morganMiddleware);
-        app.use(helmet());
-    }
+        this.app.use(cors(corsOptions));
+        this.app.use(express.json());
+        this.app.use(express.urlencoded({ extended: true }));
+        this.app.use(morganMiddleware);
+        this.app.use(helmet());
+    };
 
-    private async initRedis(): Promise<void> {
-        const redis = RedisClient.getInstance();
-        redis.initialize();
-    }
-
-    private async initDB(): Promise<void> {
+    private initDatabase = async (): Promise<void> => {
         try {
             const database = Database.getInstance();
             await database.initializeDB();
@@ -59,11 +50,16 @@ export default class Server {
         } catch (error) {
             logger.error("cant initializing database:", error);
         }
-    }
+    };
 
-    public start(port: any): void {
+    private initRoutes = (): void => {
+        const route = new Routes(this.app);
+        route.initialize();
+    };
+
+    public start = (port: any): void => {
         this.server = this.app
-            .listen(port, function () {
+            .listen(port, () => {
                 logger.info(`Server is running on port ${port}.`);
             })
             .on("error", (err: any) => {
@@ -73,11 +69,10 @@ export default class Server {
                     logger.error(err.message);
                 }
             });
-    }
+    };
 
-    public async stop(): Promise<void> {
+    public stop = async (): Promise<void> => {
         this.server.close();
-
         logger.info("Server stopped.");
-    }
+    };
 }

@@ -6,13 +6,13 @@ import { ErrNotFound } from "@src/common/errors/custom";
 import BadRequestError from "@src/common/errors/bad_request";
 
 export default class UserController {
-    private redis: Redis;
+    // private redis: Redis;
     private userService: UserService;
 
     constructor() {
-        const redisInstance = RedisClient.getInstance();
-        this.redis = redisInstance.getRedisInstance();
-
+        // const redisInstance = RedisClient.getInstance();
+        // this.redis = redisInstance.getRedisInstance();
+        
         this.userService = new UserService();
     }
 

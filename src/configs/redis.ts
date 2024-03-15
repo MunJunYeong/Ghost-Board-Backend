@@ -2,35 +2,19 @@ import Redis from "ioredis";
 export * from "ioredis";
 
 export default class RedisClient {
-    private static instance: RedisClient;
-    private redisInstance: Redis | null;
+    private static instance: Redis | null = null;
 
-    private constructor() {
-        this.redisInstance = null;
-    }
+    private constructor() {}
 
-    public initialize(): void {
-        if (!this.redisInstance) {
+    static getInstance(): Redis {
+        if (!RedisClient.instance) {
             const redisPort = process.env.REDIS_PORT ? parseInt(process.env.REDIS_PORT, 10) : 6379;
-            this.redisInstance = new Redis({
+            RedisClient.instance = new Redis({
                 host: process.env.REDIS_HOST || "127.0.0.1",
                 port: redisPort,
                 password: process.env.REDIS_PASSWORD || "redis",
             });
         }
-    }
-
-    public static getInstance(): RedisClient {
-        if (!RedisClient.instance) {
-            RedisClient.instance = new RedisClient();
-        }
         return RedisClient.instance;
-    }
-
-    public getRedisInstance(): Redis {
-        if (!this.redisInstance) {
-            throw new Error("Redis instance has not been initialized.");
-        }
-        return this.redisInstance;
     }
 }
