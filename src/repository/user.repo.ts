@@ -11,7 +11,7 @@ export default class UserRepo {
         });
     };
 
-    findUserByID = async (id: string) => {
+    findUserByID = async (id: any) => {
         return await User.findOne({
             where: {
                 id: id,
@@ -45,7 +45,11 @@ export default class UserRepo {
 
     deleteUserByID = async (id: any) => {
         try {
-            await User.destroy(id);
+            await User.destroy({
+                where: {
+                    id: id,
+                },
+            });
         } catch (err) {
             throw err;
         }

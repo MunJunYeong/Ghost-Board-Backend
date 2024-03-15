@@ -4,15 +4,15 @@ import RedisClient, { Redis } from "@src/configs/redis";
 import UserService from "@src/services/user/user.service";
 import { ErrNotFound } from "@src/common/errors/custom";
 import BadRequestError from "@src/common/errors/bad_request";
+import InternalError from "@src/common/errors/internal_server";
 
 export default class UserController {
-    // private redis: Redis;
+    private redis: Redis;
     private userService: UserService;
 
     constructor() {
-        // const redisInstance = RedisClient.getInstance();
-        // this.redis = redisInstance.getRedisInstance();
-        
+        this.redis = RedisClient.getInstance();
+
         this.userService = new UserService();
     }
 
@@ -25,6 +25,7 @@ export default class UserController {
             if (err.message === ErrNotFound) {
                 throw new BadRequestError({ code: 404, error: err });
             }
+            throw new InternalError({ error: err });
         }
     };
 }

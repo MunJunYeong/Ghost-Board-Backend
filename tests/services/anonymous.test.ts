@@ -1,5 +1,6 @@
 import request from "supertest";
 import app from "../setup";
+import User from "@models/user";
 
 interface userBody {
     userID: string;
@@ -8,7 +9,8 @@ interface userBody {
     email: string;
 }
 
-describe("회원가입 API", () => {
+let createdUser: User;
+describe("Signup API", () => {
     let body: userBody;
     beforeEach(() => {
         body = {
@@ -19,13 +21,14 @@ describe("회원가입 API", () => {
         };
     });
 
-    describe("회원가입 성공", () => {
-        test("signup", async () => {
+    describe("성공", () => {
+        test("Post - api/signup", async () => {
             const response: any = await request(app).post("/api/signup").send(body);
             expect(response.statusCode).toBe(200);
+            createdUser = response.body.data;
         });
     });
-    describe("Request Validation", () => {
+    describe("Exception", () => {
         beforeEach(() => {
             body = {
                 userID: "test1234",
@@ -65,6 +68,36 @@ describe("회원가입 API", () => {
         test("signup", async () => {
             const response: any = await request(app).post("/api/signup").send(body);
             expect(response.statusCode).toBe(400);
+        });
+    });
+});
+
+// describe("Get User API", () => {
+//     describe("성공", () => {
+//         test("Get - /api/users/{id}", async () => {
+//             const response: any = await request(app).get(`api/users/{id}`);
+//             expect(response.statusCode).toBe(200);
+//         });
+//     });
+//     describe("Exception", () => {
+//         test("not found user", async () => {
+//             const response: any = await request(app).get(`api/users/{id}`);
+//             expect(response.statusCode).toBe(200);
+//         });
+//     });
+// });
+
+describe("Delete User API", () => {
+    describe("성공", () => {
+        test(`Delete - /api/users/{id})`, async () => {
+            const response: any = await request(app).delete(`/api/users/${createdUser.id}`);
+            expect(response.statusCode).toBe(200);
+        });
+    });
+    describe("Exception", () => {
+        test("not found user", async () => {
+            const response: any = await request(app).delete(`/api/users/${createdUser.id}`);
+            expect(response.statusCode).toBe(404);
         });
     });
 });

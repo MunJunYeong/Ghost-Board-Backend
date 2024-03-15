@@ -4,7 +4,6 @@ import anonymousRouter from "@routes/anonymous.routes";
 import userRouter from "@routes/user.routes";
 
 import { errorMiddleware } from "@middlewares/error";
-import RedisClient from "@configs/redis";
 
 export default class Routes {
     private app: Application | null;
