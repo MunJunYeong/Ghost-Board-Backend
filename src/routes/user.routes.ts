@@ -1,5 +1,17 @@
-import express from "express";
+import { Router } from "express";
 
-const userRouter = express.Router();
+import UserController from "@src/controllers/user/user.controller";
+class UserRoutes {
+    router = Router();
+    controller = new UserController();
 
-export default userRouter;
+    constructor() {
+        this.intializeRoutes();
+    }
+
+    intializeRoutes() {
+        this.router.delete("/:id", this.controller.deleteUser);
+    }
+}
+
+export default new UserRoutes().router;

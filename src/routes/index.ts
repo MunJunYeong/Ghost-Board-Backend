@@ -8,7 +8,7 @@ export default class Routes {
         app.use("/api/", anonymousRouter);
         app.use("/api/users", userRouter);
 
-        // error middleware가 가장 마지막에 있어야
+        // error middleware가 가장 마지막에 있어야 함.
         app.use(errorMiddleware);
     }
 }
