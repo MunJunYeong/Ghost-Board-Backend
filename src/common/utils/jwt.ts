@@ -36,11 +36,13 @@ const verifyAccessToken = (token: string) => {
 
 const verifyRefreshToken = async (token: string, userID: string) => {
     // redis 모듈이 프로미스를 지원하지 않기에 직접 promise를 반환해주어야 함.
-    const getAsync = promisify(redis.get).bind(redis);
+    // TODO:
+    // const getAsync = promisify(redis.get).bind(redis);
 
     try {
         // userID로 저장된 refresh token 가져오기
-        const data = await getAsync(userID);
+        // const data = await getAsync(userID);
+        const data = null;
         if (token === data) {
             jwt.verify(token, process.env.JWT_SECRET_KEY!);
             return true;
@@ -54,9 +56,4 @@ const verifyRefreshToken = async (token: string, userID: string) => {
     }
 };
 
-export {
-    issueAccessToken,
-    issueRefreshToken,
-    verifyAccessToken,
-    verifyRefreshToken,
-};
+export { issueAccessToken, issueRefreshToken, verifyAccessToken, verifyRefreshToken };
