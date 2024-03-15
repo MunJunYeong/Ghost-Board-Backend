@@ -61,14 +61,6 @@ describe("Signup API", () => {
             response = await request(app).post("/api/signup").send(body);
             expect(response.statusCode).toBe(400);
         });
-        test("signup", async () => {
-            const response: any = await request(app).post("/api/signup").send(body);
-            expect(response.statusCode).toBe(400);
-        });
-        test("signup", async () => {
-            const response: any = await request(app).post("/api/signup").send(body);
-            expect(response.statusCode).toBe(400);
-        });
     });
 });
 
