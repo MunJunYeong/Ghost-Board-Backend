@@ -12,5 +12,5 @@ export abstract class CustomError extends Error {
     }
 }
 
-
-export const ErrAlreadyExist = "already exist"
+export const ErrAlreadyExist = "already exist";
+export const ErrNotFound = "not found";

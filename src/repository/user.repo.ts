@@ -1,6 +1,6 @@
 import User from "@models/user";
 
-export default class AnonymousRepo {
+export default class UserRepo {
     constructor() {}
 
     findUserByUserID = async (userID: string) => {
@@ -10,6 +10,15 @@ export default class AnonymousRepo {
             },
         });
     };
+
+    findUserByID = async (id: any) => {
+        return await User.findOne({
+            where: {
+                id: id,
+            },
+        });
+    };
+
     findUserByEmail = async (email: string) => {
         return await User.findOne({
             where: {
@@ -30,6 +39,18 @@ export default class AnonymousRepo {
             });
             return u;
         } catch (err: any) {
+            throw err;
+        }
+    };
+
+    deleteUserByID = async (id: any) => {
+        try {
+            await User.destroy({
+                where: {
+                    id: id,
+                },
+            });
+        } catch (err) {
             throw err;
         }
     };

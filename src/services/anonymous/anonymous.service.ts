@@ -1,4 +1,4 @@
-import AnonymousRepo from "@repo/anonymous.repo";
+import UserRepo from "@src/repository/user.repo";
 import { issueAccessToken, issueRefreshToken } from "@utils/jwt";
 import * as dto from "@controllers/anonymous/dto/anonymous.dto";
 import { convSignupToUser } from "./anonymous.conv";
@@ -11,10 +11,10 @@ interface AccessTokenPayload {
 }
 
 export default class AnonymousService {
-    private anonymousRepo: AnonymousRepo;
+    private userRepo: UserRepo;
 
     constructor() {
-        this.anonymousRepo = new AnonymousRepo();
+        this.userRepo = new UserRepo();
     }
 
     signup = async (userDTO: dto.SignupReqDTO) => {
@@ -23,13 +23,13 @@ export default class AnonymousService {
         try {
             // userID / email duplicate check
             if (
-                (await this.anonymousRepo.findUserByUserID(user.userID)) ||
-                (await this.anonymousRepo.findUserByEmail(user.email))
+                (await this.userRepo.findUserByUserID(user.userID)) ||
+                (await this.userRepo.findUserByEmail(user.email))
             ) {
                 throw new Error(ErrAlreadyExist);
             }
 
-            return await this.anonymousRepo.createUser(user);
+            return await this.userRepo.createUser(user);
         } catch (err) {
             throw err;
         }
