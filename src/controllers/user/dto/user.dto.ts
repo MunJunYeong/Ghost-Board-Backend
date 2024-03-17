@@ -4,12 +4,12 @@ export class UpdateUserReqDTO {
     @IsString()
     @IsOptional()
     password!: string;
-    
+
     @IsString()
     @IsOptional()
     username!: string;
-    
-    @IsEmail()
+
     @IsOptional()
-    email!: string;
+    @IsEmail()
+    email!: string; // IsOptional + IsEmail - 애초에 email key가 오면 안됨.
 }
