@@ -3,10 +3,10 @@ import app from "../setup";
 import User from "@models/user";
 
 interface userBody {
-    userID: string;
-    password: string;
-    username: string;
-    email: string;
+    userID?: string;
+    password?: string;
+    username?: string;
+    email?: string;
 }
 
 let createdUser: User;
@@ -52,7 +52,7 @@ describe("Signup API", () => {
             let response: any = await request(app).post("/api/signup").send(body);
             expect(response.statusCode).toBe(400);
         });
-        test("empty & wrong email", async () => {
+        test("empty & invalid email", async () => {
             body.email = "";
             let response: any = await request(app).post("/api/signup").send(body);
             expect(response.statusCode).toBe(400);
@@ -72,7 +72,7 @@ describe("Get User API", () => {
 
             const result: userBody = response.body.data;
             expect(result.userID).toEqual(createdUser.userID);
-            expect(result.password).toEqual(createdUser.password);
+            expect(result.password).toEqual(""); // password는 FE측으로 유출해선 안된다.
             expect(result.username).toEqual(createdUser.username);
             expect(result.email).toEqual(createdUser.email);
         });
@@ -84,6 +84,56 @@ describe("Get User API", () => {
         });
     });
 });
+
+describe("Update User API", () => {
+    let body: userBody;
+    beforeEach(() => {
+        body = {
+            userID: "", // not used this test
+            username: "",
+            password: "",
+            email: "",
+        };
+    });
+    describe("성공", () => {
+        test(`Put - /api/users/{id}) - username`, async () => {
+            body.username = "changeduser123"
+            delete body.email
+            const response: any = await request(app).put(`/api/users/${createdUser.id}`).send(body);
+            expect(response.statusCode).toBe(200);
+
+            const result: userBody = response.body.data;
+            expect(result.username).toEqual(body.username);
+        });
+        test(`Put - /api/users/{id}) - password`, async () => {
+            body.password = "changeduser313"
+            delete body.email
+            const response: any = await request(app).put(`/api/users/${createdUser.id}`).send(body);
+            expect(response.statusCode).toBe(200);
+        });
+        test(`Put - /api/users/{id}) - email`, async () => {
+            body.email = "changeduser@naver.com"
+            const response: any = await request(app).put(`/api/users/${createdUser.id}`).send(body);
+            expect(response.statusCode).toBe(200);
+
+            const result: userBody = response.body.data;
+            expect(result.email).toEqual(body.email);
+        });
+    });
+    describe("Exception", () => {
+        test("invalid email", async () => {
+            body.email = "invalidemailformat"
+            const response: any = await request(app).put(`/api/users/${createdUser.id}`).send(body);
+            expect(response.statusCode).toBe(400);
+        });
+        test("not found user", async () => {
+            body.email = "changeduser@naver.com"
+            const response: any = await request(app).put(`/api/users/${createdUser.id + 100}`).send(body);
+            expect(response.statusCode).toBe(404);
+        });
+    });
+});
+
 
 describe("Delete User API", () => {
     describe("성공", () => {
