@@ -25,6 +25,8 @@ export default class AnonymousController {
             if (!u) {
                 throw new InternalError({ error: new Error("cant find user but created") });
             }
+            // delete user's password
+            u.password = ""
 
             res.send({ message: "success created user", data: u.dataValues });
         } catch (err: any) {

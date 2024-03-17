@@ -1,5 +1,10 @@
-import { ErrNotFound } from "@src/common/errors/custom";
-import UserRepo from "@src/repository/user.repo";
+// common
+import { ErrNotFound } from "@errors/custom";
+
+// server
+import * as dto from "@controllers/user/dto/user.dto";
+import UserRepo from "@repo/user.repo";
+import { hashing } from "@src/common/utils/encryption";
 
 export default class UserService {
     private userRepo: UserRepo;
@@ -32,4 +37,25 @@ export default class UserService {
             throw err;
         }
     };
+
+    updateUser = async (targetUserPkID: string, userData: dto.UpdateUserReqDTO) => {
+        try {
+            const user = await this.userRepo.findUserByID(targetUserPkID);
+            if (!user) {
+                throw new Error(ErrNotFound);
+            }
+            if (userData.email) {
+                user.email = userData.email
+            }
+            if (userData.password) {
+                user.password = await hashing(userData.password)
+            }
+            if (userData.username) {
+                user.username = userData.username
+            }
+            return await this.userRepo.updateUser(user);
+        } catch (err) {
+            throw err;
+        }
+    }
 }

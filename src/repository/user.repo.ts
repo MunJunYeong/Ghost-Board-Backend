@@ -1,7 +1,7 @@
 import User from "@models/user";
 
 export default class UserRepo {
-    constructor() {}
+    constructor() { }
 
     findUserByUserID = async (userID: string) => {
         return await User.findOne({
@@ -54,4 +54,28 @@ export default class UserRepo {
             throw err;
         }
     };
+
+    updateUser = async (user: User) => {
+        try {
+            const updatedUser = await User.update(
+                {
+                    username: user.username,
+                    password: user.password,
+                    email: user.email,
+                },
+                {
+                    where: {
+                        id: user.id, // 사용자의 고유 식별자로 업데이트
+                    },
+                }
+            );
+            if (updatedUser[0] === 1) {
+                return user
+            } else {
+                throw new Error("cant update user")
+            }
+        } catch (err) {
+            throw err;
+        }
+    }
 }
