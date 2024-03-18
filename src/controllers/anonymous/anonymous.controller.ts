@@ -5,7 +5,7 @@ import RedisClient, { Redis } from "@configs/redis";
 import AnonymousService from "@services/anonymous/anonymous.service";
 import InternalError from "@errors/internal_server";
 import BadRequestError from "@errors/bad_request";
-import { ErrAlreadyExist } from "@errors/custom";
+import { ErrAlreadyExist, ErrNotFound } from "@errors/custom";
 
 export default class AnonymousController {
     private redis: Redis;
@@ -25,10 +25,8 @@ export default class AnonymousController {
             if (!u) {
                 throw new InternalError({ error: new Error("cant find user but created") });
             }
-            // delete user's password
-            u.password = ""
 
-            res.send({ message: "success created user", data: u.dataValues });
+            res.send({ message: "success created user", data: u });
         } catch (err: any) {
             if (err.message === ErrAlreadyExist) {
                 throw new BadRequestError({ error: err });
@@ -41,16 +39,18 @@ export default class AnonymousController {
         const loginBody: dto.LoginReqDTO = req.body;
 
         try {
-            const result: dto.LoginResDTO = await this.anonymouseService.login(loginBody.id, loginBody.password);
+            const result: dto.LoginResDTO = await this.anonymouseService.login(loginBody);
 
             this.redis.set(loginBody.id, result.refreshToken);
 
             res.status(200).send({
                 data: result,
             });
-        } catch (error: any) {
-            // status code같은 경우에는 한 파일에서 define 하는 것도 좋음
-            throw new InternalError(error);
+        } catch (err: any) {
+            if (err.message === ErrNotFound) {
+                throw new BadRequestError({ code: 404, error: err });
+            }
+            throw new InternalError(err);
         }
     };
 }

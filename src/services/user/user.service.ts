@@ -4,7 +4,8 @@ import { ErrNotFound } from "@errors/custom";
 // server
 import * as dto from "@controllers/user/dto/user.dto";
 import UserRepo from "@repo/user.repo";
-import { hashing } from "@src/common/utils/encryption";
+import { hashing } from "@utils/encryption";
+import { deletePassword } from "../common.conv";
 
 export default class UserService {
     private userRepo: UserRepo;
@@ -15,10 +16,12 @@ export default class UserService {
 
     getUser = async (id: string) => {
         try {
-            const user = await this.userRepo.findUserByID(id);
-            if (!user) {
+            const u = await this.userRepo.findUserByID(id);
+            if (!u) {
                 throw new Error(ErrNotFound);
             }
+
+            const user = deletePassword(u);
             return user;
         } catch (err: any) {
             throw err;
@@ -40,22 +43,24 @@ export default class UserService {
 
     updateUser = async (targetUserPkID: string, userData: dto.UpdateUserReqDTO) => {
         try {
-            const user = await this.userRepo.findUserByID(targetUserPkID);
-            if (!user) {
+            let u = await this.userRepo.findUserByID(targetUserPkID);
+            if (!u) {
                 throw new Error(ErrNotFound);
             }
             if (userData.email) {
-                user.email = userData.email
+                u.email = userData.email;
             }
             if (userData.password) {
-                user.password = await hashing(userData.password)
+                u.password = await hashing(userData.password);
             }
             if (userData.username) {
-                user.username = userData.username
+                u.username = userData.username;
             }
-            return await this.userRepo.updateUser(user);
+            u = await this.userRepo.updateUser(u);
+            const user = deletePassword(u);
+            return user;
         } catch (err) {
             throw err;
         }
-    }
+    };
 }
