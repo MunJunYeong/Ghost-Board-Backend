@@ -6,6 +6,7 @@ import AnonymousService from "@services/anonymous/anonymous.service";
 import InternalError from "@errors/internal_server";
 import BadRequestError from "@errors/bad_request";
 import { ErrAlreadyExist, ErrNotFound } from "@errors/custom";
+import { logger } from "@src/configs/logger";
 
 export default class AnonymousController {
     private redis: Redis;
@@ -39,18 +40,16 @@ export default class AnonymousController {
         const loginBody: dto.LoginReqDTO = req.body;
 
         try {
-            const result: dto.LoginResDTO = await this.anonymouseService.login(loginBody);
+            const result = await this.anonymouseService.login(loginBody);
+            
+            this.redis.set(loginBody.userID, result.refreshToken);
 
-            this.redis.set(loginBody.id, result.refreshToken);
-
-            res.status(200).send({
-                data: result,
-            });
+            res.status(200).send({ data: result });
         } catch (err: any) {
             if (err.message === ErrNotFound) {
                 throw new BadRequestError({ code: 404, error: err });
             }
-            throw new InternalError(err);
+            throw new InternalError({ error: err });
         }
     };
 }

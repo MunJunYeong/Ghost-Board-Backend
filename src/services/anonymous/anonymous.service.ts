@@ -4,7 +4,6 @@ import * as dto from "@controllers/anonymous/dto/anonymous.dto";
 import { convSignupToUser } from "./anonymous.conv";
 import { ErrAlreadyExist, ErrNotFound } from "@errors/custom";
 import { comparePassword, hashing } from "@utils/encryption";
-import User from "@src/models/user";
 import { deletePassword } from "../common.conv";
 
 export default class AnonymousService {
@@ -30,9 +29,9 @@ export default class AnonymousService {
         return user;
     };
 
-    login = async (loginData: dto.LoginReqDTO) => {
-        const { id, password } = loginData;
-        const u = await this.userRepo.findUserByID(id);
+    login = async (loginData: dto.LoginReqDTO): Promise<dto.LoginResDTO> => {
+        const { userID, password } = loginData;
+        const u = await this.userRepo.findUserByUserID(userID);
         // login validation - id and compare password
         if (!u || !(await comparePassword(password, u.password))) {
             throw new Error(ErrNotFound);
@@ -40,9 +39,10 @@ export default class AnonymousService {
 
         const user = deletePassword(u);
 
-        return {
+        const result: dto.LoginResDTO = {
             accessToken: issueAccessToken(user),
             refreshToken: issueRefreshToken(),
         };
+        return result;
     };
 }

@@ -27,7 +27,7 @@ export class LoginReqDTO {
     @IsNotEmpty()
     @MinLength(3, { message: "ID is too short" })
     @MaxLength(15, { message: "ID is too long" })
-    id!: string;
+    userID!: string;
 
     @IsString()
     @IsNotEmpty()
@@ -38,8 +38,10 @@ export class LoginReqDTO {
 
 export class LoginResDTO {
     @IsString()
+    @IsNotEmpty()
     accessToken!: string;
 
     @IsString()
+    @IsNotEmpty()
     refreshToken!: string;
 }
