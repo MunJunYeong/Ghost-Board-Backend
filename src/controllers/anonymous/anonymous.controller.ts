@@ -6,7 +6,6 @@ import AnonymousService from "@services/anonymous/anonymous.service";
 import InternalError from "@errors/internal_server";
 import BadRequestError from "@errors/bad_request";
 import { ErrAlreadyExist, ErrNotFound } from "@errors/custom";
-import { logger } from "@src/configs/logger";
 
 export default class AnonymousController {
     private redis: Redis;

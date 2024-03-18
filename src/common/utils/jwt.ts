@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import { promisify } from "util";
 import redis from "@configs/redis";
 import { logger } from "@configs/logger";
+import { ErrUnauthorized } from "../errors/custom";
 
 const issueAccessToken = (payload: object) => {
     return jwt.sign(payload, process.env.JWT_SECRET_KEY!, {
@@ -21,16 +22,9 @@ const verifyAccessToken = (token: string) => {
     let decoded: any = null;
     try {
         decoded = jwt.verify(token, process.env.JWT_SECRET_KEY!);
-        return {
-            ok: true,
-            id: decoded.id,
-            role: decoded.role,
-        };
+        return decoded;
     } catch (err: any) {
-        return {
-            ok: false,
-            message: err.message,
-        };
+        throw new Error(ErrUnauthorized);
     }
 };
 
