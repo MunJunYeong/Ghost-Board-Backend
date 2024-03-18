@@ -9,7 +9,6 @@ import RedisClient, { Redis } from "@configs/redis";
 // server
 import * as dto from "@controllers/user/dto/user.dto";
 import UserService from "@services/user/user.service";
-import User from "@models/user";
 
 export default class UserController {
     private redis: Redis;
@@ -24,10 +23,9 @@ export default class UserController {
     getUser = async (req: Request, res: Response) => {
         const id = req.params.id;
         try {
-            const u: User = await this.userService.getUser(id);
-            // delete user's password
-            u.password = ""
-            res.send({ message: `success get user (id : ${id})`, data: u.dataValues });
+            const u = await this.userService.getUser(id);
+            
+            res.send({ message: `success get user (id : ${id})`, data: u });
         } catch (err: any) {
             if (err.message === ErrNotFound) {
                 throw new BadRequestError({ code: 404, error: err });
@@ -53,9 +51,7 @@ export default class UserController {
         const body: dto.UpdateUserReqDTO = req.body;
         try {
             const u = await this.userService.updateUser(id, body);
-            // delete user's password
-            u.password = ""
-            res.send({ message: `success get user (id : ${id})`, data: u.dataValues });
+            res.send({ message: `success get user (id : ${id})`, data: u });
         } catch (err: any) {
             if (err.message === ErrNotFound) {
                 throw new BadRequestError({ code: 404, error: err });

@@ -3,16 +3,16 @@ import { promisify } from "util";
 import redis from "@configs/redis";
 import { logger } from "@configs/logger";
 
-const issueAccessToken = (payload: object, expiresIn: string | number) => {
+const issueAccessToken = (payload: object) => {
     return jwt.sign(payload, process.env.JWT_SECRET_KEY!, {
-        algorithm: "RS256",
-        expiresIn,
+        algorithm: "HS256",
+        expiresIn: "1h",
     });
 };
 
 const issueRefreshToken = () => {
     return jwt.sign({}, process.env.JWT_SECRET_KEY!, {
-        algorithm: "RS256",
+        algorithm: "HS256",
         expiresIn: "14d",
     });
 };

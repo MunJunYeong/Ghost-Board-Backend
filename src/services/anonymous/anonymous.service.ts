@@ -2,14 +2,9 @@ import UserRepo from "@src/repository/user.repo";
 import { issueAccessToken, issueRefreshToken } from "@utils/jwt";
 import * as dto from "@controllers/anonymous/dto/anonymous.dto";
 import { convSignupToUser } from "./anonymous.conv";
-import { ErrAlreadyExist } from "@errors/custom";
-import { hashing } from "@src/common/utils/encryption";
-
-interface AccessTokenPayload {
-    // 알아서 추가할 것
-    name: string;
-    etc: string;
-}
+import { ErrAlreadyExist, ErrNotFound } from "@errors/custom";
+import { comparePassword, hashing } from "@utils/encryption";
+import { deletePassword } from "../common.conv";
 
 export default class AnonymousService {
     private userRepo: UserRepo;
@@ -19,35 +14,35 @@ export default class AnonymousService {
     }
 
     signup = async (userDTO: dto.SignupReqDTO) => {
-        const user = convSignupToUser(userDTO);
+        let u = convSignupToUser(userDTO);
 
-        try {
-            // userID / email duplicate check
-            if (
-                (await this.userRepo.findUserByUserID(user.userID)) ||
-                (await this.userRepo.findUserByEmail(user.email))
-            ) {
-                throw new Error(ErrAlreadyExist);
-            }
-
-            // encryption password
-            user.password = await hashing(user.password);
-
-            return await this.userRepo.createUser(user);
-        } catch (err) {
-            throw err;
+        // userID / email duplicate check
+        if ((await this.userRepo.findUserByUserID(u.userID)) || (await this.userRepo.findUserByEmail(u.email))) {
+            throw new Error(ErrAlreadyExist);
         }
+
+        // encryption password
+        u.password = await hashing(u.password);
+        u = await this.userRepo.createUser(u);
+
+        const user = deletePassword(u);
+        return user;
     };
 
-    login = async (userID: string, pw: string) => {
-        //  user login 로직 - DB에 접근하여 id pw 대조
-        // 아래는 예시용 payload. 실제로는 user 정보를 넣어야 함.
-        const tempPayload: AccessTokenPayload = { name: "aa", etc: "bb" };
-        // 성공 했다면 토큰 발행
+    login = async (loginData: dto.LoginReqDTO): Promise<dto.LoginResDTO> => {
+        const { userID, password } = loginData;
+        const u = await this.userRepo.findUserByUserID(userID);
+        // login validation - id and compare password
+        if (!u || !(await comparePassword(password, u.password))) {
+            throw new Error(ErrNotFound);
+        }
 
-        return {
-            accessToken: issueAccessToken(tempPayload, "1h" /* 이것도 예시임 */),
+        const user = deletePassword(u);
+
+        const result: dto.LoginResDTO = {
+            accessToken: issueAccessToken(user),
             refreshToken: issueRefreshToken(),
         };
+        return result;
     };
 }
