@@ -9,7 +9,11 @@ interface userBody {
     email?: string;
 }
 
+// test용 user data
 let createdUser: userBody;
+let accessToken: string;
+let refreshToken: string;
+
 describe("Signup API", () => {
     let body: userBody;
     beforeEach(() => {
@@ -70,6 +74,8 @@ describe("Login API", () => {
             expect(response.statusCode).toBe(200);
 
             const result = response.body.data;
+            accessToken = result.accessToken;
+            refreshToken = result.refreshToken;
             expect(result.accessToken).not.toBeNull();
             expect(result.refreshToken).not.toBeNull();
         });
@@ -103,8 +109,11 @@ describe("Login API", () => {
 describe("Get User API", () => {
     describe("성공", () => {
         test("Get - /api/users/{id}", async () => {
-            const response: any = await request(app).get(`/api/users/${createdUser.id}`);
+            const response: any = await request(app)
+                .get(`/api/users/${createdUser.id}`)
+                .set("Authorization", `Bearer ${accessToken}`);
             expect(response.statusCode).toBe(200);
+            console.log(response.body);
 
             const result: userBody = response.body.data;
             expect(result.userID).toEqual(createdUser.userID);
@@ -115,8 +124,11 @@ describe("Get User API", () => {
     });
     describe("Exception", () => {
         test("not found user", async () => {
-            const response: any = await request(app).get(`/api/users/${createdUser.id! + 100}`);
-            expect(response.statusCode).toBe(404);
+            const response: any = await request(app)
+                .get(`/api/users/${createdUser.id! + 100}`)
+                .set("Authorization", `Bearer ${accessToken}`);
+            console.log(response.body);
+            expect(response.statusCode).toBe(401);
         });
     });
 });
@@ -136,7 +148,10 @@ describe("Update User API", () => {
         test(`Put - /api/users/{id}) - username`, async () => {
             body.username = "changeduser123";
             delete body.email;
-            const response: any = await request(app).put(`/api/users/${createdUser.id}`).send(body);
+            const response: any = await request(app)
+                .put(`/api/users/${createdUser.id}`)
+                .set("Authorization", `Bearer ${accessToken}`)
+                .send(body);
             expect(response.statusCode).toBe(200);
 
             const result: userBody = response.body.data;
@@ -145,12 +160,18 @@ describe("Update User API", () => {
         test(`Put - /api/users/{id}) - password`, async () => {
             body.password = "changeduser313";
             delete body.email;
-            const response: any = await request(app).put(`/api/users/${createdUser.id}`).send(body);
+            const response: any = await request(app)
+                .put(`/api/users/${createdUser.id}`)
+                .set("Authorization", `Bearer ${accessToken}`)
+                .send(body);
             expect(response.statusCode).toBe(200);
         });
         test(`Put - /api/users/{id}) - email`, async () => {
             body.email = "changeduser@naver.com";
-            const response: any = await request(app).put(`/api/users/${createdUser.id}`).send(body);
+            const response: any = await request(app)
+                .put(`/api/users/${createdUser.id}`)
+                .set("Authorization", `Bearer ${accessToken}`)
+                .send(body);
             expect(response.statusCode).toBe(200);
 
             const result: userBody = response.body.data;
@@ -160,15 +181,18 @@ describe("Update User API", () => {
     describe("Exception", () => {
         test("invalid email", async () => {
             body.email = "invalidemailformat";
-            const response: any = await request(app).put(`/api/users/${createdUser.id}`).send(body);
+            const response: any = await request(app)
+                .put(`/api/users/${createdUser.id}`)
+                .set("Authorization", `Bearer ${accessToken}`)
+                .send(body);
             expect(response.statusCode).toBe(400);
         });
-        test("not found user", async () => {
+        test("wrong authenticated", async () => {
             body.email = "changeduser@naver.com";
             const response: any = await request(app)
                 .put(`/api/users/${createdUser.id! + 100}`)
                 .send(body);
-            expect(response.statusCode).toBe(404);
+            expect(response.statusCode).toBe(401);
         });
     });
 });
@@ -176,13 +200,17 @@ describe("Update User API", () => {
 describe("Delete User API", () => {
     describe("성공", () => {
         test(`Delete - /api/users/{id})`, async () => {
-            const response: any = await request(app).delete(`/api/users/${createdUser.id}`);
+            const response: any = await request(app)
+                .delete(`/api/users/${createdUser.id}`)
+                .set("Authorization", `Bearer ${accessToken}`);
             expect(response.statusCode).toBe(200);
         });
     });
     describe("Exception", () => {
         test("not found user", async () => {
-            const response: any = await request(app).delete(`/api/users/${createdUser.id}`);
+            const response: any = await request(app)
+                .delete(`/api/users/${createdUser.id}`)
+                .set("Authorization", `Bearer ${accessToken}`);
             expect(response.statusCode).toBe(404);
         });
     });

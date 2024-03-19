@@ -4,7 +4,7 @@ import redis from "redis-mock";
 jest.mock("@configs/redis", () => {
     return {
         // RedisClient 클래스를 mocking합니다.
-        getInstance: jest.fn(() => redis),
+        getInstance: jest.fn(() => redis.createClient()),
     };
 });
 
