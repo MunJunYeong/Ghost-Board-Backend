@@ -16,9 +16,16 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
         });
     }
 
-    req.user = verifyAccessToken(token);
+    const decoded = verifyAccessToken(token);
+    if (!decoded.valid) {
+        throw new BadRequestError({
+            error: decoded.error,
+            code: 401,
+        });
+    }
+    req.user = decoded.user
 
-    if (req.user.id !== Number(req.params.id)) {
+    if (req.user!.id !== Number(req.params.id)) {
         throw new BadRequestError({
             error: new Error("invalid token"),
             code: 401,
