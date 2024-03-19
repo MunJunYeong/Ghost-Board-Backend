@@ -22,7 +22,6 @@ export default class UserController {
 
     getUser = async (req: Request, res: Response) => {
         const id = req.params.id;
-        if (Number(id) !== req.user!.id) throw new BadRequestError({ error: new Error(ErrUnauthorized), code: 401 });
 
         try {
             const u = await this.userService.getUser(id);
@@ -38,7 +37,6 @@ export default class UserController {
 
     deleteUser = async (req: Request, res: Response) => {
         const id = req.params.id;
-        if (Number(id) !== req.user!.id) throw new BadRequestError({ error: new Error(ErrUnauthorized), code: 401 });
 
         try {
             await this.userService.deleteUser(id);
@@ -52,7 +50,6 @@ export default class UserController {
     };
     updateUser = async (req: Request, res: Response) => {
         const id = req.params.id;
-        if (Number(id) !== req.user!.id) throw new BadRequestError({ error: new Error(ErrUnauthorized), code: 401 });
 
         const body: dto.UpdateUserReqDTO = req.body;
         try {

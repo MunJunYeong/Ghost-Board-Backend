@@ -4,6 +4,7 @@ import redis from "@configs/redis";
 import { logger } from "@configs/logger";
 import { ErrUnauthorized } from "../errors/custom";
 import { DecodedUser } from "@controllers/common.dto";
+import RedisClient from "@configs/redis";
 
 const issueAccessToken = (payload: object) => {
     return jwt.sign(payload, process.env.JWT_SECRET_KEY!, {
@@ -23,26 +24,34 @@ const verifyAccessToken = (token: string) => {
     let decoded: DecodedUser;
     try {
         decoded = jwt.verify(token, process.env.JWT_SECRET_KEY!) as DecodedUser;
-        return decoded;
+        return {
+            valid: true,
+            user: decoded,
+            error: null,
+        };
     } catch (err: any) {
-        throw new Error(ErrUnauthorized);
+        const data = jwt.decode(token) as DecodedUser;
+        return {
+            valid: false,
+            user: data,
+            error: err,
+        };
     }
 };
 
 const verifyRefreshToken = async (token: string, userID: string) => {
     // redis 모듈이 프로미스를 지원하지 않기에 직접 promise를 반환해주어야 함.
-    // TODO:
-    // const getAsync = promisify(redis.get).bind(redis);
+    const redis = RedisClient.getInstance();
+    const getAsync = promisify(redis.get).bind(redis);
 
     try {
         // userID로 저장된 refresh token 가져오기
-        // const data = await getAsync(userID);
-        const data = null;
+        const data = await getAsync(userID);
         if (token === data) {
             jwt.verify(token, process.env.JWT_SECRET_KEY!);
             return true;
         } else {
-            logger.warn("wrong refresh token");
+            logger.error("wrong refresh token");
             return false;
         }
     } catch (err: any) {
