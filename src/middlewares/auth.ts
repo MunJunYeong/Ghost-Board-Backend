@@ -5,7 +5,6 @@ import { Request, Response, NextFunction } from "express";
 
 // JWT 검증을 위한 미들웨어 함수
 export const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
-    // 헤더에서 JWT 토큰 가져오기
     const authHeader = req.headers["authorization"];
     const token = authHeader && authHeader.split(" ")[1];
 
@@ -16,7 +15,6 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
         });
     }
 
-    const user = verifyAccessToken(token);
-    req["user"] = user;
+    req.user = verifyAccessToken(token);
     next();
 };

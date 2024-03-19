@@ -1,9 +1,8 @@
 {
     "compilerOptions": {
-        "typeRoots": ["./node_modules/@types","./src/customType"], 
+        "typeRoots": ["./node_modules/@types","customType"], 
         "baseUrl": ".",
         "paths": {
-            "@src/*": ["src/*"],
             "@configs/*": ["src/configs/*"],
             "@dtos/*": ["src/dtos/*"],
             "@middlewares/*": ["src/middlewares/*"],
@@ -13,7 +12,8 @@
             "@controllers/*": ["src/controllers/*"],
             "@services/*": ["src/services/*"],
             "@errors/*": ["src/common/errors/*"],
-            "@utils/*": ["src/common/utils/*"]
+            "@utils/*": ["src/common/utils/*"],
+            "@src/*": ["src/*"],
         },
         "outDir": "./dist",
         "target": "es2016",
