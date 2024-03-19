@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 
 // common
-import { ErrNotFound } from "@errors/custom";
+import { ErrNotFound, ErrUnauthorized } from "@errors/custom";
 import BadRequestError from "@errors/bad_request";
 import InternalError from "@errors/internal_server";
 import RedisClient, { Redis } from "@configs/redis";
@@ -22,9 +22,11 @@ export default class UserController {
 
     getUser = async (req: Request, res: Response) => {
         const id = req.params.id;
+        if (Number(id) !== req.user!.id) throw new BadRequestError({ error: new Error(ErrUnauthorized), code: 401 });
+
         try {
             const u = await this.userService.getUser(id);
-            
+
             res.send({ message: `success get user (id : ${id})`, data: u });
         } catch (err: any) {
             if (err.message === ErrNotFound) {
@@ -36,6 +38,8 @@ export default class UserController {
 
     deleteUser = async (req: Request, res: Response) => {
         const id = req.params.id;
+        if (Number(id) !== req.user!.id) throw new BadRequestError({ error: new Error(ErrUnauthorized), code: 401 });
+
         try {
             await this.userService.deleteUser(id);
             res.send({ message: `success delete user (id : ${id})`, data: id });
@@ -48,6 +52,8 @@ export default class UserController {
     };
     updateUser = async (req: Request, res: Response) => {
         const id = req.params.id;
+        if (Number(id) !== req.user!.id) throw new BadRequestError({ error: new Error(ErrUnauthorized), code: 401 });
+
         const body: dto.UpdateUserReqDTO = req.body;
         try {
             const u = await this.userService.updateUser(id, body);
@@ -58,5 +64,5 @@ export default class UserController {
             }
             throw new InternalError({ error: err });
         }
-    }
+    };
 }

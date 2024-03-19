@@ -2,6 +2,8 @@ import jwt from "jsonwebtoken";
 import { promisify } from "util";
 import redis from "@configs/redis";
 import { logger } from "@configs/logger";
+import { ErrUnauthorized } from "../errors/custom";
+import { DecodedUser } from "@controllers/common.dto";
 
 const issueAccessToken = (payload: object) => {
     return jwt.sign(payload, process.env.JWT_SECRET_KEY!, {
@@ -18,19 +20,12 @@ const issueRefreshToken = () => {
 };
 
 const verifyAccessToken = (token: string) => {
-    let decoded: any = null;
+    let decoded: DecodedUser;
     try {
-        decoded = jwt.verify(token, process.env.JWT_SECRET_KEY!);
-        return {
-            ok: true,
-            id: decoded.id,
-            role: decoded.role,
-        };
+        decoded = jwt.verify(token, process.env.JWT_SECRET_KEY!) as DecodedUser;
+        return decoded;
     } catch (err: any) {
-        return {
-            ok: false,
-            message: err.message,
-        };
+        throw new Error(ErrUnauthorized);
     }
 };
 
