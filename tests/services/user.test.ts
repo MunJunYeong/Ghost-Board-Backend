@@ -113,7 +113,6 @@ describe("Get User API", () => {
                 .get(`/api/users/${createdUser.id}`)
                 .set("Authorization", `Bearer ${accessToken}`);
             expect(response.statusCode).toBe(200);
-            console.log(response.body);
 
             const result: userBody = response.body.data;
             expect(result.userID).toEqual(createdUser.userID);
@@ -127,7 +126,6 @@ describe("Get User API", () => {
             const response: any = await request(app)
                 .get(`/api/users/${createdUser.id! + 100}`)
                 .set("Authorization", `Bearer ${accessToken}`);
-            console.log(response.body);
             expect(response.statusCode).toBe(401);
         });
     });
