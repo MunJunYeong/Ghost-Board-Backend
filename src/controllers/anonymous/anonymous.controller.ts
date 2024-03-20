@@ -62,19 +62,18 @@ export default class AnonymousController {
             const refreshToken = req.headers.refresh as string;
 
             const decoded = verifyAccessToken(accessToken);
-            console.log(decoded)
             // exception
             {
                 // valid한 accessToken의 경우에는 해당 API를 호출해서는 아니된다.
                 if (decoded.valid) {
-                    throw new BadRequestError({error: new Error("is valid accesstoken")});
+                    throw new BadRequestError({ message: "is valid accesstoken" });
                 }
                 // accessToken이 Expired된 토큰이 아닌 경우의 exception (malformed와 같은 오류일 수 있다.)
                 if (decoded.error.name !== "TokenExpiredError") {
                     throw new BadRequestError({ error: decoded.error });
                 }
                 if (!decoded.user?.userID) {
-                    throw new BadRequestError({ error: new Error("not exist user data in decoded token") });
+                    throw new BadRequestError({ message: "not exist user data in decoded token" });
                 }
             }
 
