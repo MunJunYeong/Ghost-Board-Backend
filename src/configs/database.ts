@@ -2,6 +2,8 @@ import { Sequelize, Dialect } from "sequelize";
 import { initUser } from "@models/user";
 import { initPost } from "@models/post";
 import { initBoard } from "@models/board";
+import { initComment } from "@models/comment";
+import { initReply } from "@models/reply";
 
 const DBConfigs = {
     username: process.env.DB_USERNAME || "postgres",
@@ -36,6 +38,8 @@ export default class Database {
             initUser(this.sequelizeInstance);
             initBoard(this.sequelizeInstance);
             initPost(this.sequelizeInstance);
+            initComment(this.sequelizeInstance);
+            initReply(this.sequelizeInstance);
 
             // await this.sequelizeInstance.sync();
             await this.sequelizeInstance.sync({ logging: false });
