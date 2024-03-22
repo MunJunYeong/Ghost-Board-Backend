@@ -1,17 +1,24 @@
-import { Model, DataTypes, Sequelize } from "sequelize";
+import { Model, DataTypes, Sequelize, InferCreationAttributes, InferAttributes, CreationOptional } from "sequelize";
 
 import User from "./user";
+import Board from "./board";
 
-class Post extends Model {
-    public id!: number;
-    public title!: string;
-    public content!: string;
+class Post extends Model<InferAttributes<Post>, InferCreationAttributes<Post>> {
+    declare postId: CreationOptional<number>;
+    declare title: string;
+    declare description: string;
+    declare createdAt: CreationOptional<Date>;
+    declare updatedAt: CreationOptional<Date>;
+
+    // relation
+    declare userId: number; // userId 속성 추가
+    declare boardId: number; // boardId 속성 추가
 }
 
 export const initPost = (sequelize: Sequelize) => {
     Post.init(
         {
-            id: {
+            postId: {
                 type: DataTypes.INTEGER,
                 autoIncrement: true,
                 primaryKey: true,
@@ -20,18 +27,33 @@ export const initPost = (sequelize: Sequelize) => {
                 type: DataTypes.STRING,
                 allowNull: false,
             },
-            content: {
-                type: DataTypes.TEXT,
+            description: {
+                type: DataTypes.STRING,
                 allowNull: false,
             },
-        }, 
+            createdAt: {
+                type: DataTypes.DATE,
+            },
+            updatedAt: {
+                type: DataTypes.DATE,
+            },
+            userId: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+            },
+            boardId: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+            },
+        },
         {
             sequelize,
-            tableName: "posts",
+            tableName: "post",
         }
     );
     // 관계 설정
     Post.belongsTo(User, { foreignKey: "userId" });
+    Post.belongsTo(Board, { foreignKey: "boardId" }); // Post는 Board에 속합니다.
 };
 
 export default Post;

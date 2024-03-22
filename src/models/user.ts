@@ -47,7 +47,7 @@ export const initUser = (sequelize: Sequelize) => {
         },
         {
             sequelize,
-            tableName: "users",
+            tableName: "user",
         }
     );
 };

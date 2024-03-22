@@ -1,6 +1,7 @@
 import { Sequelize, Dialect } from "sequelize";
 import { initUser } from "@models/user";
 import { initPost } from "@models/post";
+import { initBoard } from "@models/board";
 
 const DBConfigs = {
     username: process.env.DB_USERNAME || "postgres",
@@ -26,13 +27,14 @@ export default class Database {
                     host: DBConfigs.host,
                     dialect: DBConfigs.dialect as Dialect,
                     logging: false,
-                    define : {
-                        underscored : true
-                    }
+                    define: {
+                        underscored: true,
+                    },
                 });
             }
 
             initUser(this.sequelizeInstance);
+            initBoard(this.sequelizeInstance);
             initPost(this.sequelizeInstance);
 
             // await this.sequelizeInstance.sync();
