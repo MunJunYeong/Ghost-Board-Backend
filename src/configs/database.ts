@@ -26,6 +26,9 @@ export default class Database {
                     host: DBConfigs.host,
                     dialect: DBConfigs.dialect as Dialect,
                     logging: false,
+                    define : {
+                        underscored : true
+                    }
                 });
             }
 

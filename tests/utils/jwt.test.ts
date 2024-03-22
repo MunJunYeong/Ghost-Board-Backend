@@ -14,7 +14,6 @@ describe("jwt util", () => {
             accessToken = issueAccessToken(payload);
             // length가 1 이상이어야 한다.
             expect(accessToken.length).toBeGreaterThan(1);
-            console.log(accessToken);
         });
         test("verifyAccessToken", async () => {
             const result = verifyAccessToken(accessToken);

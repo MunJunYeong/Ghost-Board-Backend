@@ -21,12 +21,12 @@ export default class UserController {
     }
 
     getUser = async (req: Request, res: Response) => {
-        const id = req.params.id;
+        const userID = req.params.id;
 
         try {
-            const u = await this.userService.getUser(id);
+            const u = await this.userService.getUser(userID);
 
-            res.send({ message: `success get user (id : ${id})`, data: u });
+            res.send({ message: `success get user (id : ${userID})`, data: u });
         } catch (err: any) {
             if (err.message === ErrNotFound) {
                 throw new BadRequestError({ code: 404, error: err });

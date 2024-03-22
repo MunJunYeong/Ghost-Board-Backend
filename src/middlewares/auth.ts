@@ -23,11 +23,11 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
             code: 401,
         });
     }
-    req.user = decoded.user
+    req.user = decoded.user;
 
-    if (req.user!.id !== Number(req.params.id)) {
+    if (req.user!.userId !== Number(req.params.id)) {
         throw new BadRequestError({
-            error: new Error("invalid token"),
+            error: new Error(`invalid token (token user id : ${req.user!.id}, request params id : ${req.params.id})`),
             code: 401,
         });
     }

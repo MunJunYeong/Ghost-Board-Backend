@@ -42,7 +42,7 @@ export default class AnonymousController {
         try {
             const result = await this.anonymouseService.login(loginBody);
 
-            this.redis.set(loginBody.userID, result.refreshToken);
+            this.redis.set(loginBody.id, result.refreshToken);
 
             res.status(200).send({ data: result });
         } catch (err: any) {
@@ -72,19 +72,19 @@ export default class AnonymousController {
                 if (decoded.error.name !== "TokenExpiredError") {
                     throw new BadRequestError({ error: decoded.error });
                 }
-                if (!decoded.user?.userID) {
+                if (!decoded.user?.userId) {
                     throw new BadRequestError({ message: "not exist user data in decoded token" });
                 }
             }
 
             // userID로 redis에 저장된 refresh token이 맞는지 확인 후 verify까지 함수에서 책임지고 함
-            if (!(await verifyRefreshToken(refreshToken, decoded.user?.userID))) {
+            if (!(await verifyRefreshToken(refreshToken, decoded.user?.id))) {
                 throw new InternalError();
             }
 
             const newPayload = {
+                userId: decoded.user.userId,
                 id: decoded.user.id,
-                userID: decoded.user.userID,
                 username: decoded.user.username,
                 email: decoded.user.email,
             };
