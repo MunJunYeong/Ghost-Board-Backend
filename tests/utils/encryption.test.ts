@@ -1,4 +1,4 @@
-import { comparePassword, hashing } from "@src/common/utils/encryption";
+import { comparePassword, hashing } from "@utils/encryption";
 
 describe("encryption util", () => {
     let pwd = "test1234";

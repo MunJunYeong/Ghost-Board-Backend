@@ -1,8 +1,7 @@
 import jwt from "jsonwebtoken";
+
 import { promisify } from "util";
-import redis from "@configs/redis";
 import { logger } from "@configs/logger";
-import { ErrUnauthorized } from "../errors/custom";
 import { DecodedUser } from "@controllers/common.dto";
 import RedisClient from "@configs/redis";
 
