@@ -1,6 +1,6 @@
 export class DecodedUser {
-    id!: number;
+    userId!: number;
+    id!: string;
     username!: string;
-    userID!: string;
     email!: string;
 }

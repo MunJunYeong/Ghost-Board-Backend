@@ -2,8 +2,8 @@
 import { Model, DataTypes, Sequelize, InferCreationAttributes, InferAttributes, CreationOptional } from "sequelize";
 
 class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
-    declare id: CreationOptional<number>;
-    declare userID: string;
+    declare userId: CreationOptional<number>;
+    declare id: string;
     declare password: string;
     declare username: string;
     declare email: string;
@@ -14,12 +14,12 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
 export const initUser = (sequelize: Sequelize) => {
     User.init(
         {
-            id: {
+            userId: {
                 type: DataTypes.INTEGER,
                 autoIncrement: true,
                 primaryKey: true,
             },
-            userID: {
+            id: {
                 type: DataTypes.STRING,
                 allowNull: false,
                 unique: true,
@@ -47,7 +47,7 @@ export const initUser = (sequelize: Sequelize) => {
         },
         {
             sequelize,
-            tableName: "users",
+            tableName: "user",
         }
     );
 };

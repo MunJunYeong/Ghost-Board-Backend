@@ -1,12 +1,12 @@
 import User from "@models/user";
 
 export default class UserRepo {
-    constructor() { }
+    constructor() {}
 
-    findUserByUserID = async (userID: string) => {
+    findUserByPkID = async (id: string) => {
         return await User.findOne({
             where: {
-                userID: userID,
+                userId: id,
             },
         });
     };
@@ -32,9 +32,9 @@ export default class UserRepo {
             // TODO: 왜 model로 삽입 시 안되는지 추후에 해결해보기
             // const u = await User.create(user);
             const u = await User.create({
-                userID: user.userID,
-                username: user.username,
+                id: user.id,
                 password: user.password,
+                username: user.username,
                 email: user.email,
             });
             return u;
@@ -43,11 +43,11 @@ export default class UserRepo {
         }
     };
 
-    deleteUserByID = async (id: any) => {
+    deleteUserByPkID = async (id: any) => {
         try {
             await User.destroy({
                 where: {
-                    id: id,
+                    userId: id,
                 },
             });
         } catch (err) {
@@ -70,12 +70,12 @@ export default class UserRepo {
                 }
             );
             if (updatedUser[0] === 1) {
-                return user
+                return user;
             } else {
-                throw new Error("cant update user")
+                throw new Error("cant update user");
             }
         } catch (err) {
             throw err;
         }
-    }
+    };
 }

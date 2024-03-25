@@ -9,7 +9,7 @@ export class SignupReqDTO {
     @IsNotEmpty()
     @MinLength(3, { message: "ID is too short" })
     @MaxLength(15, { message: "ID is too long" })
-    userID!: string;
+    id!: string;
 
     @IsString()
     @IsNotEmpty()
@@ -27,7 +27,7 @@ export class LoginReqDTO {
     @IsNotEmpty()
     @MinLength(3, { message: "ID is too short" })
     @MaxLength(15, { message: "ID is too long" })
-    userID!: string;
+    id!: string;
 
     @IsString()
     @IsNotEmpty()
