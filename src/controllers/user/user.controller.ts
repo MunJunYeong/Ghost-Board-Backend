@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 
 // common
-import { ErrNotFound, ErrUnauthorized } from "@errors/custom";
+import { ErrNotFound, ErrUnauthorized, handleError } from "@errors/custom";
 import BadRequestError from "@errors/bad_request";
 import InternalError from "@errors/internal_server";
 import RedisClient, { Redis } from "@configs/redis";
@@ -28,10 +28,7 @@ export default class UserController {
 
             res.send({ message: `success get user (id : ${userID})`, data: u });
         } catch (err: any) {
-            if (err.message === ErrNotFound) {
-                throw new BadRequestError({ code: 404, error: err });
-            }
-            throw new InternalError({ error: err });
+            throw handleError(err)
         }
     };
 
@@ -42,10 +39,7 @@ export default class UserController {
             await this.userService.deleteUser(id);
             res.send({ message: `success delete user (id : ${id})`, data: id });
         } catch (err: any) {
-            if (err.message === ErrNotFound) {
-                throw new BadRequestError({ code: 404, error: err });
-            }
-            throw new InternalError({ error: err });
+            throw handleError(err)
         }
     };
     updateUser = async (req: Request, res: Response) => {
@@ -56,10 +50,7 @@ export default class UserController {
             const u = await this.userService.updateUser(id, body);
             res.send({ message: `success get user (id : ${id})`, data: u });
         } catch (err: any) {
-            if (err.message === ErrNotFound) {
-                throw new BadRequestError({ code: 404, error: err });
-            }
-            throw new InternalError({ error: err });
+            throw handleError(err)
         }
     };
 }

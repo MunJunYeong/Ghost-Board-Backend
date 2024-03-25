@@ -5,7 +5,7 @@ import RedisClient, { Redis } from "@configs/redis";
 import AnonymousService from "@services/anonymous/anonymous.service";
 import InternalError from "@errors/internal_server";
 import BadRequestError from "@errors/bad_request";
-import { ErrAlreadyExist, ErrNotFound } from "@errors/custom";
+import { ErrAlreadyExist, ErrNotFound, handleError } from "@errors/custom";
 import { issueAccessToken, verifyAccessToken, verifyRefreshToken } from "@utils/jwt";
 
 export default class AnonymousController {
@@ -23,16 +23,9 @@ export default class AnonymousController {
         try {
             const u = await this.anonymouseService.signup(body);
 
-            if (!u) {
-                throw new InternalError({ error: new Error("cant find user but created") });
-            }
-
             res.send({ message: "success created user", data: u });
         } catch (err: any) {
-            if (err.message === ErrAlreadyExist) {
-                throw new BadRequestError({ error: err });
-            }
-            throw new InternalError({ error: err });
+            throw handleError(err)
         }
     };
 
@@ -46,10 +39,7 @@ export default class AnonymousController {
 
             res.status(200).send({ data: result });
         } catch (err: any) {
-            if (err.message === ErrNotFound) {
-                throw new BadRequestError({ code: 404, error: err });
-            }
-            throw new InternalError({ error: err });
+            throw handleError(err)
         }
     };
 
@@ -91,7 +81,7 @@ export default class AnonymousController {
             const newToken = issueAccessToken(newPayload);
             res.status(200).send({ data: { accessToken: newToken } });
         } catch (err: any) {
-            throw new InternalError({ error: err });
+            throw handleError(err)
         }
     };
 }
