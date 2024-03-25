@@ -13,6 +13,7 @@ export default class BoardRepo {
             throw err
         }
     }
+
     findBoardByID = async (id: string) => {
         return await Board.findOne({
             where: {
@@ -20,6 +21,7 @@ export default class BoardRepo {
             },
         });
     }
+
     findBoards = async () => {
         return await Board.findAll();
     }
