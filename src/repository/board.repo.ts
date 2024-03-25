@@ -22,6 +22,14 @@ export default class BoardRepo {
         });
     }
 
+    findBoardByTitle = async (title: string) => {
+        return await Board.findOne({
+            where: {
+                title: title
+            }
+        })
+    }
+
     findBoards = async () => {
         return await Board.findAll();
     }

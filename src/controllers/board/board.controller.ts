@@ -2,7 +2,8 @@ import { Request, Response } from "express";
 
 import BoardService from "@services/board/board.service";
 import * as dto from "@controllers/board/dto/board.dto";
-import InternalError from "@errors/internal_server";
+import { sendJSONResponse } from "@utils/response";
+import { handleError } from "@errors/custom";
 
 export default class BoardController {
     private boardService: BoardService;
@@ -15,9 +16,9 @@ export default class BoardController {
         try {
             const boards = await this.boardService.getBoardList();
             const boardsJSON = boards.map(board => board.toJSON());
-            res.json({ message: `success get boards`, data: boardsJSON })
+            sendJSONResponse(res, "success get boards", boardsJSON)
         } catch (err: any) {
-            throw new InternalError({ error: err })
+            throw handleError(err)
         }
     }
 
@@ -25,9 +26,9 @@ export default class BoardController {
         const boardId = req.params.id;
         try {
             const board = await this.boardService.getBoard(boardId);
-            res.json({ message: `success delete board`, data: board.toJSON() })
+            sendJSONResponse(res, "success get board", board.toJSON())
         } catch (err: any) {
-            throw new InternalError({ error: err })
+            throw handleError(err)
         }
     }
 
@@ -35,9 +36,9 @@ export default class BoardController {
         const boardId = req.params.id;
         try {
             await this.boardService.deleteBoard(boardId);
-            res.json({ message: `success delete board`, data: true })
+            sendJSONResponse(res, "success delete board", true)
         } catch (err: any) {
-            throw new InternalError({ error: err })
+            throw handleError(err)
         }
     }
 
@@ -45,9 +46,9 @@ export default class BoardController {
         const body: dto.CreateBoardReqDTO = req.body;
         try {
             const board = await this.boardService.createBoard(body)
-            res.json({ message: `success create board (id : ${board.boardId})`, data: board.toJSON() })
+            sendJSONResponse(res, `success create board (id : ${board.boardId})`, board.toJSON())
         } catch (err: any) {
-            throw new InternalError({ error: err })
+            throw handleError(err)
         }
     }
 

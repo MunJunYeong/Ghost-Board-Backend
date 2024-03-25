@@ -1,7 +1,8 @@
 import Board from "@models/board";
 import BoardRepo from "@repo/board.repo";
 import * as dto from "@controllers/board/dto/board.dto";
-import { ErrNotFound } from "@errors/custom";
+import { ErrAlreadyExist, ErrNotFound } from "@errors/custom";
+import { convCreateBoardToBoard } from "./board.conv";
 
 export default class BoardService {
     private boardRepo: BoardRepo;
@@ -34,21 +35,22 @@ export default class BoardService {
     deleteBoard = async (id: string) => {
         try {
             const result = await this.boardRepo.deleteBoard(id);
-            return result > 0
+            if (result < 1) {
+                throw new Error(ErrNotFound)
+            }
+            return true
         } catch (err) {
             throw err
         }
-
     }
 
-    // TODO: Dto to conv 추가해야됨
     createBoard = async (boardDTO: dto.CreateBoardReqDTO) => {
-        // DTO to model 추가
-        let board: Board = new Board()
+        let board = convCreateBoardToBoard(boardDTO);
 
         try {
-            // TODO: board title 중복 체크
-
+            if (await this.boardRepo.findBoardByTitle(boardDTO.title)) {
+                throw new Error(ErrAlreadyExist)
+            }
             return await this.boardRepo.createBoard(board);
         } catch (err) {
             throw err
