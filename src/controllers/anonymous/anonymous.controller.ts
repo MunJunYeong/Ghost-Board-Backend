@@ -5,8 +5,9 @@ import RedisClient, { Redis } from "@configs/redis";
 import AnonymousService from "@services/anonymous/anonymous.service";
 import InternalError from "@errors/internal_server";
 import BadRequestError from "@errors/bad_request";
-import { ErrAlreadyExist, ErrNotFound, handleError } from "@errors/custom";
+import { handleError } from "@errors/custom";
 import { issueAccessToken, verifyAccessToken, verifyRefreshToken } from "@utils/jwt";
+import { sendJSONResponse } from "@utils/response";
 
 export default class AnonymousController {
     private redis: Redis;
@@ -23,7 +24,7 @@ export default class AnonymousController {
         try {
             const u = await this.anonymouseService.signup(body);
 
-            res.send({ message: "success created user", data: u });
+            sendJSONResponse(res, "success signup", u)
         } catch (err: any) {
             throw handleError(err)
         }
@@ -37,7 +38,7 @@ export default class AnonymousController {
 
             this.redis.set(loginBody.id, result.refreshToken);
 
-            res.status(200).send({ data: result });
+            sendJSONResponse(res, "success login", result)
         } catch (err: any) {
             throw handleError(err)
         }
@@ -79,7 +80,7 @@ export default class AnonymousController {
                 email: decoded.user.email,
             };
             const newToken = issueAccessToken(newPayload);
-            res.status(200).send({ data: { accessToken: newToken } });
+            sendJSONResponse(res, "success refresh accessToken", { accessToken: newToken })
         } catch (err: any) {
             throw handleError(err)
         }

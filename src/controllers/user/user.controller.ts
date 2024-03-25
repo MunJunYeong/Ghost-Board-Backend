@@ -1,14 +1,13 @@
 import { Request, Response } from "express";
 
 // common
-import { ErrNotFound, ErrUnauthorized, handleError } from "@errors/custom";
-import BadRequestError from "@errors/bad_request";
-import InternalError from "@errors/internal_server";
+import { handleError } from "@errors/custom";
 import RedisClient, { Redis } from "@configs/redis";
 
 // server
 import * as dto from "@controllers/user/dto/user.dto";
 import UserService from "@services/user/user.service";
+import { sendJSONResponse } from "@utils/response";
 
 export default class UserController {
     private redis: Redis;
@@ -25,8 +24,7 @@ export default class UserController {
 
         try {
             const u = await this.userService.getUser(userID);
-
-            res.send({ message: `success get user (id : ${userID})`, data: u });
+            sendJSONResponse(res, `success get user (id : ${userID})`, u)
         } catch (err: any) {
             throw handleError(err)
         }
@@ -37,7 +35,7 @@ export default class UserController {
 
         try {
             await this.userService.deleteUser(id);
-            res.send({ message: `success delete user (id : ${id})`, data: id });
+            sendJSONResponse(res, `success delete user (id : ${id})`, true)
         } catch (err: any) {
             throw handleError(err)
         }
@@ -48,7 +46,7 @@ export default class UserController {
         const body: dto.UpdateUserReqDTO = req.body;
         try {
             const u = await this.userService.updateUser(id, body);
-            res.send({ message: `success get user (id : ${id})`, data: u });
+            sendJSONResponse(res, `success get user (id : ${id})`, u)
         } catch (err: any) {
             throw handleError(err)
         }
