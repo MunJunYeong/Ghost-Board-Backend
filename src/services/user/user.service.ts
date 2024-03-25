@@ -1,10 +1,10 @@
 // common
-import { ErrNotFound } from "@errors/custom";
+import { ErrNotFound } from "@errors/handler";
+import { hashing } from "@utils/encryption";
 
 // server
 import * as dto from "@controllers/user/dto/user.dto";
 import UserRepo from "@repo/user.repo";
-import { hashing } from "@utils/encryption";
 import { deletePassword } from "../common.conv";
 
 export default class UserService {

@@ -19,9 +19,9 @@ describe("jwt util", () => {
             const result = verifyAccessToken(accessToken);
             expect(result.error).toBeNull();
 
-            const { id, userID, username, email } = result.user;
+            const { id, userId, username, email } = result.user;
             expect(id).toEqual(payload.id);
-            expect(userID).toEqual(payload.userID);
+            expect(userId).toEqual(payload.userID);
             expect(username).toEqual(payload.username);
             expect(email).toEqual(payload.email);
         });

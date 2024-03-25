@@ -5,7 +5,7 @@ import RedisClient, { Redis } from "@configs/redis";
 import AnonymousService from "@services/anonymous/anonymous.service";
 import InternalError from "@errors/internal_server";
 import BadRequestError from "@errors/bad_request";
-import { handleError } from "@errors/custom";
+import { handleError } from "@errors/handler";
 import { issueAccessToken, verifyAccessToken, verifyRefreshToken } from "@utils/jwt";
 import { sendJSONResponse } from "@utils/response";
 

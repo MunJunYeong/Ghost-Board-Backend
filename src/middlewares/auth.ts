@@ -1,5 +1,4 @@
 import BadRequestError from "@src/common/errors/bad_request";
-import { ErrUnauthorized } from "@src/common/errors/custom";
 import { verifyAccessToken } from "@src/common/utils/jwt";
 import { Request, Response, NextFunction } from "express";
 
