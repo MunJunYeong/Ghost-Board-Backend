@@ -11,8 +11,8 @@ class Post extends Model<InferAttributes<Post>, InferCreationAttributes<Post>> {
     declare updatedAt: CreationOptional<Date>;
 
     // relation
-    declare userId: number; // userId 속성 추가
-    declare boardId: number; // boardId 속성 추가
+    declare userId: number;
+    declare boardId: number;
 }
 
 export const initPost = (sequelize: Sequelize) => {
