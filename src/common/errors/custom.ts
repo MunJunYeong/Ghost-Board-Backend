@@ -1,3 +1,6 @@
+import BadRequestError from "./bad_request";
+import InternalError from "./internal_server";
+
 export abstract class CustomError extends Error {
     abstract readonly statusCode: number;
     abstract readonly message: string;
@@ -12,6 +15,3 @@ export abstract class CustomError extends Error {
     }
 }
 
-export const ErrAlreadyExist = "already exist";
-export const ErrNotFound = "not found";
-export const ErrUnauthorized = "Unauthorized";

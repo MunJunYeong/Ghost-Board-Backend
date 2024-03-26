@@ -1,5 +1,4 @@
 import BadRequestError from "@src/common/errors/bad_request";
-import { ErrUnauthorized } from "@src/common/errors/custom";
 import { verifyAccessToken } from "@src/common/utils/jwt";
 import { Request, Response, NextFunction } from "express";
 
@@ -25,11 +24,5 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
     }
     req.user = decoded.user;
 
-    if (req.user!.userId !== Number(req.params.id)) {
-        throw new BadRequestError({
-            error: new Error(`invalid token (token user id : ${req.user!.id}, request params id : ${req.params.id})`),
-            code: 401,
-        });
-    }
     next();
 };

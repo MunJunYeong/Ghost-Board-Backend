@@ -18,6 +18,7 @@ export const initBoard = (sequelize: Sequelize) => {
             },
             title: {
                 type: DataTypes.STRING,
+                unique: true,
                 allowNull: false,
             },
             description: {

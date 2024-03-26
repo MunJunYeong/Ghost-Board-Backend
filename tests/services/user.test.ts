@@ -126,7 +126,7 @@ describe("Get User API", () => {
             const response: any = await request(app)
                 .get(`/api/users/${createdUser.userId! + 100}`)
                 .set("Authorization", `Bearer ${accessToken}`);
-            expect(response.statusCode).toBe(401);
+            expect(response.statusCode).toBe(404);
         });
     });
 });

@@ -3,8 +3,8 @@ import { issueAccessToken, verifyAccessToken } from "@utils/jwt";
 let accessToken: string;
 describe("jwt util", () => {
     const payload = {
-        id: 1,
-        userID: "test1234",
+        userId: 1,
+        id: "test1234",
         username: "testuser",
         email: "test@test.com",
     };
@@ -19,9 +19,9 @@ describe("jwt util", () => {
             const result = verifyAccessToken(accessToken);
             expect(result.error).toBeNull();
 
-            const { id, userID, username, email } = result.user;
+            const { id, userId, username, email } = result.user;
+            expect(userId).toEqual(payload.userId);
             expect(id).toEqual(payload.id);
-            expect(userID).toEqual(payload.userID);
             expect(username).toEqual(payload.username);
             expect(email).toEqual(payload.email);
         });
