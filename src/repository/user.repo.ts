@@ -43,9 +43,9 @@ export default class UserRepo {
         });
     };
 
-    deleteUserByPkID = async (id: any) => {
+    deleteUser = async (id: any) => {
         try {
-            await User.destroy({
+            return await User.destroy({
                 where: {
                     userId: id,
                 },
@@ -65,7 +65,7 @@ export default class UserRepo {
                 },
                 {
                     where: {
-                        id: user.id, // 사용자의 고유 식별자로 업데이트
+                        userId: user.userId, // 사용자의 고유 식별자로 업데이트
                     },
                 }
             );
