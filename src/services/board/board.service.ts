@@ -12,7 +12,7 @@ export default class BoardService {
 
     getBoardList = async () => {
         try {
-            return await this.boardRepo.findBoards();
+            return await this.boardRepo.getBoardList();
         } catch (err) {
             throw err
         }
@@ -20,7 +20,7 @@ export default class BoardService {
 
     getBoard = async (id: string) => {
         try {
-            const board = await this.boardRepo.findBoardByID(id);
+            const board = await this.boardRepo.getBoardByID(id);
             if (!board) {
                 throw new Error(ErrNotFound);
             }
@@ -47,7 +47,7 @@ export default class BoardService {
         let board = convCreateBoardToBoard(boardDTO);
 
         try {
-            if (await this.boardRepo.findBoardByTitle(boardDTO.title)) {
+            if (await this.boardRepo.getBoardByTitle(boardDTO.title)) {
                 throw new Error(ErrAlreadyExist)
             }
             return await this.boardRepo.createBoard(board);

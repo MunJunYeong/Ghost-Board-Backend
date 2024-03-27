@@ -14,7 +14,7 @@ export default class BoardRepo {
         }
     }
 
-    findBoardByID = async (id: string) => {
+    getBoardByID = async (id: string) => {
         return await Board.findOne({
             where: {
                 boardId: id,
@@ -22,7 +22,7 @@ export default class BoardRepo {
         });
     }
 
-    findBoardByTitle = async (title: string) => {
+    getBoardByTitle = async (title: string) => {
         return await Board.findOne({
             where: {
                 title: title
@@ -30,7 +30,7 @@ export default class BoardRepo {
         })
     }
 
-    findBoards = async () => {
+    getBoardList = async () => {
         return await Board.findAll();
     }
 
