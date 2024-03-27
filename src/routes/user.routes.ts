@@ -9,14 +9,14 @@ class UserRoutes {
     controller = new UserController();
 
     constructor() {
-        this.intializeRoutes();
+        this.initializeRoutes();
     }
 
-    intializeRoutes() {
+    initializeRoutes() {
         // prefix - boards
-        this.router.get("/:id", this.controller.getUser);
-        this.router.delete("/:id", this.controller.deleteUser);
-        this.router.put("/:id", validationMiddleware(dto.UpdateUserReqDTO), this.controller.updateUser);
+        this.router.get("/:userId", this.controller.getUser);
+        this.router.delete("/:userId", this.controller.deleteUser);
+        this.router.put("/:userId", validationMiddleware(dto.UpdateUserReqDTO), this.controller.updateUser);
     }
 }
 

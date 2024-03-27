@@ -20,35 +20,35 @@ export default class UserController {
     }
 
     getUser = async (req: Request, res: Response) => {
-        const userID = req.params.id;
+        const userID = req.params.userId;
 
         try {
             const u = await this.userService.getUser(userID);
-            sendJSONResponse(res, `success get user (id : ${userID})`, u)
+            sendJSONResponse(res, `success get user (id : ${userID})`, u);
         } catch (err: any) {
-            throw handleError(err)
+            throw handleError(err);
         }
     };
 
     deleteUser = async (req: Request, res: Response) => {
-        const id = req.params.id;
+        const id = req.params.userId;
 
         try {
             await this.userService.deleteUser(id);
-            sendJSONResponse(res, `success delete user (id : ${id})`, true)
+            sendJSONResponse(res, `success delete user (id : ${id})`, true);
         } catch (err: any) {
-            throw handleError(err)
+            throw handleError(err);
         }
     };
     updateUser = async (req: Request, res: Response) => {
-        const id = req.params.id;
+        const id = req.params.userId;
 
         const body: dto.UpdateUserReqDTO = req.body;
         try {
             const u = await this.userService.updateUser(id, body);
-            sendJSONResponse(res, `success get user (id : ${id})`, u)
+            sendJSONResponse(res, `success get user (id : ${id})`, u);
         } catch (err: any) {
-            throw handleError(err)
+            throw handleError(err);
         }
     };
 }

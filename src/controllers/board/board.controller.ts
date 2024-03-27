@@ -33,7 +33,7 @@ export default class BoardController {
     };
 
     getBoard = async (req: Request, res: Response) => {
-        const boardId = req.params.id;
+        const boardId = req.params.boardId;
         try {
             const board = await this.boardService.getBoard(boardId);
             sendJSONResponse(res, "success get board", board.toJSON());
@@ -43,7 +43,7 @@ export default class BoardController {
     };
 
     deleteBoard = async (req: Request, res: Response) => {
-        const boardId = req.params.id;
+        const boardId = req.params.boardId;
         try {
             const result = await this.boardService.deleteBoard(boardId);
             sendJSONResponse(res, "success delete board", result);
