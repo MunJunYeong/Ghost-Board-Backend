@@ -10,49 +10,32 @@ export default class BoardService {
         this.boardRepo = new BoardRepo();
     }
 
-    getBoardList = async () => {
-        try {
-            return await this.boardRepo.findBoards();
-        } catch (err) {
-            throw err
+    createBoard = async (boardDTO: dto.CreateBoardReqDTO) => {
+        const board = convCreateBoardToBoard(boardDTO);
+
+        if (await this.boardRepo.getBoardByTitle(boardDTO.title)) {
+            throw new Error(ErrAlreadyExist);
         }
-    }
+        return await this.boardRepo.createBoard(board);
+    };
+
+    getBoardList = async () => {
+        return await this.boardRepo.getBoardList();
+    };
 
     getBoard = async (id: string) => {
-        try {
-            const board = await this.boardRepo.findBoardByID(id);
-            if (!board) {
-                throw new Error(ErrNotFound);
-            }
-            return board
-        } catch (err) {
-            throw err
+        const board = await this.boardRepo.getBoardByID(id);
+        if (!board) {
+            throw new Error(ErrNotFound);
         }
-
-    }
+        return board;
+    };
 
     deleteBoard = async (id: string) => {
-        try {
-            const result = await this.boardRepo.deleteBoard(id);
-            if (result < 1) {
-                throw new Error(ErrNotFound)
-            }
-            return true
-        } catch (err) {
-            throw err
+        const result = await this.boardRepo.deleteBoard(id);
+        if (result < 1) {
+            throw new Error(ErrNotFound);
         }
-    }
-
-    createBoard = async (boardDTO: dto.CreateBoardReqDTO) => {
-        let board = convCreateBoardToBoard(boardDTO);
-
-        try {
-            if (await this.boardRepo.findBoardByTitle(boardDTO.title)) {
-                throw new Error(ErrAlreadyExist)
-            }
-            return await this.boardRepo.createBoard(board);
-        } catch (err) {
-            throw err
-        }
-    }
+        return true;
+    };
 }

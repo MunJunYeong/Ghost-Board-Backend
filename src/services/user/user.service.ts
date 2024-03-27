@@ -16,7 +16,7 @@ export default class UserService {
 
     getUser = async (userID: string) => {
         try {
-            const u = await this.userRepo.findUserByPkID(userID);
+            const u = await this.userRepo.getUserByPkID(userID);
             if (!u) {
                 throw new Error(ErrNotFound);
             }
@@ -30,12 +30,11 @@ export default class UserService {
 
     deleteUser = async (id: string) => {
         try {
-            // TODO: 고민해보기 - precheck가 필요한가 ?
-            if (!(await this.userRepo.findUserByPkID(id))) {
+            const result = await this.userRepo.deleteUser(id);
+            if (result < 1) {
                 throw new Error(ErrNotFound);
             }
-
-            await this.userRepo.deleteUserByPkID(id);
+            return true;
         } catch (err: any) {
             throw err;
         }
@@ -43,7 +42,7 @@ export default class UserService {
 
     updateUser = async (targetUserPkID: string, userData: dto.UpdateUserReqDTO) => {
         try {
-            let u = await this.userRepo.findUserByPkID(targetUserPkID);
+            let u = await this.userRepo.getUserByPkID(targetUserPkID);
             if (!u) {
                 throw new Error(ErrNotFound);
             }

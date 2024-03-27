@@ -9,47 +9,46 @@ export default class BoardController {
     private boardService: BoardService;
 
     constructor() {
-        this.boardService = new BoardService()
-    }
-
-    getBoardList = async (req: Request, res: Response) => {
-        try {
-            const boards = await this.boardService.getBoardList();
-            const boardsJSON = boards.map(board => board.toJSON());
-            sendJSONResponse(res, "success get boards", boardsJSON)
-        } catch (err: any) {
-            throw handleError(err)
-        }
-    }
-
-    getBoard = async (req: Request, res: Response) => {
-        const boardId = req.params.id;
-        try {
-            const board = await this.boardService.getBoard(boardId);
-            sendJSONResponse(res, "success get board", board.toJSON())
-        } catch (err: any) {
-            throw handleError(err)
-        }
-    }
-
-    deleteBoard = async (req: Request, res: Response) => {
-        const boardId = req.params.id;
-        try {
-            await this.boardService.deleteBoard(boardId);
-            sendJSONResponse(res, "success delete board", true)
-        } catch (err: any) {
-            throw handleError(err)
-        }
+        this.boardService = new BoardService();
     }
 
     createBoard = async (req: Request, res: Response) => {
         const body: dto.CreateBoardReqDTO = req.body;
         try {
-            const board = await this.boardService.createBoard(body)
-            sendJSONResponse(res, `success create board (id : ${board.boardId})`, board.toJSON())
+            const board = await this.boardService.createBoard(body);
+            sendJSONResponse(res, `success create board (id : ${board.boardId})`, board.toJSON());
         } catch (err: any) {
-            throw handleError(err)
+            throw handleError(err);
         }
-    }
+    };
 
+    getBoardList = async (req: Request, res: Response) => {
+        try {
+            const boards = await this.boardService.getBoardList();
+            const boardsJSON = boards.map((board) => board.toJSON());
+            sendJSONResponse(res, "success get boards", boardsJSON);
+        } catch (err: any) {
+            throw handleError(err);
+        }
+    };
+
+    getBoard = async (req: Request, res: Response) => {
+        const boardId = req.params.boardId;
+        try {
+            const board = await this.boardService.getBoard(boardId);
+            sendJSONResponse(res, "success get board", board.toJSON());
+        } catch (err: any) {
+            throw handleError(err);
+        }
+    };
+
+    deleteBoard = async (req: Request, res: Response) => {
+        const boardId = req.params.boardId;
+        try {
+            const result = await this.boardService.deleteBoard(boardId);
+            sendJSONResponse(res, "success delete board", result);
+        } catch (err: any) {
+            throw handleError(err);
+        }
+    };
 }

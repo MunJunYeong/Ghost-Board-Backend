@@ -17,7 +17,7 @@ export default class AnonymousService {
         let u = convSignupToUser(userDTO);
 
         // userID / email duplicate check
-        if ((await this.userRepo.findUserByID(u.id)) || (await this.userRepo.findUserByEmail(u.email))) {
+        if ((await this.userRepo.getUserByID(u.id)) || (await this.userRepo.getUserByEmail(u.email))) {
             throw new Error(ErrAlreadyExist);
         }
 
@@ -31,7 +31,7 @@ export default class AnonymousService {
 
     login = async (loginData: dto.LoginReqDTO): Promise<dto.LoginResDTO> => {
         const { id, password } = loginData;
-        const u = await this.userRepo.findUserByID(id);
+        const u = await this.userRepo.getUserByID(id);
         // login validation - id and compare password
         if (!u || !(await comparePassword(password, u.password))) {
             throw new Error(ErrNotFound);

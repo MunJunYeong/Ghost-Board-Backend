@@ -9,12 +9,12 @@ class AnonymousRoutes {
     controller = new anonymousController();
 
     constructor() {
-        this.intializeRoutes();
+        this.initializeRoutes();
     }
 
-    intializeRoutes() {
+    initializeRoutes() {
         this.router.post("/signup", validationMiddleware(dto.SignupReqDTO), this.controller.signup);
-        
+
         this.router.post("/login", validationMiddleware(dto.LoginReqDTO), this.controller.login);
 
         this.router.post("/refresh", this.controller.refresh);

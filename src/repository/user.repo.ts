@@ -3,30 +3,6 @@ import User from "@models/user";
 export default class UserRepo {
     constructor() {}
 
-    findUserByPkID = async (id: string) => {
-        return await User.findOne({
-            where: {
-                userId: id,
-            },
-        });
-    };
-
-    findUserByID = async (id: any) => {
-        return await User.findOne({
-            where: {
-                id: id,
-            },
-        });
-    };
-
-    findUserByEmail = async (email: string) => {
-        return await User.findOne({
-            where: {
-                email: email,
-            },
-        });
-    };
-
     createUser = async (user: User) => {
         try {
             // TODO: 왜 model로 삽입 시 안되는지 추후에 해결해보기
@@ -43,9 +19,33 @@ export default class UserRepo {
         }
     };
 
-    deleteUserByPkID = async (id: any) => {
+    getUserByPkID = async (id: string) => {
+        return await User.findOne({
+            where: {
+                userId: id,
+            },
+        });
+    };
+
+    getUserByID = async (id: any) => {
+        return await User.findOne({
+            where: {
+                id: id,
+            },
+        });
+    };
+
+    getUserByEmail = async (email: string) => {
+        return await User.findOne({
+            where: {
+                email: email,
+            },
+        });
+    };
+
+    deleteUser = async (id: any) => {
         try {
-            await User.destroy({
+            return await User.destroy({
                 where: {
                     userId: id,
                 },
@@ -65,7 +65,7 @@ export default class UserRepo {
                 },
                 {
                     where: {
-                        id: user.id, // 사용자의 고유 식별자로 업데이트
+                        userId: user.userId, // 사용자의 고유 식별자로 업데이트
                     },
                 }
             );
