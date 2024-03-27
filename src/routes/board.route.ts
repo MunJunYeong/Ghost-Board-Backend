@@ -13,6 +13,7 @@ class BoardRoutes {
     }
 
     intializeRoutes() {
+        // prefix - boards/
         this.router.post("/", validationMiddleware(dto.CreateBoardReqDTO), this.controller.createBoard);
         this.router.get("/", this.controller.getBoardList);
         this.router.get("/:id", this.controller.getBoard);

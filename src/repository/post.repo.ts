@@ -16,19 +16,24 @@ export default class PostRepo {
         }
     };
 
-    getPostList = async () => {
+    getPostList = async (boardId: number) => {
         try {
-            return await Post.findAll();
+            return await Post.findAll({
+                where: {
+                    boardId: boardId,
+                },
+            });
         } catch (err) {
             throw err;
         }
     };
 
-    getPost = async (id: string) => {
+    getPost = async (boardId: number, postId: number) => {
         try {
             return await Post.findOne({
                 where: {
-                    postId: id,
+                    boardId: boardId,
+                    postId: postId,
                 },
             });
         } catch (err) {
@@ -61,11 +66,12 @@ export default class PostRepo {
         }
     };
 
-    deletePost = async (id: any) => {
+    deletePost = async (boardId: number, postId: number) => {
         try {
             return await Post.destroy({
                 where: {
-                    postId: id,
+                    boardId: boardId,
+                    postId: postId,
                 },
             });
         } catch (err) {
