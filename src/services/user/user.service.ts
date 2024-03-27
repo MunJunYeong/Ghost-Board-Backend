@@ -5,7 +5,7 @@ import { hashing } from "@utils/encryption";
 // server
 import * as dto from "@controllers/user/dto/user.dto";
 import UserRepo from "@repo/user.repo";
-import { deletePassword } from "../common.conv";
+import { createUserResponse } from "./user.conv";
 
 export default class UserService {
     private userRepo: UserRepo;
@@ -14,52 +14,38 @@ export default class UserService {
         this.userRepo = new UserRepo();
     }
 
-    getUser = async (userID: string) => {
-        try {
-            const u = await this.userRepo.getUserByPkID(userID);
-            if (!u) {
-                throw new Error(ErrNotFound);
-            }
-
-            const user = deletePassword(u);
-            return user;
-        } catch (err: any) {
-            throw err;
+    getUser = async (userID: any) => {
+        const u = await this.userRepo.getUserByPkID(userID);
+        if (!u) {
+            throw ErrNotFound;
         }
+
+        return createUserResponse(u);
     };
 
     deleteUser = async (id: string) => {
-        try {
-            const result = await this.userRepo.deleteUser(id);
-            if (result < 1) {
-                throw new Error(ErrNotFound);
-            }
-            return true;
-        } catch (err: any) {
-            throw err;
+        const result = await this.userRepo.deleteUser(id);
+        if (result < 1) {
+            throw ErrNotFound;
         }
+        return true;
     };
 
     updateUser = async (targetUserPkID: string, userData: dto.UpdateUserReqDTO) => {
-        try {
-            let u = await this.userRepo.getUserByPkID(targetUserPkID);
-            if (!u) {
-                throw new Error(ErrNotFound);
-            }
-            if (userData.email) {
-                u.email = userData.email;
-            }
-            if (userData.password) {
-                u.password = await hashing(userData.password);
-            }
-            if (userData.username) {
-                u.username = userData.username;
-            }
-            u = await this.userRepo.updateUser(u);
-            const user = deletePassword(u);
-            return user;
-        } catch (err) {
-            throw err;
+        let u = await this.userRepo.getUserByPkID(targetUserPkID);
+        if (!u) {
+            throw ErrNotFound;
         }
+        if (userData.email) {
+            u.email = userData.email;
+        }
+        if (userData.password) {
+            u.password = await hashing(userData.password);
+        }
+        if (userData.username) {
+            u.username = userData.username;
+        }
+        u = await this.userRepo.updateUser(u);
+        return createUserResponse(u);
     };
 }
