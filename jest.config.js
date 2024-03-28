@@ -16,5 +16,7 @@ module.exports = {
         "^@errors/(.*)$": "<rootDir>/src/common/errors/$1",
         "^@utils/(.*)$": "<rootDir>/src/common/utils/$1",
     },
+    // 만약 테스트 파일 하나만 실행하려면 아래 명령어로 실행하기
+    // jest --config jest.config.js {test_file_name}
     setupFilesAfterEnv: ["<rootDir>/tests/setup.ts"],
 };

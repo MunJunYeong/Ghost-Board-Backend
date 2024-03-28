@@ -46,6 +46,7 @@ export default class PostController {
             throw handleError(err);
         }
     };
+    
     updatePost = async (req: Request, res: Response) => {
         try {
             const boardId = req.params.boardId;
