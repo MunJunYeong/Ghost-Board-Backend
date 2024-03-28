@@ -3,6 +3,7 @@ import * as dto from "@controllers/board/dto/board.dto";
 import { ErrAlreadyExist, ErrNotFound } from "@errors/handler";
 import { convCreateBoardToBoard } from "./board.conv";
 import Board from "@models/board";
+import { logger } from "@configs/logger";
 
 export default class BoardService {
     private boardRepo: BoardRepo;
@@ -15,6 +16,7 @@ export default class BoardService {
         const board = convCreateBoardToBoard(boardDTO);
 
         if (await this.boardRepo.getBoardByTitle(boardDTO.title)) {
+            logger.error(`already exist title (title : ${boardDTO.title})`);
             throw ErrAlreadyExist;
         }
         return await this.boardRepo.createBoard(board);
@@ -27,6 +29,7 @@ export default class BoardService {
     getBoard = async (id: string): Promise<Board> => {
         const board = await this.boardRepo.getBoardByID(id);
         if (!board) {
+            logger.error(`cant find board (board_id : ${id})`);
             throw ErrNotFound;
         }
         return board;

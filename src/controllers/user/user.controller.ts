@@ -40,6 +40,7 @@ export default class UserController {
             throw handleError(err);
         }
     };
+    
     updateUser = async (req: Request, res: Response) => {
         const id = req.params.userId;
 

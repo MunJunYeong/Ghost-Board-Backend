@@ -22,7 +22,7 @@ export default class Routes {
         this.app.use("/api/", anonymousRouter);
         this.app.use("/api/users", authMiddleware, userRouter);
         this.app.use("/api/boards", authMiddleware, boardRoute);
-        this.app.use("/api/boards/:boardId/posts", authMiddleware, postRoute);
+        this.app.use("/api/", authMiddleware, postRoute);
 
 
         // error middleware가 가장 마지막에 있어야 함.

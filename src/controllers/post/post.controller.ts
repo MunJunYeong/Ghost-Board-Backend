@@ -14,7 +14,7 @@ export default class PostController {
 
     createPost = async (req: Request, res: Response) => {
         try {
-            const boardId = req.params.id;
+            const boardId = req.params.boardId;
             const userId = req.user?.userId;
             const body: dto.CreatePostReqDTO = req.body;
             const result = await this.postService.createPost(body, Number(boardId), Number(userId));
@@ -26,7 +26,7 @@ export default class PostController {
 
     getPostList = async (req: Request, res: Response) => {
         try {
-            const boardId = req.params.id;
+            const boardId = req.params.boardId;
 
             const result = await this.postService.getPostList(Number(boardId));
             sendJSONResponse(res, "success get post list", result);

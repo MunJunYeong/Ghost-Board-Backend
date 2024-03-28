@@ -19,17 +19,19 @@ export default class AnonymousController {
         this.anonymouseService = new AnonymousService();
     }
 
+    // 회원가입
     signup = async (req: Request, res: Response) => {
         const body: dto.SignupReqDTO = req.body;
         try {
             const u = await this.anonymouseService.signup(body);
 
-            sendJSONResponse(res, "success signup", u)
+            sendJSONResponse(res, "success signup", u);
         } catch (err: any) {
-            throw handleError(err)
+            throw handleError(err);
         }
     };
 
+    // 로그인
     login = async (req: Request, res: Response) => {
         const loginBody: dto.LoginReqDTO = req.body;
 
@@ -38,14 +40,15 @@ export default class AnonymousController {
 
             this.redis.set(loginBody.id, result.refreshToken);
 
-            sendJSONResponse(res, "success login", result)
+            sendJSONResponse(res, "success login", result);
         } catch (err: any) {
-            throw handleError(err)
+            throw handleError(err);
         }
     };
 
-    // repo에 접근할 경우가 아니기에 Service layer에 로직을 담지 않음.
+    // refresh token 발급
     refresh = async (req: Request, res: Response) => {
+        // repo에 접근할 경우가 아니기에 Service layer에 로직을 담지 않음.
         try {
             if (!req.headers.authorization || !req.headers.refresh) {
             }
@@ -80,9 +83,9 @@ export default class AnonymousController {
                 email: decoded.user.email,
             };
             const newToken = issueAccessToken(newPayload);
-            sendJSONResponse(res, "success refresh accessToken", { accessToken: newToken })
+            sendJSONResponse(res, "success refresh accessToken", { accessToken: newToken });
         } catch (err: any) {
-            throw handleError(err)
+            throw handleError(err);
         }
     };
 }

@@ -1,4 +1,4 @@
-import UserRepo from "@src/repository/user.repo";
+import UserRepo from "@repo/user.repo";
 import { issueAccessToken, issueRefreshToken } from "@utils/jwt";
 import * as dto from "@controllers/anonymous/dto/anonymous.dto";
 import { convSignupToUser } from "./anonymous.conv";

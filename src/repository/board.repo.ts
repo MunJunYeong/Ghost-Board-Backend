@@ -14,7 +14,7 @@ export default class BoardRepo {
         }
     }
 
-    getBoardByID = async (id: string) => {
+    getBoardByID = async (id: any) => {
         return await Board.findOne({
             where: {
                 boardId: id,

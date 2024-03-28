@@ -14,14 +14,14 @@ class PostRoutes {
     initializeRoutes() {
         // prefix - boards/:id/posts
 
-        this.router.post("/", validationMiddleware(dto.CreatePostReqDTO), this.controller.createPost);
+        this.router.post("/boards/:boardId/posts", validationMiddleware(dto.CreatePostReqDTO), this.controller.createPost);
 
-        this.router.get("/", this.controller.getPostList);
-        this.router.get("/:postId", this.controller.getPost);
+        this.router.get("/boards/:boardId/posts", this.controller.getPostList);
+        this.router.get("/boards/:boardId/posts/:postId", this.controller.getPost);
 
-        this.router.put("/:postId", validationMiddleware(dto.UpdatePostReqDTO), this.controller.updatePost);
+        this.router.put("/boards/:boardId/posts/:postId", validationMiddleware(dto.UpdatePostReqDTO), this.controller.updatePost);
 
-        this.router.delete("/:postId", this.controller.deletePost);
+        this.router.delete("/boards/:boardId/posts/:postId", this.controller.deletePost);
     }
 }
 

@@ -16,7 +16,7 @@ export default class PostRepo {
         }
     };
 
-    getPostList = async (boardId: number) => {
+    getPostList = async (boardId: any) => {
         try {
             return await Post.findAll({
                 where: {
