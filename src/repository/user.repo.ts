@@ -19,7 +19,7 @@ export default class UserRepo {
         }
     };
 
-    getUserByPkID = async (id: string) => {
+    getUserByPkID = async (id: any) => {
         return await User.findOne({
             where: {
                 userId: id,

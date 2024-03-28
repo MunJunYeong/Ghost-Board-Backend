@@ -16,7 +16,7 @@ export default class BoardController {
         const body: dto.CreateBoardReqDTO = req.body;
         try {
             const board = await this.boardService.createBoard(body);
-            sendJSONResponse(res, `success create board (id : ${board.boardId})`, board.toJSON());
+            sendJSONResponse(res, `success create board (id : ${board.boardId})`, board);
         } catch (err: any) {
             throw handleError(err);
         }
@@ -25,8 +25,8 @@ export default class BoardController {
     getBoardList = async (req: Request, res: Response) => {
         try {
             const boards = await this.boardService.getBoardList();
-            const boardsJSON = boards.map((board) => board.toJSON());
-            sendJSONResponse(res, "success get boards", boardsJSON);
+            const result = boards.map((board) => board);
+            sendJSONResponse(res, "success get boards", result);
         } catch (err: any) {
             throw handleError(err);
         }
@@ -36,7 +36,7 @@ export default class BoardController {
         const boardId = req.params.boardId;
         try {
             const board = await this.boardService.getBoard(boardId);
-            sendJSONResponse(res, "success get board", board.toJSON());
+            sendJSONResponse(res, "success get board", board);
         } catch (err: any) {
             throw handleError(err);
         }

@@ -1,10 +1,10 @@
-import UserRepo from "@src/repository/user.repo";
+import UserRepo from "@repo/user.repo";
 import { issueAccessToken, issueRefreshToken } from "@utils/jwt";
 import * as dto from "@controllers/anonymous/dto/anonymous.dto";
 import { convSignupToUser } from "./anonymous.conv";
 import { ErrAlreadyExist, ErrNotFound } from "@errors/handler";
 import { comparePassword, hashing } from "@utils/encryption";
-import { deletePassword } from "../common.conv";
+import { createUserResponse } from "@services/user/user.conv";
 
 export default class AnonymousService {
     private userRepo: UserRepo;
@@ -18,14 +18,14 @@ export default class AnonymousService {
 
         // userID / email duplicate check
         if ((await this.userRepo.getUserByID(u.id)) || (await this.userRepo.getUserByEmail(u.email))) {
-            throw new Error(ErrAlreadyExist);
+            throw ErrAlreadyExist;
         }
 
         // encryption password
         u.password = await hashing(u.password);
         u = await this.userRepo.createUser(u);
 
-        const user = deletePassword(u);
+        const user = createUserResponse(u);
         return user;
     };
 
@@ -34,11 +34,10 @@ export default class AnonymousService {
         const u = await this.userRepo.getUserByID(id);
         // login validation - id and compare password
         if (!u || !(await comparePassword(password, u.password))) {
-            throw new Error(ErrNotFound);
+            throw ErrNotFound;
         }
 
-        const user = deletePassword(u);
-
+        const user = createUserResponse(u);
         const result: dto.LoginResDTO = {
             accessToken: issueAccessToken(user),
             refreshToken: issueRefreshToken(),
