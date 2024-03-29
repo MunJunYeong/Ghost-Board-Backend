@@ -29,6 +29,14 @@ export default class PostRepo {
         });
     };
 
+    getPostByID = async (postId: number) => {
+        return await Post.findOne({
+            where: {
+                postId: postId,
+            },
+        });
+    };
+
     updatePost = async (post: Post) => {
         const updatedPost = await Post.update(
             {
