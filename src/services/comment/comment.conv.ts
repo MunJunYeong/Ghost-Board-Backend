@@ -1,11 +1,11 @@
 import Comment from "@models/comment";
+import * as dto from "@controllers/comment/dto/comment.dto";
 
-// TODO: type any 추후 수정
-export const convCreateDtoToComment = (commentDTO: any, userId: any, postId: any, commentId: any | null) => {
+export const convCreateDtoToComment = (commentDTO: dto.CreateCommentReqDTO, userId: any, postId: any) => {
     return new Comment({
         content: commentDTO.content,
         postId: postId,
         userId: userId,
-        parentId: commentId,
+        parentId: commentDTO.parentCommentId,
     });
 };

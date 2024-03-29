@@ -1,9 +1,10 @@
-import CommentRepo from "@repo/comment.repo";
-import { convCreateDtoToComment } from "./comment.conv";
-import UserRepo from "@repo/user.repo";
-import PostRepo from "@repo/post.repo";
 import { ErrInvalidArgument, ErrNotFound } from "@errors/handler";
 import { logger } from "@configs/logger";
+import * as dto from "@controllers/comment/dto/comment.dto";
+import { convCreateDtoToComment } from "./comment.conv";
+import CommentRepo from "@repo/comment.repo";
+import UserRepo from "@repo/user.repo";
+import PostRepo from "@repo/post.repo";
 
 export default class CommentService {
     private userRepo: UserRepo;
@@ -16,8 +17,8 @@ export default class CommentService {
         this.commentRepo = new CommentRepo();
     }
 
-    createComment = async (commentDTO: any, userId: any, postId: any, parentCommentId: any | null) => {
-        const newComment = convCreateDtoToComment(commentDTO, userId, postId, parentCommentId);
+    createComment = async (commentDTO: dto.CreateCommentReqDTO, userId: any, postId: any) => {
+        const newComment = convCreateDtoToComment(commentDTO, userId, postId);
 
         // validation check
         {
@@ -27,8 +28,8 @@ export default class CommentService {
             }
 
             // 대댓글의 경우 parent comment가 유효한 comment인지 확인
-            if (!parentCommentId) {
-                if (!(await this.commentRepo.getCommentByID(parentCommentId))) {
+            if (commentDTO.parentCommentId) {
+                if (!(await this.commentRepo.getCommentByID(commentDTO.parentCommentId))) {
                     throw ErrInvalidArgument;
                 }
             }
