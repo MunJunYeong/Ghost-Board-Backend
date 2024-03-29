@@ -12,16 +12,16 @@ class PostRoutes {
     }
 
     initializeRoutes() {
-        // prefix - boards/:id/posts
+        const prefix = "/boards/:boardId/posts";
 
-        this.router.post("/boards/:boardId/posts", validationMiddleware(dto.CreatePostReqDTO), this.controller.createPost);
+        this.router.post(`${prefix}`, validationMiddleware(dto.CreatePostReqDTO), this.controller.createPost);
 
-        this.router.get("/boards/:boardId/posts", this.controller.getPostList);
-        this.router.get("/boards/:boardId/posts/:postId", this.controller.getPost);
+        this.router.get(`${prefix}`, this.controller.getPostList);
+        this.router.get(`${prefix}/:postId`, this.controller.getPost);
 
-        this.router.put("/boards/:boardId/posts/:postId", validationMiddleware(dto.UpdatePostReqDTO), this.controller.updatePost);
+        this.router.put(`${prefix}/:postId`, validationMiddleware(dto.UpdatePostReqDTO), this.controller.updatePost);
 
-        this.router.delete("/boards/:boardId/posts/:postId", this.controller.deletePost);
+        this.router.delete(`${prefix}/:postId`, this.controller.deletePost);
     }
 }
 
