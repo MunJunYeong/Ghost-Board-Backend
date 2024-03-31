@@ -1,8 +1,8 @@
 import Comment from "@models/comment";
-import { Sequelize } from "sequelize";
+import { Op, Sequelize } from "sequelize";
 
 export default class CommentRepo {
-    constructor() {}
+    constructor() { }
 
     createComment = async (comment: Comment) => {
         return await Comment.create({
@@ -26,14 +26,12 @@ export default class CommentRepo {
         return await Comment.findAll({
             where: {
                 postId: postId,
+                parentId: null,
             },
             include: {
                 model: Comment,
                 as: "replies",
-                where: {
-                    parentId: Sequelize.col("Comment.commentId"),
-                },
-                required: false, // false -> using left join
+                required: false // 왼쪽 조인 사용
             },
         });
     };
