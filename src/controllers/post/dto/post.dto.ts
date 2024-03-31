@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsOptional, IsString, MaxLength, MinLength } from "@utils/validation";
+import { IsNotEmpty, IsOptional, IsString, MaxLength, MinLength } from "@utils/validation";
 
 export class CreatePostReqDTO {
     @IsString()

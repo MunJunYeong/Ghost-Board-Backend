@@ -13,11 +13,12 @@ class BoardRoutes {
     }
 
     initializeRoutes() {
-        // prefix - boards/
-        this.router.post("/", validationMiddleware(dto.CreateBoardReqDTO), this.controller.createBoard);
-        this.router.get("/", this.controller.getBoardList);
-        this.router.get("/:boardId", this.controller.getBoard);
-        this.router.delete("/:boardId", this.controller.deleteBoard);
+        const prefix = "/boards";
+
+        this.router.post(`${prefix}`, validationMiddleware(dto.CreateBoardReqDTO), this.controller.createBoard);
+        this.router.get(`${prefix}`, this.controller.getBoardList);
+        this.router.get(`${prefix}/:boardId`, this.controller.getBoard);
+        this.router.delete(`${prefix}/:boardId`, this.controller.deleteBoard);
     }
 }
 

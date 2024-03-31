@@ -14,9 +14,10 @@ class UserRoutes {
 
     initializeRoutes() {
         // prefix - boards
-        this.router.get("/:userId", this.controller.getUser);
-        this.router.delete("/:userId", this.controller.deleteUser);
-        this.router.put("/:userId", validationMiddleware(dto.UpdateUserReqDTO), this.controller.updateUser);
+        const prefix = "/users";
+        this.router.get(`${prefix}/:userId`, this.controller.getUser);
+        this.router.delete(`${prefix}/:userId`, this.controller.deleteUser);
+        this.router.put(`${prefix}/:userId`, validationMiddleware(dto.UpdateUserReqDTO), this.controller.updateUser);
     }
 }
 

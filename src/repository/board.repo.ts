@@ -4,14 +4,10 @@ export default class BoardRepo {
     constructor() { }
 
     createBoard = async (board: Board) => {
-        try {
             return await Board.create({
                 title: board.title,
                 description: board.description,
             })
-        } catch (err) {
-            throw err
-        }
     }
 
     getBoardByID = async (id: any) => {

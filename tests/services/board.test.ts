@@ -5,21 +5,23 @@ import { CreateBoardReqDTO } from "@controllers/board/dto/board.dto";
 import Board from "@models/board";
 import { issueAccessToken } from "@utils/jwt";
 
-let accessToken: string;
-beforeAll(() => {
-    accessToken = issueAccessToken({
-        userId: 0,
-        username: "test",
-        id: "test123",
-        email: "test123@test.com",
-    });
-});
-
-let newBoard: Board;
-
 const title = "title123";
 const desc = "test title";
 describe("Board API", () => {
+    let accessToken: string;
+    let newBoard: Board;
+    let endpoint: string;
+    beforeAll(() => {
+        accessToken = issueAccessToken({
+            userId: 0,
+            username: "test",
+            id: "test123",
+            email: "test123@test.com",
+        });
+
+        endpoint = `/api/boards`;
+    });
+
     describe("Create Board API", () => {
         let body: CreateBoardReqDTO;
         beforeEach(() => {
@@ -32,7 +34,7 @@ describe("Board API", () => {
         describe("성공", () => {
             test("Post - api/boards", async () => {
                 const response: any = await request(app)
-                    .post("/api/boards")
+                    .post(`${endpoint}`)
                     .set("Authorization", `Bearer ${accessToken}`)
                     .send(body);
 
@@ -44,7 +46,7 @@ describe("Board API", () => {
             async function testTitleLength(title: string) {
                 body.title = title;
                 const response = await request(app)
-                    .post("/api/boards")
+                    .post(`${endpoint}`)
                     .set("Authorization", `Bearer ${accessToken}`)
                     .send(body);
                 expect(response.statusCode).toBe(400);
@@ -52,7 +54,7 @@ describe("Board API", () => {
             async function testDescLength(desc: string) {
                 body.description = desc;
                 const response = await request(app)
-                    .post("/api/boards")
+                    .post(`${endpoint}`)
                     .set("Authorization", `Bearer ${accessToken}`)
                     .send(body);
                 expect(response.statusCode).toBe(400);
@@ -72,7 +74,7 @@ describe("Board API", () => {
                 await testDescLength("aaaaaaaaaaaaaaaaaaaaaa");
             });
             test("empty token", async () => {
-                const response: any = await request(app).post("/api/boards").send(body);
+                const response: any = await request(app).post(`${endpoint}`).send(body);
                 expect(response.statusCode).toBe(401);
             });
         });
@@ -81,7 +83,9 @@ describe("Board API", () => {
     describe("Get Board List API", () => {
         describe("성공", () => {
             test("Get - api/boards", async () => {
-                const response: any = await request(app).get("/api/boards").set("Authorization", `Bearer ${accessToken}`);
+                const response: any = await request(app)
+                    .get(`${endpoint}`)
+                    .set("Authorization", `Bearer ${accessToken}`);
                 expect(response.statusCode).toBe(200);
             });
         });
@@ -91,7 +95,7 @@ describe("Board API", () => {
         describe("성공", () => {
             test("Get - api/boards/:id", async () => {
                 const response: any = await request(app)
-                    .get(`/api/boards/${newBoard.boardId}`)
+                    .get(`${endpoint}/${newBoard.boardId}`)
                     .set("Authorization", `Bearer ${accessToken}`);
                 expect(response.statusCode).toBe(200);
 
@@ -103,7 +107,7 @@ describe("Board API", () => {
         describe("Exception", () => {
             test("not found", async () => {
                 const response: any = await request(app)
-                    .get(`/api/boards/${newBoard.boardId + 100}`)
+                    .get(`${endpoint}/${newBoard.boardId + 100}`)
                     .set("Authorization", `Bearer ${accessToken}`);
                 expect(response.statusCode).toBe(404);
             });
@@ -114,7 +118,7 @@ describe("Board API", () => {
         describe("성공", () => {
             test("Delete - api/boards/:id", async () => {
                 const response: any = await request(app)
-                    .delete(`/api/boards/${newBoard.boardId}`)
+                    .delete(`${endpoint}/${newBoard.boardId}`)
                     .set("Authorization", `Bearer ${accessToken}`);
                 expect(response.statusCode).toBe(200);
             });
@@ -122,10 +126,10 @@ describe("Board API", () => {
         describe("Exception", () => {
             test("not found", async () => {
                 const response: any = await request(app)
-                    .delete(`/api/boards/${newBoard.boardId + 100}`)
+                    .delete(`${endpoint}/${newBoard.boardId + 100}`)
                     .set("Authorization", `Bearer ${accessToken}`);
                 expect(response.statusCode).toBe(404);
             });
         });
     });
-})
+});

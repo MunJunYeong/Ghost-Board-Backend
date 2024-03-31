@@ -14,7 +14,6 @@ let createdUser: userBody;
 let accessToken: string;
 let refreshToken: string;
 
-
 describe("User API", () => {
     describe("Signup API", () => {
         let body: userBody;
@@ -215,5 +214,4 @@ describe("User API", () => {
             });
         });
     });
-})
-
+});
