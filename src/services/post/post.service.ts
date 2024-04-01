@@ -34,20 +34,26 @@ export default class PostService {
         return await this.postRepo.createPost(newPost);
     };
 
-    getPostList = async (boardId: any, postId: any | undefined): Promise<Post[]> => {
+    getPostList = async (boardId: any, postId: any | undefined) => {
         // exist board check
         if (!(await this.boardRepo.getBoardByID(boardId))) {
             logger.error(`cant find board data (id - ${boardId})`);
             throw ErrNotFound;
         }
 
-        let result: Post[]
+        let postList: Post[]
         if (postId) {
-            result = await this.postRepo.getPostListAfterCursor(boardId, postId)
+            postList = await this.postRepo.getPostListAfterCursor(boardId, postId)
         } else {
-            result = await this.postRepo.getPostList(boardId)
+            postList = await this.postRepo.getPostList(boardId)
         }
-        return result;
+
+        let nextCursor: number = 0;
+        if (postList.length > 0) {
+            nextCursor = postList[postList.length - 1].postId;
+        }
+
+        return { posts: postList, nextCursor };
     };
 
     getPost = async (boardId: any, postId: any): Promise<Post> => {

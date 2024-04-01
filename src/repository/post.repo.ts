@@ -1,4 +1,5 @@
 import Post from "@models/post";
+import { Op } from "sequelize";
 
 export default class PostRepo {
     constructor() { }
@@ -26,7 +27,7 @@ export default class PostRepo {
         return await Post.findAll({
             where: {
                 boardId: boardId,
-                postId: { $gt: postId },
+                postId: { [Op.lt]: postId }, //  [Op.lte]:10,   < 10
             },
             limit: 10,
             order: [['created_at', 'DESC']],
