@@ -1,7 +1,8 @@
 import Post from "@models/post";
+import { Op } from "sequelize";
 
 export default class PostRepo {
-    constructor() {}
+    constructor() { }
 
     createPost = async (post: Post) => {
         return await Post.create({
@@ -17,8 +18,21 @@ export default class PostRepo {
             where: {
                 boardId: boardId,
             },
+            limit: 10,
+            order: [['created_at', 'DESC']],
         });
     };
+
+    getPostListAfterCursor = async (boardId: any, postId: any) => {
+        return await Post.findAll({
+            where: {
+                boardId: boardId,
+                postId: { [Op.lt]: postId }, //  [Op.lte]:10,   < 10
+            },
+            limit: 10,
+            order: [['created_at', 'DESC']],
+        })
+    }
 
     getPost = async (boardId: number, postId: number) => {
         return await Post.findOne({
