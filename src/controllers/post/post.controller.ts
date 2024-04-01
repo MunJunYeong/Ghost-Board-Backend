@@ -17,7 +17,7 @@ export default class PostController {
             const boardId = req.params.boardId;
             const userId = req.user?.userId;
             const body: dto.CreatePostReqDTO = req.body;
-            const result = await this.postService.createPost(body, Number(boardId), Number(userId));
+            const result = await this.postService.createPost(body, boardId, userId);
             sendJSONResponse(res, "success create post", result.toJSON());
         } catch (err: any) {
             throw handleError(err);
@@ -27,8 +27,10 @@ export default class PostController {
     getPostList = async (req: Request, res: Response) => {
         try {
             const boardId = req.params.boardId;
+            // cursor
+            const postId = req.query.postId;
 
-            const result = await this.postService.getPostList(Number(boardId));
+            const result = await this.postService.getPostList(boardId, postId);
             sendJSONResponse(res, "success get post list", result);
         } catch (err: any) {
             throw handleError(err);
@@ -40,20 +42,20 @@ export default class PostController {
             const boardId = req.params.boardId;
             const postId = req.params.postId;
 
-            const result = await this.postService.getPost(Number(boardId), Number(postId));
+            const result = await this.postService.getPost(boardId, postId);
             sendJSONResponse(res, "success get post", result.toJSON());
         } catch (err: any) {
             throw handleError(err);
         }
     };
-    
+
     updatePost = async (req: Request, res: Response) => {
         try {
             const boardId = req.params.boardId;
             const postId = req.params.postId;
             const body: dto.UpdatePostReqDTO = req.body;
 
-            const result = await this.postService.updatePost(body, Number(boardId), Number(postId));
+            const result = await this.postService.updatePost(body, boardId, postId);
             sendJSONResponse(res, "success update boards", result.toJSON());
         } catch (err: any) {
             throw handleError(err);
@@ -65,7 +67,7 @@ export default class PostController {
             const boardId = req.params.boardId;
             const postId = req.params.postId;
 
-            const result = await this.postService.deletePost(Number(boardId), Number(postId));
+            const result = await this.postService.deletePost(boardId, postId);
             sendJSONResponse(res, "success get boards", result);
         } catch (err: any) {
             throw handleError(err);
