@@ -43,7 +43,7 @@ export default class PostController {
             const postId = req.params.postId;
 
             const result = await this.postService.getPost(boardId, postId);
-            sendJSONResponse(res, "success get post", result.toJSON());
+            sendJSONResponse(res, `success get post (post_id : ${postId})`, result.toJSON());
         } catch (err: any) {
             throw handleError(err);
         }

@@ -30,7 +30,7 @@ export default class CommentController {
             const postId = req.params.postId;
 
             const result = await this.commentService.getCommentWithReplies(postId);
-            sendJSONResponse(res, `success get comment (postId : ${postId}`, result);
+            sendJSONResponse(res, `success get comment (postId : ${postId})`, result);
         } catch (err: any) {
             throw handleError(err);
         }
@@ -41,7 +41,7 @@ export default class CommentController {
             const commentId = req.params.commentId;
             const body: dto.CreateCommentReqDTO = req.body;
             const result = await this.commentService.updateComment(body.content, commentId);
-            sendJSONResponse(res, `success update comment (commentId : ${commentId}`, result);
+            sendJSONResponse(res, `success update comment (commentId : ${commentId})`, result);
         } catch (err: any) {
             throw handleError(err);
         }
@@ -51,7 +51,7 @@ export default class CommentController {
         try {
             const commentId = req.params.commentId;
             const result = await this.commentService.deleteComment(commentId);
-            sendJSONResponse(res, `success delete comment (commentId : ${commentId}`, result);
+            sendJSONResponse(res, `success delete comment (commentId : ${commentId})`, result);
         } catch (err: any) {
             throw handleError(err);
         }
