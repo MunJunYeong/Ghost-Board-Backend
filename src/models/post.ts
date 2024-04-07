@@ -6,7 +6,7 @@ import Board from "./board";
 class Post extends Model<InferAttributes<Post>, InferCreationAttributes<Post>> {
     declare postId: CreationOptional<number>;
     declare title: string;
-    declare description: string;
+    declare content: string;
     declare createdAt: CreationOptional<Date>;
     declare updatedAt: CreationOptional<Date>;
 
@@ -27,7 +27,7 @@ export const initPost = (sequelize: Sequelize) => {
                 type: DataTypes.STRING,
                 allowNull: false,
             },
-            description: {
+            content: {
                 type: DataTypes.STRING,
                 allowNull: false,
             },

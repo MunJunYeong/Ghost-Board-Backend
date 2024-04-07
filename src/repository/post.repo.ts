@@ -7,7 +7,7 @@ export default class PostRepo {
     createPost = async (post: Post) => {
         return await Post.create({
             title: post.title,
-            description: post.description,
+            content: post.content,
             userId: post.userId,
             boardId: post.boardId,
         });
@@ -55,7 +55,7 @@ export default class PostRepo {
         const updatedPost = await Post.update(
             {
                 title: post.title,
-                description: post.description,
+                content: post.content,
                 userId: post.userId,
                 boardId: post.boardId,
             },

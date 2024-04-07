@@ -4,7 +4,7 @@ import * as dto from "@controllers/post/dto/post.dto";
 export const convToPost = (createReq: dto.CreatePostReqDTO, boardId: number, userId: number): Post => {
     return new Post({
         title: createReq.title,
-        description: createReq.description,
+        content: createReq.content,
         userId: userId,
         boardId: boardId,
     });

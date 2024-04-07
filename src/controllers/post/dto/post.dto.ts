@@ -9,9 +9,9 @@ export class CreatePostReqDTO {
 
     @IsString()
     @IsNotEmpty()
-    @MinLength(10, { message: "Description is too short" })
-    @MaxLength(1000, { message: "Description is too long" })
-    description!: string;
+    @MinLength(10, { message: "Content is too short" })
+    @MaxLength(1000, { message: "Content is too long" })
+    content!: string;
 }
 
 export class UpdatePostReqDTO {
@@ -23,7 +23,7 @@ export class UpdatePostReqDTO {
 
     @IsString()
     @IsOptional()
-    @MinLength(10, { message: "Description is too short" })
-    @MaxLength(1000, { message: "Description is too long" })
-    description!: string;
+    @MinLength(10, { message: "Content is too short" })
+    @MaxLength(1000, { message: "Content is too long" })
+    content!: string;
 }

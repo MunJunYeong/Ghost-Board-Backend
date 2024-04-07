@@ -75,8 +75,8 @@ export default class PostService {
         if (postData.title) {
             p.title = postData.title;
         }
-        if (postData.description) {
-            p.description = postData.description;
+        if (postData.content) {
+            p.content = postData.content;
         }
 
         return await this.postRepo.updatePost(p);
