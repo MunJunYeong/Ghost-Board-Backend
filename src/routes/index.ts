@@ -20,6 +20,7 @@ export default class Routes {
         if (!this.app) {
             throw new Error("Cant initialize routes");
         }
+
         this.app.use("/api", anonymousRouter);
         this.app.use("/api", authMiddleware, userRouter);
         this.app.use("/api", authMiddleware, boardRoute);

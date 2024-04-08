@@ -13,7 +13,7 @@ export class CreatePostReqDTO {
     @MaxLength(1000, { message: "Content is too long" })
     content!: string;
 
-    images?: Express.Multer.File[]; // 이미지 파일들을 저장할 배열
+    image?: Express.Multer.File;
 }
 
 export class UpdatePostReqDTO {

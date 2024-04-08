@@ -1,9 +1,18 @@
+import File from "@models/file";
 import Post from "@models/post";
 import { Op } from "sequelize";
 
 export default class PostRepo {
-    constructor() { }
+    constructor() {}
 
+    createFile = async (link: string, name: string, postId: any) => {
+        return await File.create({
+            link: link,
+            name: name,
+            postId: postId,
+        });
+    };
+    
     createPost = async (post: Post) => {
         return await Post.create({
             title: post.title,
@@ -18,8 +27,9 @@ export default class PostRepo {
             where: {
                 boardId: boardId,
             },
+            include : [File],
             limit: 10,
-            order: [['created_at', 'DESC']],
+            order: [["created_at", "DESC"]],
         });
     };
 
@@ -29,10 +39,11 @@ export default class PostRepo {
                 boardId: boardId,
                 postId: { [Op.lt]: postId }, //  [Op.lte]:10,   < 10
             },
+            include : [File],
             limit: 10,
-            order: [['created_at', 'DESC']],
-        })
-    }
+            order: [["created_at", "DESC"]],
+        });
+    };
 
     getPost = async (boardId: number, postId: number) => {
         return await Post.findOne({
@@ -40,6 +51,7 @@ export default class PostRepo {
                 boardId: boardId,
                 postId: postId,
             },
+            include : [File],
         });
     };
 
@@ -48,6 +60,7 @@ export default class PostRepo {
             where: {
                 postId: postId,
             },
+            include : [File],
         });
     };
 

@@ -2,7 +2,7 @@ import { Model, DataTypes, Sequelize, InferCreationAttributes, InferAttributes, 
 
 import Post from "./post";
 
-class File extends Model<InferAttributes<File>, InferCreationAttributes<Post>> {
+class File extends Model<InferAttributes<File>, InferCreationAttributes<File>> {
     declare fileId: CreationOptional<number>;
     declare link: string;
     declare name: string;
@@ -49,4 +49,4 @@ export const initFile = (sequelize: Sequelize) => {
     File.belongsTo(Post, { foreignKey: "postId" });
 };
 
-export default Post;
+export default File;

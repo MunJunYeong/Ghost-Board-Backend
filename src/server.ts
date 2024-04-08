@@ -5,13 +5,13 @@ dotenv.config({ path: GetEnvPath() });
 
 import express, { Application } from "express";
 import cors, { CorsOptions } from "cors";
+import bodyParser from "body-parser";
 import helmet from "helmet";
 import "express-async-errors";
 
 import { morganMiddleware } from "@middlewares/morgan";
 import { logger } from "@configs/logger";
 import Database from "@configs/database";
-import Routes from "@routes/index";
 
 export default class Server {
     private app: Application;
@@ -26,8 +26,6 @@ export default class Server {
         // init db
         this.initDatabase();
 
-        // init route
-        this.initRoutes();
     }
 
     private initConfig = (): void => {
@@ -36,7 +34,7 @@ export default class Server {
         };
 
         this.app.use(cors(corsOptions));
-        this.app.use(express.json());
+        this.app.use(bodyParser.json());
         this.app.use(express.urlencoded({ extended: true }));
         this.app.use(morganMiddleware);
         this.app.use(helmet());
@@ -50,11 +48,6 @@ export default class Server {
         } catch (error) {
             logger.error("cant initializing database:", error);
         }
-    };
-
-    private initRoutes = (): void => {
-        const route = new Routes(this.app);
-        route.initialize();
     };
 
     public start = (port: any): void => {
