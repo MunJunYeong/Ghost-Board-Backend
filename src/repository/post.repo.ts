@@ -5,10 +5,10 @@ import { Op } from "sequelize";
 export default class PostRepo {
     constructor() {}
 
-    createFile = async (link: string, name: string, postId: any) => {
+    createFile = async (link: string, fileName: string, postId: any) => {
         return await File.create({
             link: link,
-            name: name,
+            fileName: fileName,
             postId: postId,
         });
     };

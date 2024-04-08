@@ -39,37 +39,36 @@ export default class PostService {
         }
 
         let postId: any;
-        await this.sequelize.transaction(async (t) => {
-            try {
-                const newPost = await this.postRepo.createPost(convToPost(postData, boardId, userId));
-                // post에 저장할 사진이 있는 경우
-                if (postData.image) {
-                    const fileContent: Buffer = fs.readFileSync(postData.image.path);
-                    const params: {
-                        Bucket: string;
-                        Key: string;
-                        Body: Buffer;
-                    } = {
-                        Bucket: S3Configs.s3Bucket,
-                        Key: postData.image.filename,
-                        Body: fileContent,
-                    };
-                    // s3 업로드
-                    const result = await S3Storage.upload(params).promise();
-                    await this.postRepo.createFile(result.Location, postData.image.filename, newPost.postId);
+        const t = await this.sequelize.transaction();
+        try {
+            const newPost = await this.postRepo.createPost(convToPost(postData, boardId, userId));
+            // post에 저장할 사진이 있는 경우
+            if (postData.image) {
+                const fileContent: Buffer = fs.readFileSync(postData.image.path);
+                const params: {
+                    Bucket: string;
+                    Key: string;
+                    Body: Buffer;
+                } = {
+                    Bucket: S3Configs.s3Bucket,
+                    Key: postData.image.filename,
+                    Body: fileContent,
+                };
+                // s3 업로드
+                const result = await S3Storage.upload(params).promise();
+                await this.postRepo.createFile(result.Location, postData.image.filename, newPost.postId);
 
-                    // S3 업로드 성공 후 로컬 디스크에서 파일 삭제
-                    fs.unlinkSync(postData.image.path);
+                // S3 업로드 성공 후 로컬 디스크에서 파일 삭제
+                fs.unlinkSync(postData.image.path);
 
-                    postId = newPost.postId;
-                    await t.commit();
-                }
-            } catch (err: any) {
-                await t.rollback();
-                logger.error("Transaction rolled back due to an error:", err);
-                throw err;
+                postId = newPost.postId;
             }
-        });
+            await t.commit();
+        } catch (err: any) {
+            await t.rollback();
+            logger.error("Transaction rolled back due to an error:", err);
+            throw err;
+        }
 
         const post = await this.postRepo.getPostByID(postId);
         if (!post) {

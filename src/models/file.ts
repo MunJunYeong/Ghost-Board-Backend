@@ -5,7 +5,7 @@ import Post from "./post";
 class File extends Model<InferAttributes<File>, InferCreationAttributes<File>> {
     declare fileId: CreationOptional<number>;
     declare link: string;
-    declare name: string;
+    declare fileName: string;
     declare createdAt: CreationOptional<Date>;
     declare updatedAt: CreationOptional<Date>;
 
@@ -25,7 +25,7 @@ export const initFile = (sequelize: Sequelize) => {
                 type: DataTypes.STRING,
                 allowNull: false,
             },
-            name: {
+            fileName: {
                 type: DataTypes.STRING,
                 allowNull: false,
             },
@@ -45,6 +45,9 @@ export const initFile = (sequelize: Sequelize) => {
             tableName: "file",
         }
     );
+};
+
+export const relationFile = () => {
     // 관계 설정
     File.belongsTo(Post, { foreignKey: "postId" });
 };

@@ -2,6 +2,7 @@ import { Model, DataTypes, Sequelize, InferCreationAttributes, InferAttributes, 
 
 import User from "./user";
 import Board from "./board";
+import File from "./file";
 
 class Post extends Model<InferAttributes<Post>, InferCreationAttributes<Post>> {
     declare postId: CreationOptional<number>;
@@ -51,9 +52,13 @@ export const initPost = (sequelize: Sequelize) => {
             tableName: "post",
         }
     );
+};
+
+export const relationPost = () => {
     // 관계 설정
     Post.belongsTo(User, { foreignKey: "userId" });
     Post.belongsTo(Board, { foreignKey: "boardId" }); // Post는 Board에 속합니다.
+    Post.hasOne(File, { foreignKey: "postId" });
 };
 
 export default Post;

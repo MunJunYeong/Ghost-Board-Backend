@@ -51,7 +51,9 @@ export const initComment = (sequelize: Sequelize) => {
             tableName: "comment",
         }
     );
+};
 
+export const relationComment = () => {
     Comment.belongsTo(User, { foreignKey: "userId" });
     Comment.belongsTo(Post, { foreignKey: "postId" });
 
