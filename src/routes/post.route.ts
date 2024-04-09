@@ -2,11 +2,12 @@ import { Router } from "express";
 import * as dto from "@controllers/post/dto/post.dto";
 import PostController from "@controllers/post/post.controller";
 import { validationMiddleware } from "@middlewares/requestValidate";
-import { uploaderMiddleware } from "@middlewares/uploader";
+import { uploadMiddleware } from "@middlewares/uploader";
+
 class PostRoutes {
     router = Router();
     private controller: PostController;
-    
+
     constructor() {
         console.log("controller 호출")
         this.controller = new PostController();
@@ -16,7 +17,7 @@ class PostRoutes {
     initializeRoutes() {
         const prefix = "/boards/:boardId/posts";
 
-        this.router.post(`${prefix}`, uploaderMiddleware, validationMiddleware(dto.CreatePostReqDTO), this.controller.createPost);
+        this.router.post(`${prefix}`, uploadMiddleware.single("image"), validationMiddleware(dto.CreatePostReqDTO), this.controller.createPost);
 
         this.router.get(`${prefix}`, this.controller.getPostList);
         this.router.get(`${prefix}/:postId`, this.controller.getPost);

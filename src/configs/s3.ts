@@ -1,4 +1,4 @@
-import AWS from "aws-sdk";
+import { S3 } from "@aws-sdk/client-s3";
 
 export const S3Configs = {
     s3AccessKey: process.env.S3_ACCESS_KEY || "",
@@ -7,8 +7,10 @@ export const S3Configs = {
     s3Bucket: process.env.S3_BUCKET_NAME || "",
 };
 
-export const S3Storage: AWS.S3 = new AWS.S3({
-    accessKeyId: S3Configs.s3AccessKey,
-    secretAccessKey: S3Configs.secretAccessKey,
+export const S3Storage = new S3({
     region: S3Configs.s3Region,
+    credentials: {
+        accessKeyId: S3Configs.s3AccessKey,
+        secretAccessKey: S3Configs.secretAccessKey,
+    }
 });

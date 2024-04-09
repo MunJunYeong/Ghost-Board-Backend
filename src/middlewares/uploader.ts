@@ -1,19 +1,24 @@
-import multer from "multer";
+import { S3Configs, S3Storage } from '@configs/s3';
+import multer from 'multer';
+import multerS3 from 'multer-s3';
 import path from "path";
 import uuid4 from "uuid4";
 
-const upload = multer({
-    storage: multer.diskStorage({
-        filename(req, file, done) {
+export const uploadMiddleware = multer({
+    storage: multerS3({
+        s3: S3Storage,
+        bucket: S3Configs.s3Bucket,
+        acl: "public-read-write",
+        contentType: multerS3.AUTO_CONTENT_TYPE,
+
+        key(req, file, cb) {
+            // filename 정하기
             const randomID = uuid4();
             const ext = path.extname(file.originalname);
             const filename = randomID + ext;
-            console.log(filename);
-            done(null, filename);
+            cb(null, `${Date.now()}_${filename}`)
         },
-        destination: "uploads/",
     }),
-    limits: { fileSize: 1024 * 1024 },
-});
-
-export const uploaderMiddleware = upload.single("image");
+    // 5MB 용량 제한
+    limits: { fileSize: 5 * 1024 * 1024 },
+})
