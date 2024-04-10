@@ -1,13 +1,15 @@
 import { Request, Response } from "express";
+import crypto from "crypto";
 
 import * as dto from "@controllers/anonymous/dto/anonymous.dto";
 import RedisClient, { Redis } from "@configs/redis";
 import AnonymousService from "@services/anonymous/anonymous.service";
 import InternalError from "@errors/internal_server";
 import BadRequestError from "@errors/bad_request";
-import { handleError } from "@errors/handler";
+import { ErrNotFound, handleError } from "@errors/handler";
 import { issueAccessToken, verifyAccessToken, verifyRefreshToken } from "@utils/jwt";
 import { sendJSONResponse } from "@utils/response";
+import { sendMail } from "@utils/mailer";
 
 export default class AnonymousController {
     private redis: Redis;
@@ -38,7 +40,8 @@ export default class AnonymousController {
         try {
             const result = await this.anonymouseService.login(loginBody);
 
-            this.redis.set(loginBody.id, result.refreshToken);
+            // 유효기간 : 14일 - jwt.ts 파일의 refresh token `expiresIn` 값과 일치해야 함.
+            this.redis.set(loginBody.id, result.refreshToken, 'EX', 14 * 24 * 60 * 60);
 
             sendJSONResponse(res, "success login", result);
         } catch (err: any) {
@@ -46,7 +49,40 @@ export default class AnonymousController {
         }
     };
 
-    // refresh token 발급
+    // 이메일 전송 - only controller layer
+    sendEmail = async (req: Request, res: Response) => {
+        const emailBody: dto.EmailReqDTO = req.body;
+
+        try {
+            const code = crypto.randomBytes(3).toString('hex');
+
+            await sendMail(emailBody.email, code);
+
+            // 유효기간 5분
+            this.redis.set(emailBody.email, code, "EX", 300);
+
+            sendJSONResponse(res, "success send email", true);
+        } catch (err: any) {
+            throw handleError(err);
+        }
+    };
+
+    checkEmail = async (req: Request, res: Response) => {
+        const emailBody: dto.CheckEmailReqDTO = req.body;
+
+        try {
+            const savedCode = await this.redis.get(emailBody.email);
+            if (savedCode !== emailBody.code) {
+                throw ErrNotFound;
+            }
+
+            sendJSONResponse(res, "success check email", true);
+        } catch (err: any) {
+            throw handleError(err);
+        }
+    };
+
+    // refresh token 발급 - only controller layer
     refresh = async (req: Request, res: Response) => {
         // repo에 접근할 경우가 아니기에 Service layer에 로직을 담지 않음.
         try {

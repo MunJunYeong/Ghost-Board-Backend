@@ -45,3 +45,19 @@ export class LoginResDTO {
     @IsNotEmpty()
     refreshToken!: string;
 }
+
+export class EmailReqDTO {
+    @IsString()
+    @IsNotEmpty()
+    email!: string
+}
+
+export class CheckEmailReqDTO {
+    @IsString()
+    @IsNotEmpty()
+    email!: string
+    
+    @IsString()
+    @IsNotEmpty()
+    code!: string
+}

@@ -20,15 +20,9 @@ class AnonymousRoutes {
 
         this.router.post("/refresh", this.controller.refresh);
 
-        this.router.post("/test", async (req: Request, res: Response) => {
-            const result = await sendMail("msw711666@naver.com")
-            res.status(200).json({
-                status: 'Success',
-                code: 200,
-                message: 'Sent Auth Email',
-                data: result
-            });
-        });
+        // email 전송 및 확인
+        this.router.post("/email", validationMiddleware(dto.EmailReqDTO), this.controller.sendEmail);
+        this.router.post("/email:check", validationMiddleware(dto.CheckEmailReqDTO), this.controller.checkEmail);
     }
 }
 

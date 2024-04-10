@@ -1,5 +1,4 @@
 import nodeMailer from "nodemailer"
-import crypto from "crypto";
 import ejs from 'ejs';
 import path from "path";
 
@@ -14,9 +13,7 @@ let transporter = nodeMailer.createTransport({
     },
 });
 
-export const sendMail = async (userEmail: string, code: number) => {
-    // const code = crypto.randomBytes(3).toString('hex');
-
+export const sendMail = async (userEmail: string, code: string) => {
     let emailTemplate;
 
     // ejs render할 때 상대경로를 인식하지 못함.
