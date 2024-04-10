@@ -1,25 +1,54 @@
+import { Op, Sequelize } from "sequelize";
+
+import File from "@models/file";
 import Post from "@models/post";
-import { Op } from "sequelize";
+import Database from "@configs/database";
+import { DeleteS3File } from "@configs/s3";
 
 export default class PostRepo {
-    constructor() { }
+    private sequelize: Sequelize;
 
-    createPost = async (post: Post) => {
-        return await Post.create({
-            title: post.title,
-            description: post.description,
-            userId: post.userId,
-            boardId: post.boardId,
+    constructor() {
+        const dbInstance = Database.getInstance();
+        this.sequelize = dbInstance.getSequelize();
+    }
+
+    createFile = async (link: string, fileName: string, postId: any) => {
+        return await File.create({
+            link: link,
+            fileName: fileName,
+            postId: postId,
         });
     };
+
+    createPost = async (post: Post) => {
+        return await post.save();
+    };
+
+    createPostWithFile = async (post: Post, file: File) => {
+        const transaction = await this.sequelize.transaction();
+        try {
+            const newPost = await post.save({ transaction })
+            file.postId = newPost.postId;
+            await file.save({ transaction })
+
+            await transaction.commit();
+            return await this.getPostByID(newPost.postId)
+        } catch (err: any) {
+            await transaction.rollback();
+            await DeleteS3File(file.fileName);
+            throw err;
+        }
+    }
 
     getPostList = async (boardId: any) => {
         return await Post.findAll({
             where: {
                 boardId: boardId,
             },
+            include: [File],
             limit: 10,
-            order: [['created_at', 'DESC']],
+            order: [["created_at", "DESC"]],
         });
     };
 
@@ -29,10 +58,11 @@ export default class PostRepo {
                 boardId: boardId,
                 postId: { [Op.lt]: postId }, //  [Op.lte]:10,   < 10
             },
+            include: [File],
             limit: 10,
-            order: [['created_at', 'DESC']],
-        })
-    }
+            order: [["created_at", "DESC"]],
+        });
+    };
 
     getPost = async (boardId: number, postId: number) => {
         return await Post.findOne({
@@ -40,6 +70,7 @@ export default class PostRepo {
                 boardId: boardId,
                 postId: postId,
             },
+            include: [File],
         });
     };
 
@@ -48,6 +79,7 @@ export default class PostRepo {
             where: {
                 postId: postId,
             },
+            include: [File],
         });
     };
 
@@ -55,7 +87,7 @@ export default class PostRepo {
         const updatedPost = await Post.update(
             {
                 title: post.title,
-                description: post.description,
+                content: post.content,
                 userId: post.userId,
                 boardId: post.boardId,
             },

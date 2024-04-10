@@ -1,9 +1,10 @@
 import { Sequelize, Dialect } from "sequelize";
 
 import { initUser } from "@models/user";
-import { initPost } from "@models/post";
 import { initBoard } from "@models/board";
-import { initComment } from "@models/comment";
+import { initPost, relationPost } from "@models/post";
+import { initFile, relationFile } from "@models/file";
+import { initComment, relationComment } from "@models/comment";
 
 const DBConfigs = {
     username: process.env.DB_USERNAME || "postgres",
@@ -35,10 +36,17 @@ export default class Database {
                 });
             }
 
+            // model init
             initUser(this.sequelizeInstance);
             initBoard(this.sequelizeInstance);
             initPost(this.sequelizeInstance);
+            initFile(this.sequelizeInstance);
             initComment(this.sequelizeInstance);
+
+            // relation init
+            relationPost();
+            relationComment();
+            relationFile();
 
             // await this.sequelizeInstance.sync();
             await this.sequelizeInstance.sync({ logging: false });

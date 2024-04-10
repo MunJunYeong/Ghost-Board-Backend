@@ -1,5 +1,25 @@
 import { IsNotEmpty, IsOptional, IsString, MaxLength, MinLength } from "@utils/validation";
 
+interface UploadedImage {
+    fieldname: string;
+    originalname: string;
+    encoding: string;
+    mimetype: string;
+    size: number;
+    bucket: string;
+    key: string;
+    acl: string;
+    contentType: string;
+    contentDisposition: string | null;
+    contentEncoding: string | null;
+    storageClass: string;
+    serverSideEncryption: string | null;
+    metadata: any; // 또는 원하는 메타데이터의 타입으로 변경 가능
+    location: string;
+    etag: string;
+    versionId: string | null;
+}
+
 export class CreatePostReqDTO {
     @IsString()
     @IsNotEmpty()
@@ -9,9 +29,11 @@ export class CreatePostReqDTO {
 
     @IsString()
     @IsNotEmpty()
-    @MinLength(10, { message: "Description is too short" })
-    @MaxLength(1000, { message: "Description is too long" })
-    description!: string;
+    @MinLength(10, { message: "Content is too short" })
+    @MaxLength(1000, { message: "Content is too long" })
+    content!: string;
+
+    image?: UploadedImage; // Express.Multer.File의 type이 아닌 multer-s3의 type이라서 사전 정의
 }
 
 export class UpdatePostReqDTO {
@@ -23,7 +45,7 @@ export class UpdatePostReqDTO {
 
     @IsString()
     @IsOptional()
-    @MinLength(10, { message: "Description is too short" })
-    @MaxLength(1000, { message: "Description is too long" })
-    description!: string;
+    @MinLength(10, { message: "Content is too short" })
+    @MaxLength(1000, { message: "Content is too long" })
+    content!: string;
 }

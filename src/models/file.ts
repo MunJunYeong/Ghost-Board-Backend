@@ -1,36 +1,39 @@
 import { Model, DataTypes, Sequelize, InferCreationAttributes, InferAttributes, CreationOptional } from "sequelize";
 
-import User from "./user";
-import Board from "./board";
-import File from "./file";
+import Post from "./post";
 
-class Post extends Model<InferAttributes<Post>, InferCreationAttributes<Post>> {
-    declare postId: CreationOptional<number>;
-    declare title: string;
-    declare content: string;
+class File extends Model<InferAttributes<File>, InferCreationAttributes<File>> {
+    declare fileId: CreationOptional<number>;
+    declare link: string;
+    declare fileName: string;
     declare createdAt: CreationOptional<Date>;
     declare updatedAt: CreationOptional<Date>;
 
     // relation
-    declare userId: number;
-    declare boardId: number;
+    declare postId: number;
 }
 
-export const initPost = (sequelize: Sequelize) => {
-    Post.init(
+export const initFile = (sequelize: Sequelize) => {
+    File.init(
         {
-            postId: {
+            fileId: {
                 type: DataTypes.INTEGER,
                 autoIncrement: true,
                 primaryKey: true,
             },
-            title: {
+            link: {
                 type: DataTypes.STRING,
                 allowNull: false,
+                validate: {
+                    notEmpty: true,
+                },
             },
-            content: {
+            fileName: {
                 type: DataTypes.STRING,
                 allowNull: false,
+                validate: {
+                    notEmpty: true,
+                },
             },
             createdAt: {
                 type: DataTypes.DATE,
@@ -38,27 +41,21 @@ export const initPost = (sequelize: Sequelize) => {
             updatedAt: {
                 type: DataTypes.DATE,
             },
-            userId: {
-                type: DataTypes.INTEGER,
-                allowNull: false,
-            },
-            boardId: {
+            postId: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
             },
         },
         {
             sequelize,
-            tableName: "post",
+            tableName: "file",
         }
     );
 };
 
-export const relationPost = () => {
+export const relationFile = () => {
     // 관계 설정
-    Post.belongsTo(User, { foreignKey: "userId" });
-    Post.belongsTo(Board, { foreignKey: "boardId" }); // Post는 Board에 속합니다.
-    Post.hasOne(File, { foreignKey: "postId" });
+    File.belongsTo(Post, { foreignKey: "postId" });
 };
 
-export default Post;
+export default File;
