@@ -16,7 +16,6 @@ class PostRoutes {
 
     initializeRoutes() {
         const prefix = "/boards/:boardId/posts";
-
         this.router.post(`${prefix}`, uploadMiddleware.single("image"), validationMiddleware(dto.CreatePostReqDTO), this.controller.createPost);
 
         this.router.get(`${prefix}`, this.controller.getPostList);

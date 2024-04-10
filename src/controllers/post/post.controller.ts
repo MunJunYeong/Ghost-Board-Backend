@@ -17,10 +17,10 @@ export default class PostController {
             const boardId = req.params.boardId;
             const userId = req.user?.userId;
             const body: dto.CreatePostReqDTO = req.body;
-            body.image = req.file;
+            body.image = req.file as any;
 
             const result = await this.postService.createPost(body, boardId, userId);
-            sendJSONResponse(res, "success create post", result.toJSON());
+            sendJSONResponse(res, "success create post", result);
         } catch (err: any) {
             throw handleError(err);
         }

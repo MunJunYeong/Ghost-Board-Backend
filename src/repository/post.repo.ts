@@ -1,9 +1,16 @@
+import { Op, Sequelize } from "sequelize";
+
 import File from "@models/file";
 import Post from "@models/post";
-import { Op } from "sequelize";
+import Database from "@configs/database";
 
 export default class PostRepo {
-    constructor() {}
+    private sequelize: Sequelize;
+
+    constructor() {
+        const dbInstance = Database.getInstance();
+        this.sequelize = dbInstance.getSequelize();
+    }
 
     createFile = async (link: string, fileName: string, postId: any) => {
         return await File.create({
@@ -12,22 +19,32 @@ export default class PostRepo {
             postId: postId,
         });
     };
-    
+
     createPost = async (post: Post) => {
-        return await Post.create({
-            title: post.title,
-            content: post.content,
-            userId: post.userId,
-            boardId: post.boardId,
-        });
+        return await post.save();
     };
+
+    createPostWithFile = async (post: Post, file: File) => {
+        const transaction = await this.sequelize.transaction();
+        try {
+            const newPost = await post.save({transaction})
+            file.postId = newPost.postId;
+            await file.save({transaction})
+            
+            await transaction.commit();
+            return await this.getPostByID(newPost.postId)
+        } catch (err: any) {
+            await transaction.rollback();
+            throw err;
+        }
+    }
 
     getPostList = async (boardId: any) => {
         return await Post.findAll({
             where: {
                 boardId: boardId,
             },
-            include : [File],
+            include: [File],
             limit: 10,
             order: [["created_at", "DESC"]],
         });
@@ -39,7 +56,7 @@ export default class PostRepo {
                 boardId: boardId,
                 postId: { [Op.lt]: postId }, //  [Op.lte]:10,   < 10
             },
-            include : [File],
+            include: [File],
             limit: 10,
             order: [["created_at", "DESC"]],
         });
@@ -51,7 +68,7 @@ export default class PostRepo {
                 boardId: boardId,
                 postId: postId,
             },
-            include : [File],
+            include: [File],
         });
     };
 
@@ -60,7 +77,7 @@ export default class PostRepo {
             where: {
                 postId: postId,
             },
-            include : [File],
+            include: [File],
         });
     };
 

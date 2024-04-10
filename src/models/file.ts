@@ -24,10 +24,16 @@ export const initFile = (sequelize: Sequelize) => {
             link: {
                 type: DataTypes.STRING,
                 allowNull: false,
+                validate: {
+                    notEmpty: true,
+                },
             },
             fileName: {
                 type: DataTypes.STRING,
                 allowNull: false,
+                validate: {
+                    notEmpty: true,
+                },
             },
             createdAt: {
                 type: DataTypes.DATE,

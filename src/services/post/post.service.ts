@@ -1,29 +1,21 @@
-import fs from "fs";
-
 import { ErrNotFound } from "@errors/handler";
 import { logger } from "@configs/logger";
-import { S3Storage, S3Configs } from "@configs/s3";
 import * as dto from "@controllers/post/dto/post.dto";
 import Post from "@models/post";
 import PostRepo from "@repo/post.repo";
 import UserRepo from "@repo/user.repo";
 import BoardRepo from "@repo/board.repo";
-import { convToPost } from "./post.conv";
-import Database from "@configs/database";
-import { Sequelize } from "sequelize";
+import { convToFile, convToPost } from "./post.conv";
 
 export default class PostService {
     private postRepo: PostRepo;
     private userRepo: UserRepo;
     private boardRepo: BoardRepo;
-    private sequelize: Sequelize;
 
     constructor() {
         this.postRepo = new PostRepo();
         this.userRepo = new UserRepo();
         this.boardRepo = new BoardRepo();
-        const dbInstance = Database.getInstance();
-        this.sequelize = dbInstance.getSequelize();
     }
 
     createPost = async (postData: dto.CreatePostReqDTO, boardId: any, userId: any) => {
@@ -38,50 +30,14 @@ export default class PostService {
             throw ErrNotFound;
         }
 
-        console.log(postData)
-
-        let postId: any;
-        const t = await this.sequelize.transaction();
-        try {
-            const newPost = await this.postRepo.createPost(convToPost(postData, boardId, userId));
-            // post에 저장할 사진이 있는 경우
-            if (postData.image) {
-                // const fileContent: Buffer = fs.readFileSync(postData.image.path);
-                // const params: {
-                //     Bucket: string;
-                //     Key: string;
-                //     Body: Buffer;
-                // } = {
-                //     Bucket: S3Configs.s3Bucket,
-                //     Key: postData.image.filename,
-                //     Body: fileContent,
-                // };
-                // // s3 업로드
-                // const result = await S3Storage.upload(params).promise();
-
-                console.log(postData.image.destination)
-                console.log(postData.image.filename)
-                console.log(postData.image.size)
-
-                await this.postRepo.createFile(postData.image.destination, postData.image.filename, newPost.postId);
-
-                // S3 업로드 성공 후 로컬 디스크에서 파일 삭제
-                // fs.unlinkSync(postData.image.path);
-
-                postId = newPost.postId;
-            }
-            await t.commit();
-        } catch (err: any) {
-            await t.rollback();
-            logger.error("Transaction rolled back due to an error:", err);
-            throw err;
+        const post = convToPost(postData, boardId, userId)
+        if (postData.image) {
+            const { location, key } = postData.image
+            const file = convToFile(location, key)
+            return await this.postRepo.createPostWithFile(post, file)
         }
-
-        const post = await this.postRepo.getPostByID(postId);
-        if (!post) {
-            throw new Error("unhandled error - transaction doesn't catch error");
-        }
-        return post;
+        // image가 없을 경우
+        return await this.postRepo.createPost(post);
     };
 
     getPostList = async (boardId: any, postId: any | undefined) => {

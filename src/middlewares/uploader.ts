@@ -12,11 +12,11 @@ export const uploadMiddleware = multer({
         contentType: multerS3.AUTO_CONTENT_TYPE,
 
         key(req, file, cb) {
-            // filename 정하기
+            // filename 
             const randomID = uuid4();
             const ext = path.extname(file.originalname);
             const filename = randomID + ext;
-            cb(null, `${Date.now()}_${filename}`)
+            cb(null, `image/${Date.now()}_${filename}`)
         },
     }),
     // 5MB 용량 제한
