@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 
 // common
 import { handleError } from "@errors/handler";
-import RedisClient, { Redis } from "@configs/redis";
+import RedisClient, { RedisClientType } from "@configs/redis";
 
 // server
 import * as dto from "@controllers/user/dto/user.dto";
@@ -10,11 +10,11 @@ import UserService from "@services/user/user.service";
 import { sendJSONResponse } from "@utils/response";
 
 export default class UserController {
-    private redis: Redis;
+    private redis: RedisClientType;
     private userService: UserService;
 
     constructor() {
-        this.redis = RedisClient.getInstance();
+        this.redis = RedisClient;
 
         this.userService = new UserService();
     }
@@ -40,7 +40,7 @@ export default class UserController {
             throw handleError(err);
         }
     };
-    
+
     updateUser = async (req: Request, res: Response) => {
         const id = req.params.userId;
 

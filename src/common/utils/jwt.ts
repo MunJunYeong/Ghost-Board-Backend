@@ -40,7 +40,7 @@ const verifyAccessToken = (token: string) => {
 
 const verifyRefreshToken = async (token: string, userID: string) => {
     // redis 모듈이 프로미스를 지원하지 않기에 직접 promise를 반환해주어야 함.
-    const redis = RedisClient.getInstance();
+    const redis = RedisClient;
     const getAsync = promisify(redis.get).bind(redis);
 
     try {
