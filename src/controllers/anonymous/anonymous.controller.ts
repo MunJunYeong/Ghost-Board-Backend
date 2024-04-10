@@ -51,15 +51,20 @@ export default class AnonymousController {
 
     // 이메일 전송 - only controller layer
     sendEmail = async (req: Request, res: Response) => {
-        const emailBody: dto.EmailReqDTO = req.body;
+        const { email }: dto.EmailReqDTO = req.body;
+
+        // domain 확인
+        if ("corelinesoft" !== email.split("@")[1]) {
+            throw BadRequestError;
+        }
 
         try {
             const code = crypto.randomBytes(3).toString('hex');
 
-            await sendMail(emailBody.email, code);
+            await sendMail(email, code);
 
             // 유효기간 5분
-            this.redis.set(emailBody.email, code, "EX", 300);
+            this.redis.set(email, code, "EX", 300);
 
             sendJSONResponse(res, "success send email", true);
         } catch (err: any) {
@@ -69,6 +74,11 @@ export default class AnonymousController {
 
     checkEmail = async (req: Request, res: Response) => {
         const emailBody: dto.CheckEmailReqDTO = req.body;
+
+        // domain 확인
+        if ("corelinesoft" !== emailBody.email.split("@")[1]) {
+            throw BadRequestError;
+        }
 
         try {
             const savedCode = await this.redis.get(emailBody.email);
