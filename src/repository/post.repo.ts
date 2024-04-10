@@ -3,6 +3,7 @@ import { Op, Sequelize } from "sequelize";
 import File from "@models/file";
 import Post from "@models/post";
 import Database from "@configs/database";
+import { DeleteS3File } from "@configs/s3";
 
 export default class PostRepo {
     private sequelize: Sequelize;
@@ -27,14 +28,15 @@ export default class PostRepo {
     createPostWithFile = async (post: Post, file: File) => {
         const transaction = await this.sequelize.transaction();
         try {
-            const newPost = await post.save({transaction})
+            const newPost = await post.save({ transaction })
             file.postId = newPost.postId;
-            await file.save({transaction})
-            
+            await file.save({ transaction })
+
             await transaction.commit();
             return await this.getPostByID(newPost.postId)
         } catch (err: any) {
             await transaction.rollback();
+            await DeleteS3File(file.fileName);
             throw err;
         }
     }

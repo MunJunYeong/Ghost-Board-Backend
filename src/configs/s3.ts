@@ -1,4 +1,5 @@
-import { S3Client } from "@aws-sdk/client-s3";
+import { DeleteObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { logger } from "./logger";
 
 export const S3Configs = {
     s3AccessKey: process.env.S3_ACCESS_KEY || "",
@@ -14,3 +15,13 @@ export const S3Storage = new S3Client({
         secretAccessKey: S3Configs.secretAccessKey,
     }
 });
+
+export const DeleteS3File = async (fileName: string) => {
+    const deleteCommand = new DeleteObjectCommand({
+        Bucket: S3Configs.s3Bucket,
+        Key: fileName
+    });
+    const deleteResult = await S3Storage.send(deleteCommand);
+    logger.info("File deleted successfully:", deleteResult);
+    return true
+}
