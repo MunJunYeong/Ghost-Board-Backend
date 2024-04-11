@@ -6,7 +6,7 @@ import RedisClient, { Redis } from "@configs/redis";
 import AnonymousService from "@services/anonymous/anonymous.service";
 import InternalError from "@errors/internal_server";
 import BadRequestError from "@errors/bad_request";
-import { ErrNotFound, handleError } from "@errors/handler";
+import { ErrInvalidArgument, ErrNotFound, ErrUnauthorized, handleError } from "@errors/handler";
 import { issueAccessToken, verifyAccessToken, verifyRefreshToken } from "@utils/jwt";
 import { sendJSONResponse } from "@utils/response";
 import { sendMail } from "@utils/mailer";
@@ -25,6 +25,11 @@ export default class AnonymousController {
     signup = async (req: Request, res: Response) => {
         const body: dto.SignupReqDTO = req.body;
         try {
+            const isValidEmail = await this.redis.get(body.email)
+            if (isValidEmail != "true") {
+                throw ErrUnauthorized
+            }
+
             const u = await this.anonymouseService.signup(body);
 
             sendJSONResponse(res, "success signup", u);
@@ -53,12 +58,16 @@ export default class AnonymousController {
     sendEmail = async (req: Request, res: Response) => {
         const { email }: dto.EmailReqDTO = req.body;
 
-        // domain 확인
-        if ("corelinesoft" !== email.split("@")[1]) {
-            throw BadRequestError;
-        }
-
         try {
+            // domain 확인
+            {
+                const prefix = email.split("@")[1]
+                if ("corelinesoft.com" !== prefix && "corelinesoft.co.kr" !== prefix) {
+                    throw ErrInvalidArgument;
+                }
+            }
+
+
             const code = crypto.randomBytes(3).toString('hex');
 
             await sendMail(email, code);
@@ -75,17 +84,22 @@ export default class AnonymousController {
     checkEmail = async (req: Request, res: Response) => {
         const emailBody: dto.CheckEmailReqDTO = req.body;
 
-        // domain 확인
-        if ("corelinesoft" !== emailBody.email.split("@")[1]) {
-            throw BadRequestError;
-        }
-
         try {
+            // domain 확인
+            {
+                const prefix = emailBody.email.split("@")[1]
+                if ("corelinesoft.com" !== prefix && "corelinesoft.co.kr" !== prefix) {
+                    throw ErrInvalidArgument;
+                }
+            }
+
             const savedCode = await this.redis.get(emailBody.email);
             if (savedCode !== emailBody.code) {
                 throw ErrNotFound;
             }
 
+            // 유효기간 30분
+            this.redis.set(emailBody.email, "true", "EX", 1800);
             sendJSONResponse(res, "success check email", true);
         } catch (err: any) {
             throw handleError(err);
