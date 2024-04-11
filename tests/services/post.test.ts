@@ -9,7 +9,7 @@ import Post from "@models/post";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const postTitle = "test post title";
-const postDesc = "test post description";
+const postDesc = "test post content";
 
 describe("Post API", () => {
     let endpoint: string;
@@ -28,7 +28,7 @@ describe("Post API", () => {
         // board
         const boardBody = {
             title: "test",
-            description: "test desc",
+            content: "test desc",
         };
         const boardRes: any = await request(app)
             .post("/api/boards")
@@ -51,7 +51,7 @@ describe("Post API", () => {
         beforeEach(() => {
             body = {
                 title: postTitle,
-                description: postDesc,
+                content: postDesc,
             };
         });
 
@@ -72,7 +72,7 @@ describe("Post API", () => {
                 // short length 2
                 await testTitleLength("aaaa");
             });
-            test("invalid description - empty, length", async () => {
+            test("invalid content - empty, length", async () => {
                 // empty title
                 await testDescLength("");
                 // short length 2
@@ -92,7 +92,7 @@ describe("Post API", () => {
             }
 
             async function testDescLength(desc: string) {
-                body.description = desc;
+                body.content = desc;
                 const response = await request(app)
                     .post(`${endpoint}`)
                     .set("Authorization", `Bearer ${accessToken}`)
@@ -119,7 +119,7 @@ describe("Post API", () => {
                 const actualPost: Post = response.body.data;
                 expect(actualPost.postId).toEqual(newPost.postId);
                 expect(actualPost.title).toEqual(newPost.title);
-                expect(actualPost.description).toEqual(newPost.description);
+                expect(actualPost.content).toEqual(newPost.content);
                 expect(actualPost.createdAt).toEqual(newPost.createdAt);
             });
         });
@@ -154,24 +154,24 @@ describe("Post API", () => {
                 expect(res.statusCode).toBe(200);
                 let actualPost: Post = res.body.data;
                 expect(actualPost.title).toEqual(changedTitle);
-                expect(actualPost.description).toEqual(newPost.description);
+                expect(actualPost.content).toEqual(newPost.content);
 
-                // check only changed description
-                let changedDescription = "changed description for test!";
-                res = await sendUpdatePost({ description: changedDescription });
+                // check only changed content
+                let changedcontent = "changed content for test!";
+                res = await sendUpdatePost({ content: changedcontent });
                 expect(res.statusCode).toBe(200);
                 actualPost = res.body.data;
-                expect(actualPost.description).toEqual(changedDescription);
+                expect(actualPost.content).toEqual(changedcontent);
                 expect(actualPost.title).toEqual(changedTitle);
 
                 // changed both
                 changedTitle = "last changed title";
-                changedDescription = "last changed description";
-                res = await sendUpdatePost({ title: changedTitle, description: changedDescription });
+                changedcontent = "last changed content";
+                res = await sendUpdatePost({ title: changedTitle, content: changedcontent });
                 expect(res.statusCode).toBe(200);
                 actualPost = res.body.data;
                 expect(actualPost.title).toEqual(changedTitle);
-                expect(actualPost.description).toEqual(changedDescription);
+                expect(actualPost.content).toEqual(changedcontent);
                 newPost = actualPost;
             });
         });
@@ -180,8 +180,8 @@ describe("Post API", () => {
                 const response: any = await sendUpdatePost({ title: "1234" });
                 expect(response.statusCode).toBe(400);
             });
-            test("invalid description", async () => {
-                const response: any = await sendUpdatePost({ description: "123456789" });
+            test("invalid content", async () => {
+                const response: any = await sendUpdatePost({ content: "123456789" });
                 expect(response.statusCode).toBe(400);
             });
             test("invalid token", async () => {

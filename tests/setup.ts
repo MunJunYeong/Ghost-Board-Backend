@@ -19,14 +19,18 @@ jest.mock("@configs/logger", () => ({
 }));
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+// index.ts role
 import Server from "@src/server";
 import express from "express";
 import request from "supertest";
 
 const app = express();
 const server = new Server(app);
+import Routes from "@src/routes";
+const route = new Routes(app);
+route.initialize();
 server.start(3000);
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export const defaultID = "admin123";
 export const defaultPwd = "admin456";
