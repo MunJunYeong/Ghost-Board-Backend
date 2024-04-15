@@ -6,7 +6,7 @@ export const hashing = async (data: string) => {
     return await bcrypt.hash(data, salt);
 };
 
-export const comparePassword = async (pwd: string, hashedPwd: string) => {
-    // if login success - return true
-    return await bcrypt.compare(pwd, hashedPwd);
+export const compareHashedValue = async (originalValue: string, hashedValue: string) => {
+    // if equal return true
+    return await bcrypt.compare(originalValue, hashedValue);
 };

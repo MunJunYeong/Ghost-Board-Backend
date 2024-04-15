@@ -9,7 +9,7 @@ import BadRequestError from "@errors/bad_request";
 import { ErrInvalidArgument, ErrNotFound, ErrUnauthorized, handleError } from "@errors/handler";
 import { issueAccessToken, verifyAccessToken, verifyRefreshToken } from "@utils/jwt";
 import { sendJSONResponse } from "@utils/response";
-import { sendMail } from "@utils/mailer";
+import { sendIDMail, sendSignUpMail } from "@utils/mailer";
 
 export default class AnonymousController {
     private redis: Redis;
@@ -71,7 +71,7 @@ export default class AnonymousController {
 
             const code = crypto.randomBytes(3).toString('hex');
 
-            await sendMail(email, code);
+            await sendSignUpMail(email, code);
 
             // 유효기간 5분
             this.redis.set(email, code, "EX", 300);
@@ -106,6 +106,66 @@ export default class AnonymousController {
             throw handleError(err);
         }
     };
+
+    /*
+    사용자 ID 찾기 API
+    404 error - wrong username
+    401 error - wrong email (correct username)
+    */
+    findUserLoginID = async (req: Request, res: Response) => {
+        const { email, username }: dto.FindIDReqDTO = req.body;
+
+        try {
+            // domain 확인
+            {
+                const prefix = email.split("@")[1]
+                if ("corelinesoft.com" !== prefix && "corelinesoft.co.kr" !== prefix) {
+                    throw ErrInvalidArgument;
+                }
+            }
+
+            const id = await this.anonymouseService.findLoginIDByUsername(email, username)
+            await sendIDMail(email, id);
+
+            // 유효기간 5분
+            // 해당 아이디 찾기 API는 5분마다 전송이 가능하다.
+            // this.redis.set(email, code, "EX", 300);
+
+            sendJSONResponse(res, "success send email", true);
+        } catch (err: any) {
+            throw handleError(err);
+        }
+    }
+
+    findUserLoginIDForAdmin = async (req: Request, res: Response) => {
+        const { email }: dto.FindIDAdminReqDTO = req.body;
+
+        try {
+            // domain 확인
+            {
+                const prefix = email.split("@")[1]
+                if ("corelinesoft.com" !== prefix && "corelinesoft.co.kr" !== prefix) {
+                    throw ErrInvalidArgument;
+                }
+            }
+
+            const id = await this.anonymouseService.findLoginID(email)
+            if (!id || id.length === 0) {
+                throw ErrNotFound
+            }
+
+
+            await sendIDMail(email, id);
+
+            // 유효기간 5분
+            // 해당 아이디 찾기 API는 5분마다 전송이 가능하다.
+            // this.redis.set(email, code, "EX", 300);
+
+            sendJSONResponse(res, "success send email", true);
+        } catch (err: any) {
+            throw handleError(err);
+        }
+    }
 
     // refresh token 발급 - only controller layer
     refresh = async (req: Request, res: Response) => {

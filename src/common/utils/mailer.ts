@@ -12,12 +12,32 @@ let transporter = nodeMailer.createTransport({
         pass: process.env.MAIL_PASSWORD,
     },
 });
-
-export const sendMail = async (userEmail: string, code: string) => {
+export const sendIDMail = async (userEmail: string, id: string) => {
     let emailTemplate;
 
     // ejs render할 때 상대경로를 인식하지 못함.
-    const absolutePath = path.join(__dirname, 'registerVerify.ejs');
+    const absolutePath = path.join(__dirname, '/email-template/findID.ejs');
+    ejs.renderFile(absolutePath, { email: userEmail, id: id }, (err, data) => { //ejs mapping
+        if (err) {
+            console.error(err)
+        }
+        emailTemplate = data;
+    });
+
+    let info = await transporter.sendMail({
+        from: `코어실록 아이디 찾기 결과`,
+        to: userEmail,
+        subject: '코어실록 아이디 결과 메일입니다.',
+        html: emailTemplate,
+    });
+    return info
+}
+
+export const sendSignUpMail = async (userEmail: string, code: string) => {
+    let emailTemplate;
+
+    // ejs render할 때 상대경로를 인식하지 못함.
+    const absolutePath = path.join(__dirname, '/email-template/signUp.ejs');
     ejs.renderFile(absolutePath, { email: userEmail, code: code }, (err, data) => { //ejs mapping
         if (err) {
             console.error(err)

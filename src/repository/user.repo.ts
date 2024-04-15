@@ -39,6 +39,18 @@ export default class UserRepo {
         });
     };
 
+    getUserByUsername = async (username: string) => {
+        return await User.findOne({
+            where: {
+                username: username,
+            },
+        });
+    }
+
+    getAllUsers = async () => {
+        return await User.findAll();
+    }
+
     deleteUser = async (id: any) => {
         return await User.destroy({
             where: {
