@@ -46,17 +46,27 @@ export class LoginResDTO {
     refreshToken!: string;
 }
 
-export class EmailReqDTO {
+export class SendIDReqDTO {
+    @IsEmail()
+    @IsNotEmpty()
+    email!: string
+
     @IsString()
+    @IsNotEmpty()
+    username!: string
+}
+
+export class EmailReqDTO {
+    @IsEmail()
     @IsNotEmpty()
     email!: string
 }
 
 export class CheckEmailReqDTO {
-    @IsString()
+    @IsEmail()
     @IsNotEmpty()
     email!: string
-    
+
     @IsString()
     @IsNotEmpty()
     code!: string
