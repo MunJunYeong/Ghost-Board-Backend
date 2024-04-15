@@ -46,7 +46,7 @@ export class LoginResDTO {
     refreshToken!: string;
 }
 
-export class FindIDReqDTO {
+export class SendIDReqDTO {
     @IsEmail()
     @IsNotEmpty()
     email!: string

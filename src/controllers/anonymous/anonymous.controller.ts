@@ -105,12 +105,8 @@ export default class AnonymousController {
         }
     };
 
-    /*
-    사용자 ID 찾기 API
-    404 error - wrong username
-    401 error - wrong email (correct username)
-    */
-    findUserLoginID = async (req: Request, res: Response) => {
+    // 사용자의 Email로 회원가입한 복수의 로그인 정보
+    findUserLoginIDList = async (req: Request, res: Response) => {
         const { email }: dto.EmailReqDTO = req.body;
 
         try {
@@ -124,6 +120,32 @@ export default class AnonymousController {
 
             const result = await this.anonymouseService.findLoginID(email)
             sendJSONResponse(res, "success send email", result);
+        } catch (err: any) {
+            throw handleError(err);
+        }
+    }
+
+    /*
+    특정 사용자 ID를 이메일 전송
+    404 error - wrong username
+    401 error - wrong email (correct username)
+    */
+    sendUserLoginID = async (req: Request, res: Response) => {
+        const { email, username }: dto.SendIDReqDTO = req.body;
+
+        try {
+            // domain 확인
+            {
+                const prefix = email.split("@")[1]
+                if ("corelinesoft.com" !== prefix && "corelinesoft.co.kr" !== prefix) {
+                    throw ErrInvalidArgument;
+                }
+            }
+
+            const id = await this.anonymouseService.findLoginIDByUsername(email, username)
+            await sendIDMail(email, id)
+
+            sendJSONResponse(res, "success send email", true);
         } catch (err: any) {
             throw handleError(err);
         }

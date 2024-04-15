@@ -23,8 +23,10 @@ class AnonymousRoutes {
         this.router.post("/email", validationMiddleware(dto.EmailReqDTO), this.controller.sendEmail);
         this.router.post("/email:check", validationMiddleware(dto.CheckEmailReqDTO), this.controller.checkEmail);
 
-        // ID 찾기
-        this.router.post("/find-id", validationMiddleware(dto.EmailReqDTO), this.controller.findUserLoginID);
+        // Email로 회원가입한 모든 정보
+        this.router.post("/find-id", validationMiddleware(dto.EmailReqDTO), this.controller.findUserLoginIDList);
+        // Email, username으로 회원가입한 정확한 ID 정보를 Email 전송
+        this.router.post("/find-id:send", validationMiddleware(dto.SendIDReqDTO), this.controller.sendUserLoginID);
     }
 }
 
