@@ -17,12 +17,14 @@ export default class AnonymousService {
         let u = convSignupToUser(userDTO);
 
         // userID / email duplicate check
+        u.email = await hashing(u.email);
         if ((await this.userRepo.getUserByID(u.id)) || (await this.userRepo.getUserByEmail(u.email))) {
             throw ErrAlreadyExist;
         }
 
         // encryption password
         u.password = await hashing(u.password);
+
         u = await this.userRepo.createUser(u);
 
         const user = createUserResponse(u);

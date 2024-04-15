@@ -1,7 +1,7 @@
 import User from "@models/user";
 
 export default class UserRepo {
-    constructor() {}
+    constructor() { }
 
     createUser = async (user: User) => {
         // TODO: 왜 model로 삽입 시 안되는지 추후에 해결해보기

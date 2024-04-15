@@ -31,6 +31,7 @@ export default class AnonymousController {
             }
 
             const u = await this.anonymouseService.signup(body);
+            await this.redis.del(body.email)
 
             sendJSONResponse(res, "success signup", u);
         } catch (err: any) {
