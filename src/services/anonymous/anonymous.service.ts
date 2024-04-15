@@ -17,14 +17,14 @@ export default class AnonymousService {
     signup = async (userDTO: dto.SignupReqDTO) => {
         let u = convSignupToUser(userDTO);
 
-        // userID / email duplicate check
-        u.email = await hashing(u.email);
-        if ((await this.userRepo.getUserByID(u.id)) || (await this.userRepo.getUserByEmail(u.email))) {
+        // duplicate userID check
+        if (await this.userRepo.getUserByID(u.id)) {
             throw ErrAlreadyExist;
         }
 
         // encryption password
         u.password = await hashing(u.password);
+        u.email = await hashing(u.email);
 
         u = await this.userRepo.createUser(u);
 
@@ -66,14 +66,28 @@ export default class AnonymousService {
             throw ErrNotFound
         }
 
-        let targetID;
+        let matchedUserList = []
         for (const user of userList) {
             if (await compareHashedValue(email, user.email)) {
-                targetID = user.id;
+                matchedUserList.push({
+                    email: email,
+                    username: user.username,
+                    id: maskLastThreeCharacters(user.id)
+                })
                 break;
             }
         }
-        return targetID
+        return matchedUserList
+    }
+}
+
+function maskLastThreeCharacters(input: string): string {
+    if (input.length <= 3) {
+        return input.replace(/./g, '*'); // 문자열 전체를 '*'로 대체
     }
 
+    const visiblePart = input.substring(0, input.length - 3); // 마지막 3개를 제외한 문자열
+    const maskedPart = input.substring(input.length - 3).replace(/./g, '*'); // 마지막 3개를 '*'로 대체
+
+    return visiblePart + maskedPart;
 }

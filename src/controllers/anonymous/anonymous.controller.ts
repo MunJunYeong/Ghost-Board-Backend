@@ -67,8 +67,6 @@ export default class AnonymousController {
                     throw ErrInvalidArgument;
                 }
             }
-
-
             const code = crypto.randomBytes(3).toString('hex');
 
             await sendSignUpMail(email, code);
@@ -113,7 +111,7 @@ export default class AnonymousController {
     401 error - wrong email (correct username)
     */
     findUserLoginID = async (req: Request, res: Response) => {
-        const { email, username }: dto.FindIDReqDTO = req.body;
+        const { email }: dto.EmailReqDTO = req.body;
 
         try {
             // domain 확인
@@ -124,44 +122,8 @@ export default class AnonymousController {
                 }
             }
 
-            const id = await this.anonymouseService.findLoginIDByUsername(email, username)
-            await sendIDMail(email, id);
-
-            // 유효기간 5분
-            // 해당 아이디 찾기 API는 5분마다 전송이 가능하다.
-            // this.redis.set(email, code, "EX", 300);
-
-            sendJSONResponse(res, "success send email", true);
-        } catch (err: any) {
-            throw handleError(err);
-        }
-    }
-
-    findUserLoginIDForAdmin = async (req: Request, res: Response) => {
-        const { email }: dto.FindIDAdminReqDTO = req.body;
-
-        try {
-            // domain 확인
-            {
-                const prefix = email.split("@")[1]
-                if ("corelinesoft.com" !== prefix && "corelinesoft.co.kr" !== prefix) {
-                    throw ErrInvalidArgument;
-                }
-            }
-
-            const id = await this.anonymouseService.findLoginID(email)
-            if (!id || id.length === 0) {
-                throw ErrNotFound
-            }
-
-
-            await sendIDMail(email, id);
-
-            // 유효기간 5분
-            // 해당 아이디 찾기 API는 5분마다 전송이 가능하다.
-            // this.redis.set(email, code, "EX", 300);
-
-            sendJSONResponse(res, "success send email", true);
+            const result = await this.anonymouseService.findLoginID(email)
+            sendJSONResponse(res, "success send email", result);
         } catch (err: any) {
             throw handleError(err);
         }

@@ -56,11 +56,6 @@ export class FindIDReqDTO {
     username!: string
 }
 
-export class FindIDAdminReqDTO {
-    @IsEmail()
-    @IsNotEmpty()
-    email!: string
-}
 export class EmailReqDTO {
     @IsEmail()
     @IsNotEmpty()
