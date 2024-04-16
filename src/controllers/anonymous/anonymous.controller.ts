@@ -21,11 +21,29 @@ export default class AnonymousController {
         this.anonymouseService = new AnonymousService();
     }
 
+    private combinedSignup = (email: string) => {
+        const prefix = "signup_"
+        return prefix.concat(email)
+    }
+
+    private combinedPassword = (email: string) => {
+        const prefix = "password_"
+        return prefix.concat(email)
+    }
+
+    private isCorelineDomain = (email: string) => {
+        const prefix = email.split("@")[1]
+        if ("corelinesoft.com" !== prefix && "corelinesoft.co.kr" !== prefix) {
+            return false;
+        }
+        return true;
+    }
+
     // 회원가입
     signup = async (req: Request, res: Response) => {
         const body: dto.SignupReqDTO = req.body;
         try {
-            const isValidEmail = await this.redis.get(body.email)
+            const isValidEmail = await this.redis.get(this.combinedSignup(body.email))
             if (isValidEmail != "true") {
                 throw ErrUnauthorized
             }
@@ -61,18 +79,15 @@ export default class AnonymousController {
 
         try {
             // domain 확인
-            {
-                const prefix = email.split("@")[1]
-                if ("corelinesoft.com" !== prefix && "corelinesoft.co.kr" !== prefix) {
-                    throw ErrInvalidArgument;
-                }
+            if (!this.isCorelineDomain(email)) {
+                throw ErrInvalidArgument;
             }
             const code = crypto.randomBytes(3).toString('hex');
 
             await sendSignUpMail(email, code);
 
             // 유효기간 5분
-            this.redis.set(email, code, "EX", 300);
+            this.redis.set(this.combinedSignup(email), code, "EX", 300);
 
             sendJSONResponse(res, "success send email", true);
         } catch (err: any) {
@@ -81,24 +96,20 @@ export default class AnonymousController {
     };
 
     checkEmail = async (req: Request, res: Response) => {
-        const emailBody: dto.CheckEmailReqDTO = req.body;
+        const { email, code }: dto.CheckEmailReqDTO = req.body;
 
         try {
-            // domain 확인
-            {
-                const prefix = emailBody.email.split("@")[1]
-                if ("corelinesoft.com" !== prefix && "corelinesoft.co.kr" !== prefix) {
-                    throw ErrInvalidArgument;
-                }
+            if (!this.isCorelineDomain(email)) {
+                throw ErrInvalidArgument;
             }
 
-            const savedCode = await this.redis.get(emailBody.email);
-            if (savedCode !== emailBody.code) {
+            const savedCode = await this.redis.get(this.combinedSignup(email));
+            if (savedCode !== code) {
                 throw ErrNotFound;
             }
 
             // 유효기간 30분
-            this.redis.set(emailBody.email, "true", "EX", 1800);
+            this.redis.set(email, "true", "EX", 1800);
             sendJSONResponse(res, "success check email", true);
         } catch (err: any) {
             throw handleError(err);
@@ -111,11 +122,8 @@ export default class AnonymousController {
 
         try {
             // domain 확인
-            {
-                const prefix = email.split("@")[1]
-                if ("corelinesoft.com" !== prefix && "corelinesoft.co.kr" !== prefix) {
-                    throw ErrInvalidArgument;
-                }
+            if (!this.isCorelineDomain(email)) {
+                throw ErrInvalidArgument;
             }
 
             const result = await this.anonymouseService.findLoginID(email)
