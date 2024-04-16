@@ -143,17 +143,51 @@ export default class AnonymousController {
 
         try {
             // domain 확인
-            {
-                const prefix = email.split("@")[1]
-                if ("corelinesoft.com" !== prefix && "corelinesoft.co.kr" !== prefix) {
-                    throw ErrInvalidArgument;
-                }
+            if (!this.isCorelineDomain(email)) {
+                throw ErrInvalidArgument;
             }
 
             const id = await this.anonymouseService.findLoginIDByUsername(email, username)
             await sendIDMail(email, id)
 
             sendJSONResponse(res, "success send email", true);
+        } catch (err: any) {
+            throw handleError(err);
+        }
+    }
+
+    changePassword = async (req: Request, res: Response) => {
+        const { username, password }: dto.ChangePasswordReqDTO = req.body;
+
+        try {
+
+        } catch (err: any) {
+            throw handleError(err);
+        }
+
+    }
+    sendEmailForPassword = async (req: Request, res: Response) => {
+        const { email }: dto.EmailReqDTO = req.body;
+
+        try {
+            // domain 확인
+            if (!this.isCorelineDomain(email)) {
+                throw ErrInvalidArgument;
+            }
+        } catch (err: any) {
+            throw handleError(err);
+        }
+
+    }
+    checkEmailForPassword = async (req: Request, res: Response) => {
+        const { email, code }: dto.CheckEmailReqDTO = req.body;
+
+        try {
+            // domain 확인
+            if (!this.isCorelineDomain(email)) {
+                throw ErrInvalidArgument;
+            }
+
         } catch (err: any) {
             throw handleError(err);
         }
