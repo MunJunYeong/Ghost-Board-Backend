@@ -9,11 +9,12 @@ import BadRequestError from "@errors/bad_request";
 import { ErrInvalidArgument, ErrNotFound, ErrUnauthorized, handleError } from "@errors/handler";
 import { issueAccessToken, verifyAccessToken, verifyRefreshToken } from "@utils/jwt";
 import { sendJSONResponse } from "@utils/response";
-import { sendIDMail, sendSignUpMail } from "@utils/mailer";
+import { sendIDMail, sendPasswordMail, sendSignUpMail } from "@utils/mailer";
 
 export default class AnonymousController {
     private redis: Redis;
     private anonymouseService: AnonymousService;
+    private canSignUp = "true";
 
     constructor() {
         this.redis = RedisClient.getInstance();
@@ -21,35 +22,41 @@ export default class AnonymousController {
         this.anonymouseService = new AnonymousService();
     }
 
+    private createCode = () => {
+        return crypto.randomBytes(3).toString("hex");
+    };
+
     private combinedSignup = (email: string) => {
-        const prefix = "signup_"
-        return prefix.concat(email)
-    }
+        const prefix = "signup_";
+        return prefix.concat(email);
+    };
 
     private combinedPassword = (email: string) => {
-        const prefix = "password_"
-        return prefix.concat(email)
-    }
+        const prefix = "password_";
+        return prefix.concat(email);
+    };
 
     private isCorelineDomain = (email: string) => {
-        const prefix = email.split("@")[1]
+        const prefix = email.split("@")[1];
         if ("corelinesoft.com" !== prefix && "corelinesoft.co.kr" !== prefix) {
             return false;
         }
         return true;
-    }
+    };
 
     // 회원가입
     signup = async (req: Request, res: Response) => {
         const body: dto.SignupReqDTO = req.body;
         try {
-            const isValidEmail = await this.redis.get(this.combinedSignup(body.email))
-            if (isValidEmail != "true") {
-                throw ErrUnauthorized
+            const isValidEmail = await this.redis.get(this.combinedSignup(body.email));
+            if (isValidEmail != this.canSignUp) {
+                throw ErrUnauthorized;
             }
 
             const u = await this.anonymouseService.signup(body);
-            await this.redis.del(body.email)
+
+            // delete email in redis
+            await this.redis.del(this.combinedSignup(body.email));
 
             sendJSONResponse(res, "success signup", u);
         } catch (err: any) {
@@ -65,7 +72,7 @@ export default class AnonymousController {
             const result = await this.anonymouseService.login(loginBody);
 
             // 유효기간 : 14일 - jwt.ts 파일의 refresh token `expiresIn` 값과 일치해야 함.
-            this.redis.set(loginBody.id, result.refreshToken, 'EX', 14 * 24 * 60 * 60);
+            this.redis.set(loginBody.id, result.refreshToken, "EX", 14 * 24 * 60 * 60);
 
             sendJSONResponse(res, "success login", result);
         } catch (err: any) {
@@ -82,11 +89,11 @@ export default class AnonymousController {
             if (!this.isCorelineDomain(email)) {
                 throw ErrInvalidArgument;
             }
-            const code = crypto.randomBytes(3).toString('hex');
-
+            // 인증 코드 생성
+            const code = this.createCode();
             await sendSignUpMail(email, code);
 
-            // 유효기간 5분
+            // save email in redis - 유효기간 5분
             this.redis.set(this.combinedSignup(email), code, "EX", 300);
 
             sendJSONResponse(res, "success send email", true);
@@ -108,8 +115,8 @@ export default class AnonymousController {
                 throw ErrNotFound;
             }
 
-            // 유효기간 30분
-            this.redis.set(email, "true", "EX", 1800);
+            // update email in redis - 유효기간 30분
+            this.redis.set(this.combinedSignup(email), this.canSignUp, "EX", 1800);
             sendJSONResponse(res, "success check email", true);
         } catch (err: any) {
             throw handleError(err);
@@ -126,12 +133,12 @@ export default class AnonymousController {
                 throw ErrInvalidArgument;
             }
 
-            const result = await this.anonymouseService.findLoginID(email)
+            const result = await this.anonymouseService.findLoginID(email);
             sendJSONResponse(res, "success send email", result);
         } catch (err: any) {
             throw handleError(err);
         }
-    }
+    };
 
     /*
     특정 사용자 ID를 이메일 전송
@@ -147,25 +154,25 @@ export default class AnonymousController {
                 throw ErrInvalidArgument;
             }
 
-            const id = await this.anonymouseService.findLoginIDByUsername(email, username)
-            await sendIDMail(email, id)
+            const id = await this.anonymouseService.findLoginIDByUsername(email, username);
+            await sendIDMail(email, id);
 
             sendJSONResponse(res, "success send email", true);
         } catch (err: any) {
             throw handleError(err);
         }
-    }
+    };
 
     changePassword = async (req: Request, res: Response) => {
         const { username, password }: dto.ChangePasswordReqDTO = req.body;
 
         try {
-
         } catch (err: any) {
             throw handleError(err);
         }
+    };
 
-    }
+    // 비밀번호 재설정을 위한 이메일 전송
     sendEmailForPassword = async (req: Request, res: Response) => {
         const { email }: dto.EmailReqDTO = req.body;
 
@@ -174,11 +181,19 @@ export default class AnonymousController {
             if (!this.isCorelineDomain(email)) {
                 throw ErrInvalidArgument;
             }
+
+            const code = this.createCode();
+            await sendPasswordMail(email, code);
+
+            // save email in redis - 유효기간 5분
+            this.redis.set(this.combinedPassword(email), code, "EX", 300);
+
+            sendJSONResponse(res, "success send email", true);
         } catch (err: any) {
             throw handleError(err);
         }
+    };
 
-    }
     checkEmailForPassword = async (req: Request, res: Response) => {
         const { email, code }: dto.CheckEmailReqDTO = req.body;
 
@@ -188,10 +203,18 @@ export default class AnonymousController {
                 throw ErrInvalidArgument;
             }
 
+            const savedCode = await this.redis.get(this.combinedPassword(email));
+            if (savedCode !== code) {
+                throw ErrNotFound;
+            }
+
+            // update email in redis - 유효기간 30분
+            this.redis.set(this.combinedSignup(email), this.canSignUp, "EX", 1800);
+            sendJSONResponse(res, "success check email", true);
         } catch (err: any) {
             throw handleError(err);
         }
-    }
+    };
 
     // refresh token 발급 - only controller layer
     refresh = async (req: Request, res: Response) => {
