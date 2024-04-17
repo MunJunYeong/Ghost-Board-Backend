@@ -49,35 +49,39 @@ export class LoginResDTO {
 export class SendIDReqDTO {
     @IsEmail()
     @IsNotEmpty()
-    email!: string
+    email!: string;
 
     @IsString()
     @IsNotEmpty()
-    username!: string
+    username!: string;
 }
 
 export class EmailReqDTO {
     @IsEmail()
     @IsNotEmpty()
-    email!: string
+    email!: string;
 }
 
 export class CheckEmailReqDTO {
     @IsEmail()
     @IsNotEmpty()
-    email!: string
+    email!: string;
 
     @IsString()
     @IsNotEmpty()
-    code!: string
+    code!: string;
 }
 
 export class ChangePasswordReqDTO {
     @IsString()
     @IsNotEmpty()
-    username!: string
+    username!: string;
+
+    @IsEmail()
+    @IsNotEmpty()
+    email!: string;
 
     @IsString()
     @IsNotEmpty()
-    password!: string
+    password!: string;
 }

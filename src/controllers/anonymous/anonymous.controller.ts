@@ -48,6 +48,11 @@ export default class AnonymousController {
     signup = async (req: Request, res: Response) => {
         const body: dto.SignupReqDTO = req.body;
         try {
+            // domain 확인
+            if (!this.isCorelineDomain(body.email)) {
+                throw ErrInvalidArgument;
+            }
+            // email 인증이 된 올바른 request인지 확인
             const isValidEmail = await this.redis.get(this.combinedSignup(body.email));
             if (isValidEmail != this.canSignUp) {
                 throw ErrUnauthorized;
@@ -164,9 +169,26 @@ export default class AnonymousController {
     };
 
     changePassword = async (req: Request, res: Response) => {
-        const { username, password }: dto.ChangePasswordReqDTO = req.body;
+        const { username, email, password }: dto.ChangePasswordReqDTO = req.body;
 
         try {
+            // domain 확인
+            if (!this.isCorelineDomain(email)) {
+                throw ErrInvalidArgument;
+            }
+
+            // email 인증이 된 올바른 request인지 확인
+            const isValidEmail = await this.redis.get(this.combinedPassword(email));
+            if (isValidEmail != this.canSignUp) {
+                throw ErrUnauthorized;
+            }
+
+            // update password
+            await this.anonymouseService.changePassword(username, password);
+
+            // delete email in redis
+            await this.redis.del(this.combinedPassword(email));
+            sendJSONResponse(res, "success change password", true);
         } catch (err: any) {
             throw handleError(err);
         }
@@ -209,7 +231,7 @@ export default class AnonymousController {
             }
 
             // update email in redis - 유효기간 30분
-            this.redis.set(this.combinedSignup(email), this.canSignUp, "EX", 1800);
+            this.redis.set(this.combinedPassword(email), this.canSignUp, "EX", 1800);
             sendJSONResponse(res, "success check email", true);
         } catch (err: any) {
             throw handleError(err);
