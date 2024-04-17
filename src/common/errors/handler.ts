@@ -5,6 +5,7 @@ export const ErrInvalidArgument = new Error("invalid argument");
 export const ErrAlreadyExist = new Error("already exist");
 export const ErrNotFound = new Error("not found");
 export const ErrUnauthorized = new Error("Unauthorized");
+export const ErrTooManyRequest = new Error("too many request");
 
 export const isEqualNotFound = (err: any) => {
     if (err.message === ErrNotFound) {
@@ -25,6 +26,9 @@ export const handleError = (err: Error): BadRequestError | InternalError => {
     }
     if (err.message === ErrUnauthorized.message) {
         return new BadRequestError({ code: 401, error: err });
+    }
+    if (err.message === ErrTooManyRequest.message) {
+        return new BadRequestError({ code: 429, error: err });
     }
     // const로 정의된 error가 많아질 수록 추가되어야 함.
     return new InternalError({ error: err });
