@@ -6,7 +6,7 @@ import RedisClient, { Redis } from "@configs/redis";
 import AnonymousService from "@services/anonymous/anonymous.service";
 import InternalError from "@errors/internal_server";
 import BadRequestError from "@errors/bad_request";
-import { ErrInvalidArgument, ErrNotFound, ErrUnauthorized, handleError } from "@errors/handler";
+import { ErrInvalidArgument, ErrNotFound, ErrTooManyRequest, ErrUnauthorized, handleError } from "@errors/handler";
 import { issueAccessToken, verifyAccessToken, verifyRefreshToken } from "@utils/jwt";
 import { sendJSONResponse } from "@utils/response";
 import { sendIDMail, sendPasswordMail, sendSignUpMail } from "@utils/mailer";
@@ -94,6 +94,11 @@ export default class AnonymousController {
             if (!this.isCorelineDomain(email)) {
                 throw ErrInvalidArgument;
             }
+            // 5분에 한 번만 전송이 가능
+            if (await this.redis.get(this.combinedSignup(email))) {
+                throw ErrTooManyRequest;
+            }
+
             // 인증 코드 생성
             const code = this.createCode();
             await sendSignUpMail(email, code);
@@ -129,7 +134,7 @@ export default class AnonymousController {
     };
 
     // 사용자의 Email로 회원가입한 복수의 로그인 정보
-    findUserLoginIDList = async (req: Request, res: Response) => {
+    findUserAccountList = async (req: Request, res: Response) => {
         const { email }: dto.EmailReqDTO = req.body;
 
         try {
@@ -139,7 +144,7 @@ export default class AnonymousController {
             }
 
             const result = await this.anonymouseService.findLoginID(email);
-            sendJSONResponse(res, "success send email", result);
+            sendJSONResponse(res, "success find user account list", result);
         } catch (err: any) {
             throw handleError(err);
         }
@@ -202,6 +207,10 @@ export default class AnonymousController {
             // domain 확인
             if (!this.isCorelineDomain(email)) {
                 throw ErrInvalidArgument;
+            }
+            // 5분에 한 번만 전송이 가능
+            if (await this.redis.get(this.combinedPassword(email))) {
+                throw ErrTooManyRequest;
             }
 
             const code = this.createCode();

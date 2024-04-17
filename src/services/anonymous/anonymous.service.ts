@@ -78,7 +78,6 @@ export default class AnonymousService {
                     username: user.username,
                     id: maskLastThreeCharacters(user.id),
                 });
-                break;
             }
         }
         return matchedUserList;
