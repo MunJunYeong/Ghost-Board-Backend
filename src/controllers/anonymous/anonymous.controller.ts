@@ -6,7 +6,14 @@ import RedisClient, { Redis } from "@configs/redis";
 import AnonymousService from "@services/anonymous/anonymous.service";
 import InternalError from "@errors/internal_server";
 import BadRequestError from "@errors/bad_request";
-import { ErrInvalidArgument, ErrNotFound, ErrTooManyRequest, ErrUnauthorized, handleError } from "@errors/handler";
+import {
+    ErrAlreadyExist,
+    ErrInvalidArgument,
+    ErrNotFound,
+    ErrTooManyRequest,
+    ErrUnauthorized,
+    handleError,
+} from "@errors/handler";
 import { issueAccessToken, verifyAccessToken, verifyRefreshToken } from "@utils/jwt";
 import { sendJSONResponse } from "@utils/response";
 import { sendIDMail, sendPasswordMail, sendSignUpMail } from "@utils/mailer";
@@ -86,7 +93,7 @@ export default class AnonymousController {
     };
 
     // 이메일 전송 - only controller layer
-    sendEmail = async (req: Request, res: Response) => {
+    sendEmailForSignup = async (req: Request, res: Response) => {
         const { email }: dto.EmailReqDTO = req.body;
 
         try {
@@ -94,9 +101,15 @@ export default class AnonymousController {
             if (!this.isCorelineDomain(email)) {
                 throw ErrInvalidArgument;
             }
+
             // 5분에 한 번만 전송이 가능
             if (await this.redis.get(this.combinedSignup(email))) {
                 throw ErrTooManyRequest;
+            }
+
+            // 이미 회원가입된 ID인지 확인이 필요
+            if (await this.anonymouseService.findUserByEmail(email)) {
+                throw ErrAlreadyExist;
             }
 
             // 인증 코드 생성
@@ -112,7 +125,7 @@ export default class AnonymousController {
         }
     };
 
-    checkEmail = async (req: Request, res: Response) => {
+    checkEmailForSignup = async (req: Request, res: Response) => {
         const { email, code }: dto.CheckEmailReqDTO = req.body;
 
         try {
@@ -134,7 +147,7 @@ export default class AnonymousController {
     };
 
     // 사용자의 Email로 회원가입한 복수의 로그인 정보
-    findUserAccountList = async (req: Request, res: Response) => {
+    findMaskingUser = async (req: Request, res: Response) => {
         const { email }: dto.EmailReqDTO = req.body;
 
         try {
@@ -143,7 +156,11 @@ export default class AnonymousController {
                 throw ErrInvalidArgument;
             }
 
-            const result = await this.anonymouseService.findLoginID(email);
+            const result = await this.anonymouseService.findUserByEmail(email);
+            if (!result) {
+                throw ErrNotFound;
+            }
+            result.id = maskLastThreeCharacters(result.id);
             sendJSONResponse(res, "success find user account list", result);
         } catch (err: any) {
             throw handleError(err);
@@ -155,7 +172,7 @@ export default class AnonymousController {
     404 error - wrong username
     401 error - wrong email (correct username)
     */
-    sendUserLoginID = async (req: Request, res: Response) => {
+    sendExactUserID = async (req: Request, res: Response) => {
         const { email, username }: dto.SendIDReqDTO = req.body;
 
         try {
@@ -164,8 +181,8 @@ export default class AnonymousController {
                 throw ErrInvalidArgument;
             }
 
-            const id = await this.anonymouseService.findLoginIDByUsername(email, username);
-            await sendIDMail(email, id);
+            const user = await this.anonymouseService.findUserByEmailUsername(email, username);
+            await sendIDMail(email, user.id);
 
             sendJSONResponse(res, "success send email", true);
         } catch (err: any) {
@@ -289,4 +306,15 @@ export default class AnonymousController {
             throw handleError(err);
         }
     };
+}
+
+function maskLastThreeCharacters(input: string): string {
+    if (input.length <= 3) {
+        return input.replace(/./g, "*"); // 문자열 전체를 '*'로 대체
+    }
+
+    const visiblePart = input.substring(0, input.length - 3); // 마지막 3개를 제외한 문자열
+    const maskedPart = input.substring(input.length - 3).replace(/./g, "*"); // 마지막 3개를 '*'로 대체
+
+    return visiblePart + maskedPart;
 }

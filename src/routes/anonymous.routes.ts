@@ -14,17 +14,17 @@ class AnonymousRoutes {
 
     initializeRoutes() {
         this.router.post("/signup", validationMiddleware(dto.SignupReqDTO), this.controller.signup);
-        this.router.post("/signup/send-email", validationMiddleware(dto.EmailReqDTO), this.controller.sendEmail);
-        this.router.post("/signup/check-email", validationMiddleware(dto.CheckEmailReqDTO), this.controller.checkEmail);
+        this.router.post("/signup/send-email", validationMiddleware(dto.EmailReqDTO), this.controller.sendEmailForSignup);
+        this.router.post("/signup/check-email", validationMiddleware(dto.CheckEmailReqDTO), this.controller.checkEmailForSignup);
 
         this.router.post("/login", validationMiddleware(dto.LoginReqDTO), this.controller.login);
 
         this.router.post("/refresh", this.controller.refresh);
 
-        // Email로 회원가입한 모든 정보 찾기 - ID 찾기 용
-        this.router.post("/find-id", validationMiddleware(dto.EmailReqDTO), this.controller.findUserAccountList);
+        // Email로 회원가입한 정보 찾기 - ID 찾기 용
+        this.router.post("/find-id", validationMiddleware(dto.EmailReqDTO), this.controller.findMaskingUser);
         // Email, username으로 회원가입한 정확한 ID 정보를 Email 전송 - ID 찾기 용
-        this.router.post("/find-id/send-email", validationMiddleware(dto.SendIDReqDTO), this.controller.sendUserLoginID);
+        this.router.post("/find-id/send-email", validationMiddleware(dto.SendIDReqDTO), this.controller.sendExactUserID);
 
         // Change password
         this.router.post("/change-password", validationMiddleware(dto.ChangePasswordReqDTO), this.controller.changePassword);
