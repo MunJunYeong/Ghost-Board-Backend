@@ -5,7 +5,6 @@ import { convSignupToUser } from "./anonymous.conv";
 import { ErrAlreadyExist, ErrNotFound, ErrUnauthorized } from "@errors/handler";
 import { compareHashedValue, hashing } from "@utils/encryption";
 import { createUserResponse } from "@services/user/user.conv";
-import User from "@models/user";
 import { logger } from "@configs/logger";
 
 export default class AnonymousService {
@@ -50,8 +49,18 @@ export default class AnonymousService {
         return result;
     };
 
-    // user의 PK ID가 아닌 로그인 ID를 의미함
-    findLoginIDByUsername = async (email: string, username: string) => {
+    // find user by email
+    findUserByEmail = async (email: string) => {
+        const userList = await this.userRepo.getAllUsers();
+        for (const user of userList) {
+            if (await compareHashedValue(email, user.email)) {
+                return user;
+            }
+        }
+    };
+
+    // find user by email & username
+    findUserByEmailUsername = async (email: string, username: string) => {
         const user = await this.userRepo.getUserByUsername(username);
         if (!user) {
             logger.error("cant find user by username");
@@ -60,27 +69,11 @@ export default class AnonymousService {
         if (!(await compareHashedValue(email, user.email))) {
             throw ErrUnauthorized;
         }
-        return user.id;
+        return user;
     };
 
-    findLoginID = async (email: string) => {
-        const userList = await this.userRepo.getAllUsers();
-        if (userList.length < 1) {
-            logger.error("cant find all user");
-            throw ErrNotFound;
-        }
-
-        let matchedUserList = [];
-        for (const user of userList) {
-            if (await compareHashedValue(email, user.email)) {
-                matchedUserList.push({
-                    email: email,
-                    username: user.username,
-                    id: maskLastThreeCharacters(user.id),
-                });
-            }
-        }
-        return matchedUserList;
+    findUserByUsername = async (username: string) => {
+        return await this.userRepo.getUserByUsername(username);
     };
 
     changePassword = async (username: string, password: string) => {
@@ -96,15 +89,4 @@ export default class AnonymousService {
         // update user
         await this.userRepo.updateUser(user);
     };
-}
-
-function maskLastThreeCharacters(input: string): string {
-    if (input.length <= 3) {
-        return input.replace(/./g, "*"); // 문자열 전체를 '*'로 대체
-    }
-
-    const visiblePart = input.substring(0, input.length - 3); // 마지막 3개를 제외한 문자열
-    const maskedPart = input.substring(input.length - 3).replace(/./g, "*"); // 마지막 3개를 '*'로 대체
-
-    return visiblePart + maskedPart;
 }

@@ -1,4 +1,4 @@
-import { comparePassword, hashing } from "@utils/encryption";
+import { compareHashedValue, hashing } from "@utils/encryption";
 
 describe("encryption util", () => {
     let pwd = "test1234";
@@ -10,14 +10,14 @@ describe("encryption util", () => {
             expect(hashedPwd).not.toEqual(pwd);
         });
         test("compared", async () => {
-            const isEqual = await comparePassword(pwd, hashedPwd);
+            const isEqual = await compareHashedValue(pwd, hashedPwd);
             expect(isEqual).toEqual(true);
         });
     });
     describe("Exception", () => {
         test("not matched password", async () => {
             const wrongPwd = "wrongpassword";
-            const isEqual = await comparePassword(wrongPwd, hashedPwd);
+            const isEqual = await compareHashedValue(wrongPwd, hashedPwd);
             expect(isEqual).toEqual(false);
         });
     });

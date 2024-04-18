@@ -72,6 +72,12 @@ export class CheckEmailReqDTO {
     code!: string;
 }
 
+export class CheckUsernameReqDTO {
+    @IsString()
+    @IsNotEmpty()
+    username!: string;
+}
+
 export class ChangePasswordReqDTO {
     @IsString()
     @IsNotEmpty()

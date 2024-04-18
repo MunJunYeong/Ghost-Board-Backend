@@ -1,15 +1,24 @@
 import { Request, Response } from "express";
-import crypto from "crypto";
 
-import * as dto from "@controllers/anonymous/dto/anonymous.dto";
+import { logger } from "@configs/logger";
 import RedisClient, { Redis } from "@configs/redis";
-import AnonymousService from "@services/anonymous/anonymous.service";
 import InternalError from "@errors/internal_server";
 import BadRequestError from "@errors/bad_request";
-import { ErrInvalidArgument, ErrNotFound, ErrTooManyRequest, ErrUnauthorized, handleError } from "@errors/handler";
+import {
+    ErrAlreadyExist,
+    ErrInvalidArgument,
+    ErrNotFound,
+    ErrTooManyRequest,
+    ErrUnauthorized,
+    handleError,
+} from "@errors/handler";
 import { issueAccessToken, verifyAccessToken, verifyRefreshToken } from "@utils/jwt";
 import { sendJSONResponse } from "@utils/response";
 import { sendIDMail, sendPasswordMail, sendSignUpMail } from "@utils/mailer";
+import { createCode } from "@utils/crypto";
+
+import * as dto from "@controllers/anonymous/dto/anonymous.dto";
+import AnonymousService from "@services/anonymous/anonymous.service";
 
 export default class AnonymousController {
     private redis: Redis;
@@ -21,10 +30,6 @@ export default class AnonymousController {
 
         this.anonymouseService = new AnonymousService();
     }
-
-    private createCode = () => {
-        return crypto.randomBytes(3).toString("hex");
-    };
 
     private combinedSignup = (email: string) => {
         const prefix = "signup_";
@@ -55,6 +60,14 @@ export default class AnonymousController {
             // email 인증이 된 올바른 request인지 확인
             const isValidEmail = await this.redis.get(this.combinedSignup(body.email));
             if (isValidEmail != this.canSignUp) {
+                logger.error("not validate email info for signup");
+                throw ErrUnauthorized;
+            }
+
+            // username 중복 인증이 된 올바른 request인지 확인
+            const isValidUsername = await this.redis.get(this.combinedSignup(body.username));
+            if (isValidUsername != this.canSignUp) {
+                logger.error("not validate username info for signup");
                 throw ErrUnauthorized;
             }
 
@@ -62,6 +75,7 @@ export default class AnonymousController {
 
             // delete email in redis
             await this.redis.del(this.combinedSignup(body.email));
+            await this.redis.del(this.combinedSignup(body.username));
 
             sendJSONResponse(res, "success signup", u);
         } catch (err: any) {
@@ -85,8 +99,8 @@ export default class AnonymousController {
         }
     };
 
-    // 이메일 전송 - only controller layer
-    sendEmail = async (req: Request, res: Response) => {
+    // 이메일 전송 - only controller layer, 이메일 중복 여부도 판단함.
+    sendEmailForSignup = async (req: Request, res: Response) => {
         const { email }: dto.EmailReqDTO = req.body;
 
         try {
@@ -94,17 +108,23 @@ export default class AnonymousController {
             if (!this.isCorelineDomain(email)) {
                 throw ErrInvalidArgument;
             }
+
             // 5분에 한 번만 전송이 가능
             if (await this.redis.get(this.combinedSignup(email))) {
                 throw ErrTooManyRequest;
             }
 
+            // 이미 회원가입된 ID인지 확인이 필요
+            if (await this.anonymouseService.findUserByEmail(email)) {
+                throw ErrAlreadyExist;
+            }
+
             // 인증 코드 생성
-            const code = this.createCode();
+            const code = createCode();
             await sendSignUpMail(email, code);
 
             // save email in redis - 유효기간 5분
-            this.redis.set(this.combinedSignup(email), code, "EX", 300);
+            await this.redis.set(this.combinedSignup(email), code, "EX", 300);
 
             sendJSONResponse(res, "success send email", true);
         } catch (err: any) {
@@ -112,7 +132,7 @@ export default class AnonymousController {
         }
     };
 
-    checkEmail = async (req: Request, res: Response) => {
+    checkEmailForSignup = async (req: Request, res: Response) => {
         const { email, code }: dto.CheckEmailReqDTO = req.body;
 
         try {
@@ -121,21 +141,44 @@ export default class AnonymousController {
             }
 
             const savedCode = await this.redis.get(this.combinedSignup(email));
-            if (savedCode !== code) {
+            if (!savedCode || savedCode !== code) {
                 throw ErrNotFound;
             }
 
             // update email in redis - 유효기간 30분
-            this.redis.set(this.combinedSignup(email), this.canSignUp, "EX", 1800);
+            await this.redis.set(this.combinedSignup(email), this.canSignUp, "EX", 1800);
             sendJSONResponse(res, "success check email", true);
         } catch (err: any) {
             throw handleError(err);
         }
     };
 
+    checkUsername = async (req: Request, res: Response) => {
+        const { username }: dto.CheckUsernameReqDTO = req.body;
+
+        try {
+            // 이전에 존재한지 확인했는지 여부 확인
+            if ((await this.redis.get(this.combinedSignup(username))) === this.canSignUp) {
+                return sendJSONResponse(res, `can signup this username - ${username} `, true);
+            }
+
+            // is exist user
+            if (await this.anonymouseService.findUserByUsername(username)) {
+                throw ErrAlreadyExist;
+            }
+
+            // 딱히 유효기간 없이 저장을 함. 회원가입 시점에서 삭제되지 않으면 해당 username은 유효
+            this.redis.set(this.combinedSignup(username), this.canSignUp);
+
+            return sendJSONResponse(res, `can signup this username - ${username} `, true);
+        } catch (err: any) {
+            throw handleError(err);
+        }
+    };
+
     // 사용자의 Email로 회원가입한 복수의 로그인 정보
-    findUserAccountList = async (req: Request, res: Response) => {
-        const { email }: dto.EmailReqDTO = req.body;
+    findMaskingUser = async (req: Request, res: Response) => {
+        const email = req.params.email;
 
         try {
             // domain 확인
@@ -143,7 +186,11 @@ export default class AnonymousController {
                 throw ErrInvalidArgument;
             }
 
-            const result = await this.anonymouseService.findLoginID(email);
+            const result = await this.anonymouseService.findUserByEmail(email);
+            if (!result) {
+                throw ErrNotFound;
+            }
+            result.id = maskLastThreeCharacters(result.id);
             sendJSONResponse(res, "success find user account list", result);
         } catch (err: any) {
             throw handleError(err);
@@ -155,7 +202,7 @@ export default class AnonymousController {
     404 error - wrong username
     401 error - wrong email (correct username)
     */
-    sendUserLoginID = async (req: Request, res: Response) => {
+    sendExactUserID = async (req: Request, res: Response) => {
         const { email, username }: dto.SendIDReqDTO = req.body;
 
         try {
@@ -164,8 +211,8 @@ export default class AnonymousController {
                 throw ErrInvalidArgument;
             }
 
-            const id = await this.anonymouseService.findLoginIDByUsername(email, username);
-            await sendIDMail(email, id);
+            const user = await this.anonymouseService.findUserByEmailUsername(email, username);
+            await sendIDMail(email, user.id);
 
             sendJSONResponse(res, "success send email", true);
         } catch (err: any) {
@@ -213,7 +260,7 @@ export default class AnonymousController {
                 throw ErrTooManyRequest;
             }
 
-            const code = this.createCode();
+            const code = createCode();
             await sendPasswordMail(email, code);
 
             // save email in redis - 유효기간 5분
@@ -289,4 +336,15 @@ export default class AnonymousController {
             throw handleError(err);
         }
     };
+}
+
+function maskLastThreeCharacters(input: string): string {
+    if (input.length <= 3) {
+        return input.replace(/./g, "*"); // 문자열 전체를 '*'로 대체
+    }
+
+    const visiblePart = input.substring(0, input.length - 3); // 마지막 3개를 제외한 문자열
+    const maskedPart = input.substring(input.length - 3).replace(/./g, "*"); // 마지막 3개를 '*'로 대체
+
+    return visiblePart + maskedPart;
 }
