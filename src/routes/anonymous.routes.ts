@@ -13,20 +13,23 @@ class AnonymousRoutes {
     }
 
     initializeRoutes() {
+        // 회원가입 API
         this.router.post("/signup", validationMiddleware(dto.SignupReqDTO), this.controller.signup);
         this.router.post("/signup/send-email", validationMiddleware(dto.EmailReqDTO), this.controller.sendEmailForSignup);
         this.router.post("/signup/check-email", validationMiddleware(dto.CheckEmailReqDTO), this.controller.checkEmailForSignup);
+        this.router.post("/signup/check-username", validationMiddleware(dto.CheckUsernameReqDTO), this.controller.checkUsername);
 
+        // 로그인  API
         this.router.post("/login", validationMiddleware(dto.LoginReqDTO), this.controller.login);
 
+        // Refresh token 발급 API
         this.router.post("/refresh", this.controller.refresh);
 
-        // Email로 회원가입한 정보 찾기 - ID 찾기 용
+        // ID 찾기 API
         this.router.post("/find-id", validationMiddleware(dto.EmailReqDTO), this.controller.findMaskingUser);
-        // Email, username으로 회원가입한 정확한 ID 정보를 Email 전송 - ID 찾기 용
         this.router.post("/find-id/send-email", validationMiddleware(dto.SendIDReqDTO), this.controller.sendExactUserID);
 
-        // Change password
+        // PW 재변경 API
         this.router.post("/change-password", validationMiddleware(dto.ChangePasswordReqDTO), this.controller.changePassword);
         this.router.post("/change-password/send-email", validationMiddleware(dto.EmailReqDTO), this.controller.sendEmailForPassword);
         this.router.post("/change-password/check-email", validationMiddleware(dto.CheckEmailReqDTO), this.controller.checkEmailForPassword);

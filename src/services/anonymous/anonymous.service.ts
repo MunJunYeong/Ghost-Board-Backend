@@ -72,6 +72,10 @@ export default class AnonymousService {
         return user;
     };
 
+    findUserByUsername = async (username: string) => {
+        return await this.userRepo.getUserByUsername(username);
+    };
+
     changePassword = async (username: string, password: string) => {
         let user = await this.userRepo.getUserByUsername(username);
         if (!user) {

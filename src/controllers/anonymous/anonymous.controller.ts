@@ -17,6 +17,7 @@ import {
 import { issueAccessToken, verifyAccessToken, verifyRefreshToken } from "@utils/jwt";
 import { sendJSONResponse } from "@utils/response";
 import { sendIDMail, sendPasswordMail, sendSignUpMail } from "@utils/mailer";
+import { logger } from "@configs/logger";
 
 export default class AnonymousController {
     private redis: Redis;
@@ -62,6 +63,14 @@ export default class AnonymousController {
             // email 인증이 된 올바른 request인지 확인
             const isValidEmail = await this.redis.get(this.combinedSignup(body.email));
             if (isValidEmail != this.canSignUp) {
+                logger.error("not validate email info for signup");
+                throw ErrUnauthorized;
+            }
+
+            // username 중복 인증이 된 올바른 request인지 확인
+            const isValidUsername = await this.redis.get(this.combinedSignup(body.username));
+            if (isValidUsername! + this.canSignUp) {
+                logger.error("not validate username info for signup");
                 throw ErrUnauthorized;
             }
 
@@ -69,6 +78,7 @@ export default class AnonymousController {
 
             // delete email in redis
             await this.redis.del(this.combinedSignup(body.email));
+            await this.redis.del(this.combinedSignup(body.username));
 
             sendJSONResponse(res, "success signup", u);
         } catch (err: any) {
@@ -92,7 +102,7 @@ export default class AnonymousController {
         }
     };
 
-    // 이메일 전송 - only controller layer
+    // 이메일 전송 - only controller layer, 이메일 중복 여부도 판단함.
     sendEmailForSignup = async (req: Request, res: Response) => {
         const { email }: dto.EmailReqDTO = req.body;
 
@@ -141,6 +151,29 @@ export default class AnonymousController {
             // update email in redis - 유효기간 30분
             this.redis.set(this.combinedSignup(email), this.canSignUp, "EX", 1800);
             sendJSONResponse(res, "success check email", true);
+        } catch (err: any) {
+            throw handleError(err);
+        }
+    };
+
+    checkUsername = async (req: Request, res: Response) => {
+        const { username }: dto.CheckUsernameReqDTO = req.body;
+
+        try {
+            // 이전에 존재한지 확인했는지 여부 확인
+            if ((await this.redis.get(this.combinedSignup(username))) === this.canSignUp) {
+                return sendJSONResponse(res, `can signup this username - ${username} `, true);
+            }
+
+            // is exist user
+            if (await this.anonymouseService.findUserByUsername(username)) {
+                throw ErrAlreadyExist;
+            }
+
+            // 딱히 유효기간 없이 저장을 함. 회원가입 시점에서 삭제되지 않으면 해당 username은 유효
+            this.redis.set(this.combinedSignup(username), this.canSignUp);
+
+            return sendJSONResponse(res, `can signup this username - ${username} `, true);
         } catch (err: any) {
             throw handleError(err);
         }
