@@ -1,12 +1,21 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // mock - redis
-import redis from "redis-mock";
+import Ioredis from "ioredis-mock";
+const redisMock = new Ioredis();
 jest.mock("@configs/redis", () => {
     return {
         // RedisClient 클래스를 mocking합니다.
-        getInstance: jest.fn(() => redis.createClient()),
+        getInstance: jest.fn(() => redisMock),
     };
 });
+
+// mock - crypto
+export const mockEmailCode = "abc123";
+jest.mock("@utils/crypto", () => ({
+    createCode: jest.fn(() => {
+        return mockEmailCode;
+    }), // 원하는 값으로 설정
+}));
 
 // mock - logger
 jest.mock("@configs/logger", () => ({
@@ -18,15 +27,23 @@ jest.mock("@configs/logger", () => ({
     },
 }));
 
+// mock - email sender
+jest.mock("@utils/mailer", () => ({
+    sendIDMail: jest.fn(),
+    sendPasswordMail: jest.fn(),
+    sendSignUpMail: jest.fn(),
+}));
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // index.ts role
 import Server from "@src/server";
 import express from "express";
-import request from "supertest";
 
 const app = express();
 const server = new Server(app);
 import Routes from "@src/routes";
+import UserRepo from "@repo/user.repo";
+import User from "@models/user";
 const route = new Routes(app);
 route.initialize();
 server.start(3000);
@@ -34,18 +51,19 @@ server.start(3000);
 
 export const defaultID = "admin123";
 export const defaultPwd = "admin456";
+export const defaultUsername = "default123";
 beforeAll(async () => {
-    const signUpBody = {
-        id: defaultID,
-        password: defaultPwd,
-        username: "test_admin",
-        email: "admin@test.com",
-    };
-
-    const loginBody = { id: signUpBody.id, password: signUpBody.password };
-    const loginRes: any = await request(app).post(`/api/login`).send(loginBody);
-    if (loginRes.statusCode === 404) {
-        await request(app).post("/api/signup").send(signUpBody);
+    const userRepo = new UserRepo();
+    if (!(await userRepo.getUserByUsername(defaultUsername))) {
+        userRepo.createUser(
+            new User({
+                id: defaultID,
+                password: defaultPwd,
+                email: "defaultEmail123@corelinesoft.com",
+                username: defaultUsername,
+                activate: true,
+            })
+        );
     }
 });
 
