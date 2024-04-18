@@ -1,9 +1,7 @@
 import { Request, Response } from "express";
-import crypto from "crypto";
 
-import * as dto from "@controllers/anonymous/dto/anonymous.dto";
+import { logger } from "@configs/logger";
 import RedisClient, { Redis } from "@configs/redis";
-import AnonymousService from "@services/anonymous/anonymous.service";
 import InternalError from "@errors/internal_server";
 import BadRequestError from "@errors/bad_request";
 import {
@@ -17,7 +15,10 @@ import {
 import { issueAccessToken, verifyAccessToken, verifyRefreshToken } from "@utils/jwt";
 import { sendJSONResponse } from "@utils/response";
 import { sendIDMail, sendPasswordMail, sendSignUpMail } from "@utils/mailer";
-import { logger } from "@configs/logger";
+import { createCode } from "@utils/crypto";
+
+import * as dto from "@controllers/anonymous/dto/anonymous.dto";
+import AnonymousService from "@services/anonymous/anonymous.service";
 
 export default class AnonymousController {
     private redis: Redis;
@@ -29,10 +30,6 @@ export default class AnonymousController {
 
         this.anonymouseService = new AnonymousService();
     }
-
-    private createCode = () => {
-        return crypto.randomBytes(3).toString("hex");
-    };
 
     private combinedSignup = (email: string) => {
         const prefix = "signup_";
@@ -123,7 +120,7 @@ export default class AnonymousController {
             }
 
             // 인증 코드 생성
-            const code = this.createCode();
+            const code = createCode();
             await sendSignUpMail(email, code);
 
             // save email in redis - 유효기간 5분
@@ -263,7 +260,7 @@ export default class AnonymousController {
                 throw ErrTooManyRequest;
             }
 
-            const code = this.createCode();
+            const code = createCode();
             await sendPasswordMail(email, code);
 
             // save email in redis - 유효기간 5분
