@@ -44,6 +44,7 @@ const server = new Server(app);
 import Routes from "@src/routes";
 import UserRepo from "@repo/user.repo";
 import User from "@models/user";
+import { hashing } from "@utils/encryption";
 const route = new Routes(app);
 route.initialize();
 server.start(3000);
@@ -55,11 +56,13 @@ export const defaultUsername = "default123";
 beforeAll(async () => {
     const userRepo = new UserRepo();
     if (!(await userRepo.getUserByUsername(defaultUsername))) {
+        const pwd = await hashing(defaultPwd);
+        const mail = await hashing("defaultEmail123@corelinesoft.com");
         userRepo.createUser(
             new User({
                 id: defaultID,
-                password: defaultPwd,
-                email: "defaultEmail123@corelinesoft.com",
+                password: pwd,
+                email: mail,
                 username: defaultUsername,
                 activate: true,
             })

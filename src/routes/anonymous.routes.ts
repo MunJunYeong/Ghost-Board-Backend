@@ -14,10 +14,10 @@ class AnonymousRoutes {
 
     initializeRoutes() {
         // 회원가입 API
-        this.router.post("/signup", validationMiddleware(dto.SignupReqDTO), this.controller.signup);
         this.router.post("/signup/send-email", validationMiddleware(dto.EmailReqDTO), this.controller.sendEmailForSignup);
         this.router.post("/signup/check-email", validationMiddleware(dto.CheckEmailReqDTO), this.controller.checkEmailForSignup);
         this.router.post("/signup/check-username", validationMiddleware(dto.CheckUsernameReqDTO), this.controller.checkUsername);
+        this.router.post("/signup", validationMiddleware(dto.SignupReqDTO), this.controller.signup);
 
         // 로그인  API
         this.router.post("/login", validationMiddleware(dto.LoginReqDTO), this.controller.login);

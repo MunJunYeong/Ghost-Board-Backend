@@ -66,7 +66,7 @@ export default class AnonymousController {
 
             // username 중복 인증이 된 올바른 request인지 확인
             const isValidUsername = await this.redis.get(this.combinedSignup(body.username));
-            if (isValidUsername! + this.canSignUp) {
+            if (isValidUsername != this.canSignUp) {
                 logger.error("not validate username info for signup");
                 throw ErrUnauthorized;
             }
@@ -124,7 +124,7 @@ export default class AnonymousController {
             await sendSignUpMail(email, code);
 
             // save email in redis - 유효기간 5분
-            this.redis.set(this.combinedSignup(email), code, "EX", 300);
+            await this.redis.set(this.combinedSignup(email), code, "EX", 300);
 
             sendJSONResponse(res, "success send email", true);
         } catch (err: any) {
@@ -141,12 +141,12 @@ export default class AnonymousController {
             }
 
             const savedCode = await this.redis.get(this.combinedSignup(email));
-            if (savedCode !== code) {
+            if (!savedCode || savedCode !== code) {
                 throw ErrNotFound;
             }
 
             // update email in redis - 유효기간 30분
-            this.redis.set(this.combinedSignup(email), this.canSignUp, "EX", 1800);
+            await this.redis.set(this.combinedSignup(email), this.canSignUp, "EX", 1800);
             sendJSONResponse(res, "success check email", true);
         } catch (err: any) {
             throw handleError(err);
