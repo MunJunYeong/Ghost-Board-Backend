@@ -1,4 +1,4 @@
-import { Request, Response, Router } from "express";
+import { Router } from "express";
 
 import anonymousController from "@controllers/anonymous/anonymous.controller";
 import { validationMiddleware } from "@middlewares/requestValidate";
@@ -26,13 +26,13 @@ class AnonymousRoutes {
         this.router.post("/refresh", this.controller.refresh);
 
         // ID 찾기 API
-        this.router.post("/find-id", validationMiddleware(dto.EmailReqDTO), this.controller.findMaskingUser);
+        this.router.get("/find-id/:email", this.controller.findMaskingUser);
         this.router.post("/find-id/send-email", validationMiddleware(dto.SendIDReqDTO), this.controller.sendExactUserID);
 
         // PW 재변경 API
-        this.router.post("/change-password", validationMiddleware(dto.ChangePasswordReqDTO), this.controller.changePassword);
         this.router.post("/change-password/send-email", validationMiddleware(dto.EmailReqDTO), this.controller.sendEmailForPassword);
         this.router.post("/change-password/check-email", validationMiddleware(dto.CheckEmailReqDTO), this.controller.checkEmailForPassword);
+        this.router.post("/change-password", validationMiddleware(dto.ChangePasswordReqDTO), this.controller.changePassword);
     }
 }
 

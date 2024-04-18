@@ -178,7 +178,7 @@ export default class AnonymousController {
 
     // 사용자의 Email로 회원가입한 복수의 로그인 정보
     findMaskingUser = async (req: Request, res: Response) => {
-        const { email }: dto.EmailReqDTO = req.body;
+        const email = req.params.email;
 
         try {
             // domain 확인

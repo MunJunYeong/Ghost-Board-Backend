@@ -1,6 +1,6 @@
 import request from "supertest";
 import app, { defaultID, defaultUsername, mockEmailCode } from "../setup";
-import { TestPOST } from "../common";
+import { TestDELETE, TestGET, TestPOST, TestPUT } from "../common";
 import * as anonyDTO from "@controllers/anonymous/dto/anonymous.dto";
 
 let accessToken: string;
@@ -22,7 +22,7 @@ describe("User API", () => {
     }
     let createdUser: userBody;
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // run test
+    // signup
     describe("Signup API - send email", () => {
         let body: anonyDTO.EmailReqDTO;
         const endpoint = "/api/signup/send-email";
@@ -50,8 +50,8 @@ describe("User API", () => {
     });
 
     describe("Signup API - check email", () => {
-        let body: anonyDTO.CheckEmailReqDTO;
         const endpoint = "/api/signup/check-email";
+        let body: anonyDTO.CheckEmailReqDTO;
         beforeEach(() => {
             body = {
                 email: email,
@@ -148,157 +148,224 @@ describe("User API", () => {
         });
     });
 
-    // describe("Login API", () => {
-    //     let body: any;
-    //     beforeEach(() => {
-    //         body = {
-    //             id: "test1234",
-    //             password: "test5678",
-    //         };
-    //     });
-    //     describe("성공", () => {
-    //         test("Post - /api/login", async () => {
-    //             const response: any = await request(app).post(`/api/login`).send(body);
-    //             expect(response.statusCode).toBe(200);
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // login
+    describe("Login API", () => {
+        let body: anonyDTO.LoginReqDTO;
+        const endpoint = "/api/login";
+        beforeEach(() => {
+            body = {
+                id: id,
+                password: password,
+            };
+        });
+        describe("성공", () => {
+            test("Post - /api/login", async () => {
+                const response: any = await request(app).post(endpoint).send(body);
+                expect(response.statusCode).toBe(200);
 
-    //             const result = response.body.data;
-    //             accessToken = result.accessToken;
-    //             refreshToken = result.refreshToken;
-    //             expect(result.accessToken).not.toBeNull();
-    //             expect(result.refreshToken).not.toBeNull();
-    //         });
-    //     });
-    //     describe("Exception", () => {
-    //         test("empty, invalid userID", async () => {
-    //             // empty case
-    //             body.id = "";
-    //             let response: any = await request(app).post(`/api/login`).send(body);
-    //             expect(response.statusCode).toBe(400);
+                const result = response.body.data;
+                accessToken = result.accessToken;
+                refreshToken = result.refreshToken;
+                expect(result.accessToken).not.toBeNull();
+                expect(result.refreshToken).not.toBeNull();
+            });
+        });
+        describe("Exception", () => {
+            test("empty, invalid userID", async () => {
+                // empty case
+                body.id = "";
+                await TestPOST(endpoint, body, 400);
 
-    //             // invalid id case
-    //             body.id = "adnklal131";
-    //             response = await request(app).post(`/api/login`).send(body);
-    //             expect(response.statusCode).toBe(404);
-    //         });
-    //         test("empty, invalid password", async () => {
-    //             // empty case
-    //             body.password = "";
-    //             let response: any = await request(app).post(`/api/login`).send(body);
-    //             expect(response.statusCode).toBe(400);
+                // invalid id case
+                body.id = "adnklal131";
+                await TestPOST(endpoint, body, 404);
+            });
+            test("empty, invalid password", async () => {
+                // empty case
+                body.password = "";
+                await TestPOST(endpoint, body, 400);
+                // invalid password case
+                body.password = "13nlflaqp1";
+                await TestPOST(endpoint, body, 404);
+            });
+        });
+    });
 
-    //             // invalid password case
-    //             body.password = "13nlflaqp1";
-    //             response = await request(app).post(`/api/login`).send(body);
-    //             expect(response.statusCode).toBe(404);
-    //         });
-    //     });
-    // });
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Find ID
+    describe("Find ID API", () => {
+        const endpoint = "/api/find-id";
 
-    // describe("Get User API", () => {
-    //     describe("성공", () => {
-    //         test("Get - /api/users/{id}", async () => {
-    //             const response: any = await request(app)
-    //                 .get(`/api/users/${createdUser.userId}`)
-    //                 .set("Authorization", `Bearer ${accessToken}`);
-    //             expect(response.statusCode).toBe(200);
+        describe("성공", () => {
+            test("Get - api/find-id/:email", async () => {
+                const response: any = await request(app).get(`${endpoint}/${email}`);
+                expect(response.statusCode).toBe(200);
+                expect(response.body.data.id).toEqual("test1***");
+                expect(response.body.data.username).toEqual("testuser");
+            });
+        });
+        describe("Exception", () => {
+            test("alreay exist username", async () => {
+                await TestGET(`${endpoint}/adsnk2@corelinesoft.com`, 404);
+            });
+        });
+    });
 
-    //             const result: userBody = response.body.data;
-    //             expect(result.id).toEqual(createdUser.id);
-    //             expect(result.password).toBeUndefined();
-    //             expect(result.username).toEqual(createdUser.username);
-    //             expect(result.email).toEqual(createdUser.email);
-    //         });
-    //     });
-    //     describe("Exception", () => {
-    //         test("not found user", async () => {
-    //             const response: any = await request(app)
-    //                 .get(`/api/users/${createdUser.userId! + 100}`)
-    //                 .set("Authorization", `Bearer ${accessToken}`);
-    //             expect(response.statusCode).toBe(404);
-    //         });
-    //     });
-    // });
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Change Password
+    describe("Change Password API - send email", () => {
+        const endpoint = "/api/change-password/send-email";
+        let body: anonyDTO.EmailReqDTO;
+        beforeEach(() => {
+            body = {
+                email: email,
+            };
+        });
+        describe("성공", () => {
+            test("Get - api/find-id/:email", async () => {
+                await TestPOST(endpoint, body, 200);
+            });
+        });
+        describe("Exception", () => {
+            test("invalid domain (email)", async () => {
+                body.email = "dsafa1231@naver.com";
+                await TestPOST(endpoint, body, 400);
+            });
+            test("already exist username", async () => {
+                body.email = defaultUsername;
+                await TestPOST(endpoint, body, 400);
+            });
+        });
+    });
 
-    // describe("Update User API", () => {
-    //     let body: userBody;
-    //     beforeEach(() => {
-    //         body = {
-    //             userId: 0, // not used this test
-    //             id: "", // not used this test
-    //             username: "",
-    //             password: "",
-    //             email: "",
-    //         };
-    //     });
-    //     describe("성공", () => {
-    //         test(`Put - /api/users/{id}) - username`, async () => {
-    //             body.username = "changeduser123";
-    //             delete body.email;
-    //             const response: any = await request(app)
-    //                 .put(`/api/users/${createdUser.userId}`)
-    //                 .set("Authorization", `Bearer ${accessToken}`)
-    //                 .send(body);
-    //             expect(response.statusCode).toBe(200);
+    describe("Change Password API - check email", () => {
+        const endpoint = "/api/change-password/check-email";
+        let body: anonyDTO.CheckEmailReqDTO;
+        beforeEach(() => {
+            body = {
+                email: email,
+                code: mockEmailCode,
+            };
+        });
 
-    //             const result: userBody = response.body.data;
-    //             expect(result.username).toEqual(body.username);
-    //         });
-    //         test(`Put - /api/users/{id}) - password`, async () => {
-    //             body.password = "changeduser313";
-    //             delete body.email;
-    //             const response: any = await request(app)
-    //                 .put(`/api/users/${createdUser.userId}`)
-    //                 .set("Authorization", `Bearer ${accessToken}`)
-    //                 .send(body);
-    //             expect(response.statusCode).toBe(200);
-    //         });
-    //         test(`Put - /api/users/{id}) - email`, async () => {
-    //             body.email = "changeduser@naver.com";
-    //             const response: any = await request(app)
-    //                 .put(`/api/users/${createdUser.userId}`)
-    //                 .set("Authorization", `Bearer ${accessToken}`)
-    //                 .send(body);
-    //             expect(response.statusCode).toBe(200);
+        describe("성공", () => {
+            test("Post - api/signup/check-email", async () => {
+                await TestPOST(endpoint, body, 200);
+            });
+        });
+        describe("Exception", () => {
+            test("invalid domain (email)", async () => {
+                body.email = "test123@naver.com";
+                await TestPOST(endpoint, body, 400);
+            });
+            test("invalid code", async () => {
+                body.code = "asa133";
+                await TestPOST(endpoint, body, 404);
+            });
+        });
+    });
 
-    //             const result: userBody = response.body.data;
-    //             expect(result.email).toEqual(body.email);
-    //         });
-    //     });
-    //     describe("Exception", () => {
-    //         test("invalid email", async () => {
-    //             body.email = "invalidemailformat";
-    //             const response: any = await request(app)
-    //                 .put(`/api/users/${createdUser.userId}`)
-    //                 .set("Authorization", `Bearer ${accessToken}`)
-    //                 .send(body);
-    //             expect(response.statusCode).toBe(400);
-    //         });
-    //         test("wrong authenticated", async () => {
-    //             body.email = "changeduser@naver.com";
-    //             const response: any = await request(app)
-    //                 .put(`/api/users/${createdUser.userId! + 100}`)
-    //                 .send(body);
-    //             expect(response.statusCode).toBe(401);
-    //         });
-    //     });
-    // });
+    describe("Change Password API - change password", () => {
+        const endpoint = "/api/change-password";
+        let body: anonyDTO.ChangePasswordReqDTO;
+        beforeEach(() => {
+            body = {
+                email: email,
+                password: password + 123,
+                username: username,
+            };
+        });
 
-    // describe("Delete User API", () => {
-    //     describe("성공", () => {
-    //         test(`Delete - /api/users/{id})`, async () => {
-    //             const response: any = await request(app)
-    //                 .delete(`/api/users/${createdUser.userId}`)
-    //                 .set("Authorization", `Bearer ${accessToken}`);
-    //             expect(response.statusCode).toBe(200);
-    //         });
-    //     });
-    //     describe("Exception", () => {
-    //         test("not found user", async () => {
-    //             const response: any = await request(app)
-    //                 .delete(`/api/users/${createdUser.userId}`)
-    //                 .set("Authorization", `Bearer ${accessToken}`);
-    //             expect(response.statusCode).toBe(404);
-    //         });
-    //     });
-    // });
+        describe("성공", () => {
+            test("Post - api/signup/chnage-email", async () => {
+                await TestPOST(endpoint, body, 200);
+            });
+        });
+        describe("Exception", () => {
+            test("invalid domain (email)", async () => {
+                body.email = "test123@naver.com";
+                await TestPOST(endpoint, body, 400);
+            });
+            test("unauthorization email", async () => {
+                body.email = "test123@corelinesoft.com";
+                await TestPOST(endpoint, body, 401);
+            });
+        });
+    });
+
+    describe("Get User API", () => {
+        const endpoint = "/api/users";
+        describe("성공", () => {
+            test("Get - /api/users/{id}", async () => {
+                const response: any = await request(app)
+                    .get(`${endpoint}/${createdUser.userId}`)
+                    .set("Authorization", `Bearer ${accessToken}`);
+                expect(response.statusCode).toBe(200);
+
+                const result: userBody = response.body.data;
+                expect(result.id).toEqual(createdUser.id);
+                expect(result.password).toBeUndefined();
+                expect(result.username).toEqual(createdUser.username);
+                expect(result.email).toEqual(createdUser.email);
+            });
+        });
+        describe("Exception", () => {
+            test("not found user", async () => {
+                await TestGET(`${endpoint}/${createdUser.userId! + 100}`, 404, accessToken);
+            });
+        });
+    });
+
+    describe("Update User API", () => {
+        let body: userBody;
+        beforeEach(() => {
+            body = {
+                userId: 0, // not used this test
+                id: "", // not used this test
+                username: "",
+                password: "",
+                email: "",
+            };
+        });
+        describe("성공", () => {
+            test(`Put - /api/users/{id}) - username`, async () => {
+                body.username = "changeduser123";
+                delete body.email;
+                await TestPUT(`/api/users/${createdUser.userId}`, body, 200, accessToken);
+            });
+            test(`Put - /api/users/{id}) - password`, async () => {
+                body.password = "changeduser313";
+                delete body.email;
+                await TestPUT(`/api/users/${createdUser.userId}`, body, 200, accessToken);
+            });
+            test(`Put - /api/users/{id}) - email`, async () => {
+                body.email = "changeduser@naver.com";
+                await TestPUT(`/api/users/${createdUser.userId}`, body, 200, accessToken);
+            });
+        });
+        describe("Exception", () => {
+            test("invalid email", async () => {
+                body.email = "invalidemailformat";
+                await TestPUT(`/api/users/${createdUser.userId}`, body, 400, accessToken);
+            });
+            test("not found", async () => {
+                body.email = "changeduser@naver.com";
+                await TestPUT(`/api/users/${createdUser.userId! + 100}`, body, 404, accessToken);
+            });
+        });
+    });
+
+    describe("Delete User API", () => {
+        describe("성공", () => {
+            test(`Delete - /api/users/{id})`, async () => {
+                await TestDELETE(`/api/users/${createdUser.userId}`, 200, accessToken);
+            });
+        });
+        describe("Exception", () => {
+            test("not found user", async () => {
+                await TestDELETE(`/api/users/${createdUser.userId}`, 404, accessToken);
+            });
+        });
+    });
 });
