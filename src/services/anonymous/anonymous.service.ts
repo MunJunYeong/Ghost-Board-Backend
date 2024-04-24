@@ -1,11 +1,13 @@
 import UserRepo from "@repo/user.repo";
-import { issueAccessToken, issueRefreshToken } from "@utils/jwt";
+import { issueAccessToken, issueRefreshToken } from "@utils/lib/jwt";
 import * as dto from "@controllers/anonymous/dto/anonymous.dto";
 import { convSignupToUser } from "./anonymous.conv";
 import { ErrAlreadyExist, ErrNotFound, ErrUnauthorized } from "@errors/handler";
-import { compareHashedValue, hashing } from "@utils/encryption";
+import { compareHashedValue, hashing } from "@utils/lib/encryption";
 import { createUserResponse } from "@services/user/user.conv";
 import { logger } from "@configs/logger";
+import User from "@models/user";
+import { createCode } from "@utils/lib/crypto";
 
 export default class AnonymousService {
     private userRepo: UserRepo;
@@ -13,6 +15,15 @@ export default class AnonymousService {
     constructor() {
         this.userRepo = new UserRepo();
     }
+
+    private generateToken = async (u: User) => {
+        const user = createUserResponse(u);
+        const result: dto.LoginResDTO = {
+            accessToken: issueAccessToken(user),
+            refreshToken: issueRefreshToken(),
+        };
+        return result;
+    };
 
     signup = async (userDTO: dto.SignupReqDTO) => {
         let u = convSignupToUser(userDTO);
@@ -33,6 +44,27 @@ export default class AnonymousService {
         return user;
     };
 
+    googleLogin = async (id: string, email: string) => {
+        let u = await this.userRepo.getUserByID(id);
+
+        // user가 없을 경우 회원가입
+        if (!u) {
+            const hashedMail = await hashing(email);
+            const pwd = await hashing(createCode(5));
+            const randomName = createCode(5);
+
+            u = new User({
+                id: id,
+                email: hashedMail,
+                password: pwd,
+                username: randomName,
+            });
+            u = await u.save();
+        }
+
+        return await this.generateToken(u);
+    };
+
     login = async (loginData: dto.LoginReqDTO): Promise<dto.LoginResDTO> => {
         const { id, password } = loginData;
         const u = await this.userRepo.getUserByID(id);
@@ -41,12 +73,7 @@ export default class AnonymousService {
             throw ErrNotFound;
         }
 
-        const user = createUserResponse(u);
-        const result: dto.LoginResDTO = {
-            accessToken: issueAccessToken(user),
-            refreshToken: issueRefreshToken(),
-        };
-        return result;
+        return await this.generateToken(u);
     };
 
     // find user by email

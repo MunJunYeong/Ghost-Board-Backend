@@ -1,6 +1,6 @@
 // common
 import { ErrNotFound } from "@errors/handler";
-import { hashing } from "@utils/encryption";
+import { hashing } from "@utils/lib/encryption";
 
 // server
 import * as dto from "@controllers/user/dto/user.dto";

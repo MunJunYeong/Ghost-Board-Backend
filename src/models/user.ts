@@ -27,7 +27,7 @@ export const initUser = (sequelize: Sequelize) => {
             },
             password: {
                 type: DataTypes.STRING,
-                allowNull: false,
+                allowNull: true,
             },
             username: {
                 type: DataTypes.STRING,
@@ -41,7 +41,7 @@ export const initUser = (sequelize: Sequelize) => {
             },
             activate: {
                 type: DataTypes.BOOLEAN,
-                defaultValue: true
+                defaultValue: true,
             },
             createdAt: {
                 type: DataTypes.DATE,

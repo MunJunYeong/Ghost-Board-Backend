@@ -25,7 +25,6 @@ export default class Server {
 
         // init db
         this.initDatabase();
-
     }
 
     private initConfig = (): void => {
@@ -52,7 +51,7 @@ export default class Server {
 
     public start = (port: any): void => {
         this.server = this.app
-            .listen(port, () => {
+            .listen(port, "0.0.0.0", () => {
                 logger.info(`Server is running on port ${port}.`);
             })
             .on("error", (err: any) => {

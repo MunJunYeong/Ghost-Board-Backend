@@ -44,7 +44,7 @@ const server = new Server(app);
 import Routes from "@src/routes";
 import UserRepo from "@repo/user.repo";
 import User from "@models/user";
-import { hashing } from "@utils/encryption";
+import { hashing } from "@utils/lib/encryption";
 const route = new Routes(app);
 route.initialize();
 server.start(3000);

@@ -12,13 +12,14 @@ import {
     ErrUnauthorized,
     handleError,
 } from "@errors/handler";
-import { issueAccessToken, verifyAccessToken, verifyRefreshToken } from "@utils/jwt";
+import { issueAccessToken, verifyAccessToken, verifyRefreshToken } from "@utils/lib/jwt";
 import { sendJSONResponse } from "@utils/response";
-import { sendIDMail, sendPasswordMail, sendSignUpMail } from "@utils/mailer";
-import { createCode } from "@utils/crypto";
+import { sendIDMail, sendPasswordMail, sendSignUpMail } from "@utils/lib/mailer";
+import { createCode } from "@utils/lib/crypto";
 
 import * as dto from "@controllers/anonymous/dto/anonymous.dto";
 import AnonymousService from "@services/anonymous/anonymous.service";
+import { getGoogleAcount } from "@utils/google";
 
 export default class AnonymousController {
     private redis: Redis;
@@ -78,6 +79,45 @@ export default class AnonymousController {
             await this.redis.del(this.combinedSignup(body.username));
 
             sendJSONResponse(res, "success signup", u);
+        } catch (err: any) {
+            throw handleError(err);
+        }
+    };
+
+    test = async (req: Request, res: Response) => {
+        res.send(`
+                <h1>Log in</h1>
+                <a href="/api/google-login">Log in</a>
+        `);
+    };
+
+    // get google login url
+    getGoogleLoginURL = async (req: Request, res: Response) => {
+        let url = "https://accounts.google.com/o/oauth2/v2/auth";
+        const clientID = process.env.GOOGLE_CLIENT_ID!;
+        const redirectUrl = process.env.GOOGLE_REDIRECT_URL!;
+        url += `?client_id=${clientID}`;
+        url += `&redirect_uri=${redirectUrl}`;
+        url += "&response_type=code";
+        url += "&scope=email profile";
+        res.redirect(url);
+    };
+
+    // google login
+    googleLogin = async (req: Request, res: Response) => {
+        const { code } = req.query;
+
+        try {
+            const { id, email } = await getGoogleAcount(code);
+            if (!id || !email) {
+                throw ErrInvalidArgument;
+            }
+
+            const result = await this.anonymouseService.googleLogin(id, email);
+            // 유효기간 : 14일 - jwt.ts 파일의 refresh token `expiresIn` 값과 일치해야 함.
+            this.redis.set(id, result.refreshToken, "EX", 14 * 24 * 60 * 60);
+
+            sendJSONResponse(res, "success login", result);
         } catch (err: any) {
             throw handleError(err);
         }
