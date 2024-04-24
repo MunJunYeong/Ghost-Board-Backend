@@ -21,7 +21,12 @@ class AnonymousRoutes {
 
         // 로그인  API
         this.router.post("/login", validationMiddleware(dto.LoginReqDTO), this.controller.login);
-
+        
+        // Google OAuth2.0 API
+        this.router.get('/test2', this.controller.test); // TODO: test용 - Front로 나중에 바꿔야함.
+        this.router.get('/google-login', this.controller.getGoogleLoginURL)
+        this.router.get('/auth/google/callback', this.controller.googleLogin)
+        
         // Refresh token 발급 API
         this.router.post("/refresh", this.controller.refresh);
 

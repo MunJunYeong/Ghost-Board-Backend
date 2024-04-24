@@ -3,7 +3,7 @@ import app from "../setup";
 
 import { CreateBoardReqDTO } from "@controllers/board/dto/board.dto";
 import Board from "@models/board";
-import { issueAccessToken } from "@utils/jwt";
+import { issueAccessToken } from "@utils/lib/jwt";
 
 const title = "title123";
 const desc = "test title";

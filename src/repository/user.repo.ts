@@ -23,6 +23,7 @@ export default class UserRepo {
         });
     };
 
+    // not pk, login ID
     getUserByID = async (id: any) => {
         return await User.findOne({
             where: {

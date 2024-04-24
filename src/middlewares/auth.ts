@@ -1,5 +1,5 @@
 import BadRequestError from "@src/common/errors/bad_request";
-import { verifyAccessToken } from "@src/common/utils/jwt";
+import { verifyAccessToken } from "@utils/lib/jwt";
 import { Request, Response, NextFunction } from "express";
 
 // JWT 검증을 위한 미들웨어 함수

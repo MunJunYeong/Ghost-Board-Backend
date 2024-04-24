@@ -16,7 +16,7 @@ export const sendIDMail = async (userEmail: string, id: string) => {
     let emailTemplate;
 
     // ejs render할 때 상대경로를 인식하지 못함.
-    const absolutePath = path.join(__dirname, "/email-template/findID.ejs");
+    const absolutePath = path.join(__dirname, "../email-template/findID.ejs");
     ejs.renderFile(absolutePath, { email: userEmail, id: id }, (err, data) => {
         //ejs mapping
         if (err) {
@@ -38,7 +38,7 @@ export const sendSignUpMail = async (userEmail: string, code: string) => {
     let emailTemplate;
 
     // ejs render할 때 상대경로를 인식하지 못함.
-    const absolutePath = path.join(__dirname, "/email-template/signUp.ejs");
+    const absolutePath = path.join(__dirname, "../email-template/signUp.ejs");
     ejs.renderFile(absolutePath, { email: userEmail, code: code }, (err, data) => {
         //ejs mapping
         if (err) {
@@ -60,7 +60,7 @@ export const sendPasswordMail = async (userEmail: string, code: string) => {
     let emailTemplate;
 
     // ejs render할 때 상대경로를 인식하지 못함.
-    const absolutePath = path.join(__dirname, "/email-template/findPassword.ejs");
+    const absolutePath = path.join(__dirname, "../email-template/findPassword.ejs");
     ejs.renderFile(absolutePath, { email: userEmail, code: code }, (err, data) => {
         //ejs mapping
         if (err) {

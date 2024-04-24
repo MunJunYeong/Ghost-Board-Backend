@@ -1,4 +1,4 @@
-import { issueAccessToken, verifyAccessToken } from "@utils/jwt";
+import { issueAccessToken, verifyAccessToken } from "@utils/lib/jwt";
 
 let accessToken: string;
 describe("jwt util", () => {
