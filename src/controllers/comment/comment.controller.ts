@@ -19,7 +19,7 @@ export default class CommentController {
             const body: dto.CreateCommentReqDTO = req.body;
 
             const result = await this.commentService.createComment(body, userId, postId);
-            sendJSONResponse(res, "success create comment", result.toJSON());
+            sendJSONResponse(res, "success create comment", result);
         } catch (err: any) {
             throw handleError(err);
         }

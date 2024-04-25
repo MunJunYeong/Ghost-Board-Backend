@@ -6,6 +6,7 @@ import Post from "./post";
 class Comment extends Model<InferAttributes<Comment>, InferCreationAttributes<Comment>> {
     declare commentId: CreationOptional<number>;
     declare content: string;
+    declare author: string;
     declare createdAt: CreationOptional<Date>;
     declare updatedAt: CreationOptional<Date>;
 
@@ -24,6 +25,10 @@ export const initComment = (sequelize: Sequelize) => {
                 primaryKey: true,
             },
             content: {
+                type: DataTypes.STRING,
+                allowNull: false,
+            },
+            author: {
                 type: DataTypes.STRING,
                 allowNull: false,
             },
