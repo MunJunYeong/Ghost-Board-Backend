@@ -1,16 +1,16 @@
 import Comment from "@models/comment";
-import { Op, Sequelize } from "sequelize";
+import { Op } from "sequelize";
 
 export default class CommentRepo {
-    constructor() { }
+    constructor() {}
 
-    createComment = async (comment: Comment) => {
-        return await Comment.create({
-            content: comment.content,
-            userId: comment.userId,
-            postId: comment.postId,
-            // 대댓글이 아니라면 null
-            parentId: comment.parentId,
+    getLastAnonymousCommentByPostId = async (postId: any) => {
+        return await Comment.findOne({
+            where: {
+                postId: postId,
+                author: { [Op.like]: "익명%" },
+            },
+            order: [["createdAt", "DESC"]], // createdAt 기준으로 내림차순으로 정렬하여 가장 최근 댓글을 가져옴
         });
     };
 
@@ -18,6 +18,14 @@ export default class CommentRepo {
         return await Comment.findOne({
             where: {
                 commentId: commentId,
+            },
+        });
+    };
+
+    getCommentByUserId = async (userId: any) => {
+        return await Comment.findOne({
+            where: {
+                userId: userId,
             },
         });
     };
@@ -31,7 +39,7 @@ export default class CommentRepo {
             include: {
                 model: Comment,
                 as: "replies",
-                required: false // 왼쪽 조인 사용
+                required: false, // 왼쪽 조인 사용
             },
         });
     };
