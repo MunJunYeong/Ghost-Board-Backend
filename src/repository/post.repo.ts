@@ -4,6 +4,7 @@ import File from "@models/file";
 import Post from "@models/post";
 import Database from "@configs/database";
 import { DeleteS3File } from "@configs/s3";
+import PostLike from "@models/post_like";
 
 export default class PostRepo {
     private sequelize: Sequelize;
@@ -13,14 +14,6 @@ export default class PostRepo {
         this.sequelize = dbInstance.getSequelize();
     }
 
-    createFile = async (link: string, fileName: string, postId: any) => {
-        return await File.create({
-            link: link,
-            fileName: fileName,
-            postId: postId,
-        });
-    };
-
     createPost = async (post: Post) => {
         return await post.save();
     };
@@ -28,18 +21,18 @@ export default class PostRepo {
     createPostWithFile = async (post: Post, file: File) => {
         const transaction = await this.sequelize.transaction();
         try {
-            const newPost = await post.save({ transaction })
+            const newPost = await post.save({ transaction });
             file.postId = newPost.postId;
-            await file.save({ transaction })
+            await file.save({ transaction });
 
             await transaction.commit();
-            return await this.getPostByID(newPost.postId)
+            return await this.getPostByID(newPost.postId);
         } catch (err: any) {
             await transaction.rollback();
             await DeleteS3File(file.fileName);
             throw err;
         }
-    }
+    };
 
     getPostList = async (boardId: any) => {
         return await Post.findAll({
@@ -64,10 +57,9 @@ export default class PostRepo {
         });
     };
 
-    getPost = async (boardId: number, postId: number) => {
+    getPost = async (postId: number) => {
         return await Post.findOne({
             where: {
-                boardId: boardId,
                 postId: postId,
             },
             include: [File],
@@ -108,6 +100,34 @@ export default class PostRepo {
         return await Post.destroy({
             where: {
                 postId: postId,
+            },
+        });
+    };
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // file table
+    createFile = async (link: string, fileName: string, postId: any) => {
+        return await File.create({
+            link: link,
+            fileName: fileName,
+            postId: postId,
+        });
+    };
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // post_like table
+    createPostLike = async (postId: any, userId: any) => {
+        return await PostLike.create({
+            postId: postId,
+            userId: userId,
+        });
+    };
+
+    deletePostLike = async (postId: any, userId: any) => {
+        return await PostLike.destroy({
+            where: {
+                postId: postId,
+                userId: userId,
             },
         });
     };

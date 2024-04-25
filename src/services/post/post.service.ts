@@ -62,19 +62,19 @@ export default class PostService {
         return { posts: postList, nextCursor };
     };
 
-    getPost = async (boardId: any, postId: any): Promise<Post> => {
-        const post = await this.postRepo.getPost(boardId, postId);
+    getPost = async (postId: any): Promise<Post> => {
+        const post = await this.postRepo.getPost(postId);
         if (!post) {
-            logger.error(`cant find post data (board_id - ${boardId}, post_id - ${postId})`);
+            logger.error(`cant find post data (post_id - ${postId})`);
             throw ErrNotFound;
         }
         return post;
     };
 
-    updatePost = async (postData: dto.UpdatePostReqDTO, boardId: any, postId: any): Promise<Post> => {
-        let p = await this.postRepo.getPost(boardId, postId);
+    updatePost = async (postData: dto.UpdatePostReqDTO, postId: any): Promise<Post> => {
+        let p = await this.postRepo.getPost(postId);
         if (!p) {
-            logger.error(`cant find post data (board_id - ${boardId}, post_id - ${postId})`);
+            logger.error(`cant find post data (post_id - ${postId})`);
             throw ErrNotFound;
         }
 
@@ -93,6 +93,28 @@ export default class PostService {
         if (result < 1) {
             throw ErrNotFound;
         }
+        return true;
+    };
+
+    createPostLike = async (postId: any, userId: any) => {
+        // validation post
+        if (!(await this.postRepo.getPost(postId))) {
+            logger.error(`cant find post (post_id : ${postId})`);
+            throw ErrNotFound;
+        }
+
+        await this.postRepo.createPostLike(postId, userId);
+        return true;
+    };
+
+    deletePostLike = async (postId: any, userId: any) => {
+        // validation post
+        if (!(await this.postRepo.getPost(postId))) {
+            logger.error(`cant find post (post_id : ${postId})`);
+            throw ErrNotFound;
+        }
+
+        await this.postRepo.deletePostLike(postId, userId);
         return true;
     };
 }
