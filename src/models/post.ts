@@ -8,6 +8,7 @@ class Post extends Model<InferAttributes<Post>, InferCreationAttributes<Post>> {
     declare postId: CreationOptional<number>;
     declare title: string;
     declare content: string;
+    declare author: string;
     declare createdAt: CreationOptional<Date>;
     declare updatedAt: CreationOptional<Date>;
 
@@ -29,6 +30,10 @@ export const initPost = (sequelize: Sequelize) => {
                 allowNull: false,
             },
             content: {
+                type: DataTypes.STRING,
+                allowNull: false,
+            },
+            author: {
                 type: DataTypes.STRING,
                 allowNull: false,
             },
