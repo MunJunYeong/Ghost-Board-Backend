@@ -66,11 +66,26 @@ export default class PostController {
 
     deletePost = async (req: Request, res: Response) => {
         try {
-            const boardId = req.params.boardId;
+            // const boardId = req.params.boardId; 실제로 boardID는 사용하지 않음.
             const postId = req.params.postId;
 
-            const result = await this.postService.deletePost(boardId, postId);
+            const result = await this.postService.deletePost(postId);
             sendJSONResponse(res, "success get boards", result);
+        } catch (err: any) {
+            throw handleError(err);
+        }
+    };
+
+    createPostLike = async (req: Request, res: Response) => {
+        try {
+            
+        } catch (err: any) {
+            throw handleError(err);
+        }
+    };
+    deletePostLike = async (req: Request, res: Response) => {
+        try {
+            
         } catch (err: any) {
             throw handleError(err);
         }

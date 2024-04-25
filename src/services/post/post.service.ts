@@ -30,11 +30,11 @@ export default class PostService {
             throw ErrNotFound;
         }
 
-        const post = convToPost(postData, boardId, userId)
+        const post = convToPost(postData, boardId, userId);
         if (postData.image) {
-            const { location, key } = postData.image
-            const file = convToFile(location, key)
-            return await this.postRepo.createPostWithFile(post, file)
+            const { location, key } = postData.image;
+            const file = convToFile(location, key);
+            return await this.postRepo.createPostWithFile(post, file);
         }
         // image가 없을 경우
         return await this.postRepo.createPost(post);
@@ -88,8 +88,8 @@ export default class PostService {
         return await this.postRepo.updatePost(p);
     };
 
-    deletePost = async (boardId: any, postId: any): Promise<Boolean> => {
-        const result = await this.postRepo.deletePost(boardId, postId);
+    deletePost = async (postId: any): Promise<Boolean> => {
+        const result = await this.postRepo.deletePost(postId);
         if (result < 1) {
             throw ErrNotFound;
         }

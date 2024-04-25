@@ -104,10 +104,9 @@ export default class PostRepo {
         }
     };
 
-    deletePost = async (boardId: number, postId: number) => {
+    deletePost = async (postId: number) => {
         return await Post.destroy({
             where: {
-                boardId: boardId,
                 postId: postId,
             },
         });
