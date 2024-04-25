@@ -10,7 +10,7 @@ export default class CommentRepo {
                 postId: postId,
                 author: { [Op.like]: "익명%" },
             },
-            order: [["createdAt", "DESC"]], // createdAt 기준으로 내림차순으로 정렬하여 가장 최근 댓글을 가져옴
+            order: [["created_at", "DESC"]], // createdAt 기준으로 내림차순으로 정렬하여 가장 최근 댓글을 가져옴
         });
     };
 

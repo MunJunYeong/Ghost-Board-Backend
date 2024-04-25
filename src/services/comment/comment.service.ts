@@ -47,19 +47,16 @@ export default class CommentService {
                     author = userComment.author;
                 } else {
                     // 3. `익명{next_number}`로 이름 배정
-                    const previousComment = await this.commentRepo.getLastAnonymousCommentByPostId(userId);
-                    if (previousComment) {
-                        const anonymousNumber = parseInt(previousComment.author.replace("익명", ""));
-                        author = `익명${anonymousNumber + 1}`;
-                    } else {
-                        author = "익명1";
-                    }
+                    const previousComment = await this.commentRepo.getLastAnonymousCommentByPostId(postId);
+                    const anonymousNumber = previousComment
+                        ? parseInt(previousComment.author.replace("익명", "")) + 1
+                        : 1; // 처음 댓글 시 1로 시작
+                    author = `익명${anonymousNumber}`;
                 }
             }
         }
 
         const newComment = convCreateDtoToComment(commentDTO, userId, postId, author);
-
         return await newComment.save();
     };
 
