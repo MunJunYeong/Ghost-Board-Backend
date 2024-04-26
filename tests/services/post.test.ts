@@ -1,11 +1,9 @@
 import request from "supertest";
 import app, { defaultID, defaultPwd } from "../setup";
 import Board from "@models/board";
-import { CreatePostReqDTO } from "@controllers/post/dto/post.dto";
 import Post from "@models/post";
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// precondition
+import { CreatePostReqDTO } from "@controllers/post/dto/post.dto";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const postTitle = "test post title";
@@ -18,6 +16,7 @@ describe("Post API", () => {
     let newPost: Post;
 
     beforeAll(async () => {
+        // set access_token
         const loginBody = {
             id: defaultID,
             password: defaultPwd,
@@ -28,7 +27,7 @@ describe("Post API", () => {
         // board
         const boardBody = {
             title: "test",
-            content: "test desc",
+            description: "test desc",
         };
         const boardRes: any = await request(app)
             .post("/api/boards")

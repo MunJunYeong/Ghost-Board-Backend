@@ -9,7 +9,6 @@ class PostRoutes {
     private controller: PostController;
 
     constructor() {
-        console.log("controller 호출")
         this.controller = new PostController();
         this.initializeRoutes();
     }

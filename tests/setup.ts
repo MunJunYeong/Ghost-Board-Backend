@@ -11,7 +11,7 @@ jest.mock("@configs/redis", () => {
 
 // mock - crypto
 export const mockEmailCode = "abc123";
-jest.mock("@utils/crypto", () => ({
+jest.mock("@utils/lib/crypto", () => ({
     createCode: jest.fn(() => {
         return mockEmailCode;
     }), // 원하는 값으로 설정
@@ -28,7 +28,7 @@ jest.mock("@configs/logger", () => ({
 }));
 
 // mock - email sender
-jest.mock("@utils/mailer", () => ({
+jest.mock("@utils/lib/mailer", () => ({
     sendIDMail: jest.fn(),
     sendPasswordMail: jest.fn(),
     sendSignUpMail: jest.fn(),
