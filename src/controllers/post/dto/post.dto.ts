@@ -1,4 +1,5 @@
-import { IsNotEmpty, IsOptional, IsString, MaxLength, MinLength } from "@utils/validation";
+import { ReportReason } from "@models/post_report";
+import { IsEnum, IsNotEmpty, IsOptional, IsString, MaxLength, MinLength } from "@utils/validation";
 
 interface UploadedImage {
     fieldname: string;
@@ -48,4 +49,10 @@ export class UpdatePostReqDTO {
     @MinLength(10, { message: "Content is too short" })
     @MaxLength(1000, { message: "Content is too long" })
     content!: string;
+}
+
+export class CreatePostReportReqDTO {
+    @IsEnum(ReportReason, { message: "Invalid report reason" }) // ReportReason enum에 속하는지 확인
+    @IsNotEmpty({ message: "Report reason is required" })
+    reason!: string;
 }

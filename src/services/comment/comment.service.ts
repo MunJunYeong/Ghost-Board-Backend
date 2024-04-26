@@ -4,7 +4,7 @@ import * as dto from "@controllers/comment/dto/comment.dto";
 import { convCreateDtoToComment } from "./comment.conv";
 import CommentRepo from "@repo/comment.repo";
 import UserRepo from "@repo/user.repo";
-import PostRepo from "@repo/post.repo";
+import PostRepo from "@repo/post/post.repo";
 
 export default class CommentService {
     private userRepo: UserRepo;
