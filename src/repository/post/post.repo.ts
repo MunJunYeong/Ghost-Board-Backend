@@ -4,7 +4,6 @@ import File from "@models/file";
 import Post from "@models/post";
 import Database from "@configs/database";
 import { DeleteS3File } from "@configs/s3";
-import PostLike from "@models/post_like";
 
 export default class PostRepo {
     private sequelize: Sequelize;
@@ -111,42 +110,6 @@ export default class PostRepo {
             link: link,
             fileName: fileName,
             postId: postId,
-        });
-    };
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // post_like table
-
-    getPostLikeCount = async (postId: any) => {
-        return await PostLike.count({
-            where: {
-                postId: postId,
-            },
-        });
-    };
-
-    getPostLike = async (postId: any, userId: any) => {
-        return await PostLike.findOne({
-            where: {
-                postId: postId,
-                userId: userId,
-            },
-        });
-    };
-
-    createPostLike = async (postId: any, userId: any) => {
-        return await PostLike.create({
-            postId: postId,
-            userId: userId,
-        });
-    };
-
-    deletePostLike = async (postId: any, userId: any) => {
-        return await PostLike.destroy({
-            where: {
-                postId: postId,
-                userId: userId,
-            },
         });
     };
 }

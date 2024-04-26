@@ -33,6 +33,9 @@ class PostRoutes {
         this.router.get(`${prefix}/:postId/like`, this.controller.getPostLike);
         this.router.post(`${prefix}/:postId/like`, this.controller.createPostLike);
         this.router.delete(`${prefix}/:postId/like`, this.controller.deletePostLike);
+
+        // 게시글 신고 API
+        this.router.post(`${prefix}/:postId/report`, this.controller.createReport)
     }
 }
 

@@ -110,4 +110,16 @@ export default class PostController {
             throw handleError(err);
         }
     };
+
+    createReport = async (req: Request, res: Response) => {
+        try {
+            const postId = req.params.postId;
+            const userId = req.user?.userId;
+
+            await this.postService.createPostReport(postId, userId);
+            sendJSONResponse(res, "success create post report", true);
+        } catch (err: any) {
+            throw handleError(err);
+        }
+    };
 }
