@@ -68,6 +68,10 @@ export default class PostService {
         return { posts: postList, nextCursor };
     };
 
+    getPostListByUser = async (userId: any) => {
+        // TODO:
+    };
+
     getPost = async (postId: any): Promise<Post> => {
         const post = await this.postRepo.getPost(postId);
         if (!post) {

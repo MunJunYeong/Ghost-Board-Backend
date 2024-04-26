@@ -76,6 +76,17 @@ export default class PostController {
         }
     };
 
+    getPostListByUser = async (req: Request, res: Response) => {
+        try {
+            const userId = req.params.userId;
+
+            const result = await this.postService.getPostListByUser(userId);
+            sendJSONResponse(res, "success get boards", result);
+        } catch (err: any) {
+            throw handleError(err);
+        }
+    };
+
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // like
     getPostLike = async (req: Request, res: Response) => {
