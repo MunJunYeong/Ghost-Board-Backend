@@ -116,6 +116,15 @@ export default class PostRepo {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // post_like table
+
+    getPostLikeCount = async (postId: any) => {
+        return await PostLike.count({
+            where: {
+                postId: postId,
+            },
+        });
+    };
+
     createPostLike = async (postId: any, userId: any) => {
         return await PostLike.create({
             postId: postId,

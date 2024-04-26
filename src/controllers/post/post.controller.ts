@@ -76,6 +76,17 @@ export default class PostController {
         }
     };
 
+    getPostLike = async (req: Request, res: Response) => {
+        try {
+            const postId = req.params.postId;
+
+            const result = await this.postService.getPostLikeCount(postId);
+            sendJSONResponse(res, "success get post like", result);
+        } catch (err: any) {
+            throw handleError(err);
+        }
+    };
+
     createPostLike = async (req: Request, res: Response) => {
         try {
             const postId = req.params.postId;
@@ -87,6 +98,7 @@ export default class PostController {
             throw handleError(err);
         }
     };
+
     deletePostLike = async (req: Request, res: Response) => {
         try {
             const postId = req.params.postId;

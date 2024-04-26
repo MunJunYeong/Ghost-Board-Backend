@@ -96,6 +96,18 @@ export default class PostService {
         return true;
     };
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // post_like
+
+    getPostLikeCount = async (postId: any) => {
+        // validation post
+        if (!(await this.postRepo.getPost(postId))) {
+            logger.error(`cant find post (post_id : ${postId})`);
+            throw ErrNotFound;
+        }
+        return await this.postRepo.getPostLikeCount(postId);
+    };
+
     createPostLike = async (postId: any, userId: any) => {
         // validation post
         if (!(await this.postRepo.getPost(postId))) {

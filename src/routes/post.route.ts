@@ -31,8 +31,9 @@ class PostRoutes {
         this.router.delete(`${prefix}/:postId`, this.controller.deletePost);
 
         // 좋아요 API
-        this.router.post(`${prefix}/:postId/like`, this.controller.deletePost);
-        this.router.delete(`${prefix}/:postId/like`, this.controller.deletePost);
+        this.router.get(`${prefix}/:postId/like`, this.controller.getPostLike);
+        this.router.post(`${prefix}/:postId/like`, this.controller.createPostLike);
+        this.router.delete(`${prefix}/:postId/like`, this.controller.deletePostLike);
     }
 }
 
