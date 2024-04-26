@@ -17,7 +17,7 @@ describe("Comment API", () => {
     let board: Board;
     let post: Post;
     let endpoint: string;
-    const fixedContent = "test content"
+    const fixedContent = "test content";
 
     beforeAll(async () => {
         // get accessToken
@@ -42,7 +42,7 @@ describe("Comment API", () => {
         // create Post
         const postBody = {
             title: "test post",
-            description: "test post desc",
+            content: "test post desc",
         };
         const postRes: any = await request(app)
             .post(`/api/boards/${board.boardId}/posts`)
@@ -112,10 +112,10 @@ describe("Comment API", () => {
             test("Get - api/boards/:boardId/posts/:postId/comments", async () => {
                 const response: any = await request(app)
                     .get(`${endpoint}`)
-                    .set("Authorization", `Bearer ${accessToken}`)
+                    .set("Authorization", `Bearer ${accessToken}`);
                 expect(response.statusCode).toBe(200);
                 const result: Comment[] = response.body.data;
-                expect(result[0].content).toEqual(fixedContent)
+                expect(result[0].content).toEqual(fixedContent);
             });
         });
         describe("Exception", () => {
@@ -128,7 +128,7 @@ describe("Comment API", () => {
 
     describe("Update Comment API", () => {
         let body: CreateCommentReqDTO;
-        const changedContent = "changed comment"
+        const changedContent = "changed comment";
         beforeEach(() => {
             body = {
                 content: changedContent,
@@ -141,18 +141,16 @@ describe("Comment API", () => {
                 const response: any = await request(app)
                     .put(`${endpoint}/${newComment.commentId}`)
                     .set("Authorization", `Bearer ${accessToken}`)
-                    .send(body)
+                    .send(body);
                 expect(response.statusCode).toBe(200);
                 const result = response.body.data;
-                expect(result.content).toEqual(changedContent)
+                expect(result.content).toEqual(changedContent);
 
                 // get API를 통해서 확인
-                const getRes: any = await request(app)
-                    .get(`${endpoint}`)
-                    .set("Authorization", `Bearer ${accessToken}`)
+                const getRes: any = await request(app).get(`${endpoint}`).set("Authorization", `Bearer ${accessToken}`);
                 expect(getRes.statusCode).toBe(200);
                 const getResult: Comment[] = getRes.body.data;
-                expect(getResult[0].content).toEqual(changedContent)
+                expect(getResult[0].content).toEqual(changedContent);
             });
         });
         describe("Exception", () => {

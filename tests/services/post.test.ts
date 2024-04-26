@@ -1,11 +1,9 @@
 import request from "supertest";
 import app, { defaultID, defaultPwd } from "../setup";
 import Board from "@models/board";
-import { CreatePostReqDTO } from "@controllers/post/dto/post.dto";
 import Post from "@models/post";
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// precondition
+import { CreatePostReqDTO } from "@controllers/post/dto/post.dto";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const postTitle = "test post title";
@@ -18,6 +16,7 @@ describe("Post API", () => {
     let newPost: Post;
 
     beforeAll(async () => {
+        // set access_token
         const loginBody = {
             id: defaultID,
             password: defaultPwd,
@@ -28,7 +27,7 @@ describe("Post API", () => {
         // board
         const boardBody = {
             title: "test",
-            content: "test desc",
+            description: "test desc",
         };
         const boardRes: any = await request(app)
             .post("/api/boards")
@@ -187,6 +186,67 @@ describe("Post API", () => {
             test("invalid token", async () => {
                 let response: any = await request(app).put(`${endpoint}/${newPost.postId}`);
                 expect(response.statusCode).toBe(401);
+            });
+        });
+    });
+
+    describe("Post Like API", () => {
+        let likeEndpoint: string;
+        beforeAll(async () => {
+            likeEndpoint = `${endpoint}/${newPost.postId}/like`;
+        });
+        describe("Create post_like API", () => {
+            describe("성공", () => {
+                test("Post - api/boards/:boardId/posts/:postId/like", async () => {
+                    const response: any = await request(app)
+                        .post(likeEndpoint)
+                        .set("Authorization", `Bearer ${accessToken}`);
+                    expect(response.statusCode).toBe(200);
+                });
+            });
+            describe("Exception", () => {
+                test("already exist", async () => {
+                    const response = await request(app)
+                        .post(likeEndpoint)
+                        .set("Authorization", `Bearer ${accessToken}`);
+                    expect(response.statusCode).toBe(400);
+                });
+                test("invalid token", async () => {
+                    const response = await request(app).post(likeEndpoint);
+                    expect(response.statusCode).toBe(401);
+                });
+            });
+        });
+        describe("Get post_like API", () => {
+            describe("성공", () => {
+                test("Get - api/boards/:boardId/posts/:postId/like", async () => {
+                    const response: any = await request(app)
+                        .get(likeEndpoint)
+                        .set("Authorization", `Bearer ${accessToken}`);
+                    expect(response.statusCode).toBe(200);
+                });
+            });
+            describe("Exception", () => {
+                test("invalid token", async () => {
+                    const response = await request(app).post(likeEndpoint);
+                    expect(response.statusCode).toBe(401);
+                });
+            });
+        });
+        describe("Delete post_like API", () => {
+            describe("성공", () => {
+                test("Get - api/boards/:boardId/posts/:postId/like", async () => {
+                    const response: any = await request(app)
+                        .delete(likeEndpoint)
+                        .set("Authorization", `Bearer ${accessToken}`);
+                    expect(response.statusCode).toBe(200);
+                });
+            });
+            describe("Exception", () => {
+                test("invalid token", async () => {
+                    const response = await request(app).post(likeEndpoint);
+                    expect(response.statusCode).toBe(401);
+                });
             });
         });
     });
