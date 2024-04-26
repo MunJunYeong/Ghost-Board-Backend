@@ -190,6 +190,67 @@ describe("Post API", () => {
         });
     });
 
+    describe("Post Like API", () => {
+        let likeEndpoint: string;
+        beforeAll(async () => {
+            likeEndpoint = `${endpoint}/${newPost.postId}/like`;
+        });
+        describe("Create post_like API", () => {
+            describe("성공", () => {
+                test("Post - api/boards/:boardId/posts/:postId/like", async () => {
+                    const response: any = await request(app)
+                        .post(likeEndpoint)
+                        .set("Authorization", `Bearer ${accessToken}`);
+                    expect(response.statusCode).toBe(200);
+                });
+            });
+            describe("Exception", () => {
+                test("already exist", async () => {
+                    const response = await request(app)
+                        .post(likeEndpoint)
+                        .set("Authorization", `Bearer ${accessToken}`);
+                    expect(response.statusCode).toBe(400);
+                });
+                test("invalid token", async () => {
+                    const response = await request(app).post(likeEndpoint);
+                    expect(response.statusCode).toBe(401);
+                });
+            });
+        });
+        describe("Get post_like API", () => {
+            describe("성공", () => {
+                test("Get - api/boards/:boardId/posts/:postId/like", async () => {
+                    const response: any = await request(app)
+                        .get(likeEndpoint)
+                        .set("Authorization", `Bearer ${accessToken}`);
+                    expect(response.statusCode).toBe(200);
+                });
+            });
+            describe("Exception", () => {
+                test("invalid token", async () => {
+                    const response = await request(app).post(likeEndpoint);
+                    expect(response.statusCode).toBe(401);
+                });
+            });
+        });
+        describe("Delete post_like API", () => {
+            describe("성공", () => {
+                test("Get - api/boards/:boardId/posts/:postId/like", async () => {
+                    const response: any = await request(app)
+                        .delete(likeEndpoint)
+                        .set("Authorization", `Bearer ${accessToken}`);
+                    expect(response.statusCode).toBe(200);
+                });
+            });
+            describe("Exception", () => {
+                test("invalid token", async () => {
+                    const response = await request(app).post(likeEndpoint);
+                    expect(response.statusCode).toBe(401);
+                });
+            });
+        });
+    });
+
     describe("Delete Post API", () => {
         describe("성공", () => {
             test("Delete - api/boards/:boardId/posts/:postId", async () => {
