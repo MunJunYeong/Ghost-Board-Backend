@@ -143,17 +143,27 @@ export default class PostService {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // post_report
-    createPostReport = async (postId: any, userId: any) => {
+    createPostReport = async (postId: any, userId: any, reason: string) => {
         // validation post
-        if (!(await this.postRepo.getPost(postId))) {
+        const post = await this.postRepo.getPost(postId);
+        if (!post) {
             logger.error(`cant find post (post_id : ${postId})`);
             throw ErrNotFound;
         }
 
-        // 중복 like check
-        if (await this.postLikeRepo.getPostLike(postId, userId)) {
-            logger.error(`Is alreay exist post_like`);
+        // 중복 report check
+        if (await this.postReportRepo.getPostReport(postId, userId)) {
+            logger.error(`Is alreay exist post_report`);
             throw ErrAlreadyExist;
+        }
+
+        await this.postReportRepo.createPostReport(postId, userId, reason);
+
+        // 중요 로직 - 해당 Post의 신고가 누적 10건이라면 해당 Post의 `activate`를 false로 비활성화 시켜버림
+        const count = await this.postReportRepo.getPostReportCount(postId);
+        if (count >= 10) {
+            post.activate = false;
+            await this.postRepo.updatePost(post);
         }
 
         return true;

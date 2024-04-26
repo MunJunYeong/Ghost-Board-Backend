@@ -9,7 +9,7 @@ class PostLike extends Model<InferAttributes<PostLike>, InferCreationAttributes<
     declare type?: string;
 }
 
-export const initLike = (sequelize: Sequelize) => {
+export const initPostLike = (sequelize: Sequelize) => {
     PostLike.init(
         {
             likeId: {
@@ -38,7 +38,7 @@ export const initLike = (sequelize: Sequelize) => {
     );
 };
 
-export const relationLike = () => {
+export const relationPostLike = () => {
     // Like 테이블은 User와 Post에 속합니다.
     PostLike.belongsTo(User, { foreignKey: "userId" });
     PostLike.belongsTo(Post, { foreignKey: "postId" });

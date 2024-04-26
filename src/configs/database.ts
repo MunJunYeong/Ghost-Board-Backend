@@ -5,7 +5,8 @@ import { initBoard } from "@models/board";
 import { initPost, relationPost } from "@models/post";
 import { initFile, relationFile } from "@models/file";
 import { initComment, relationComment } from "@models/comment";
-import { initLike, relationLike } from "@models/post_like";
+import { initPostLike, relationPostLike } from "@models/post_like";
+import { initPostReport, relationPostReport } from "@models/post_report";
 
 const DBConfigs = {
     username: process.env.DB_USERNAME || "postgres",
@@ -40,16 +41,18 @@ export default class Database {
             // model init
             initUser(this.sequelizeInstance);
             initBoard(this.sequelizeInstance);
-            initPost(this.sequelizeInstance);
             initFile(this.sequelizeInstance);
+            initPost(this.sequelizeInstance);
+            initPostLike(this.sequelizeInstance);
+            initPostReport(this.sequelizeInstance);
             initComment(this.sequelizeInstance);
-            initLike(this.sequelizeInstance);
 
             // relation init
             relationPost();
+            relationPostLike();
+            relationPostReport();
             relationComment();
             relationFile();
-            relationLike();
 
             // await this.sequelizeInstance.sync();
             await this.sequelizeInstance.sync({ logging: false });

@@ -76,6 +76,8 @@ export default class PostController {
         }
     };
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // like
     getPostLike = async (req: Request, res: Response) => {
         try {
             const postId = req.params.postId;
@@ -111,12 +113,15 @@ export default class PostController {
         }
     };
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // report
     createReport = async (req: Request, res: Response) => {
         try {
             const postId = req.params.postId;
             const userId = req.user?.userId;
+            const body: dto.CreatePostReportReqDTO = req.body;
 
-            await this.postService.createPostReport(postId, userId);
+            await this.postService.createPostReport(postId, userId, body.reason);
             sendJSONResponse(res, "success create post report", true);
         } catch (err: any) {
             throw handleError(err);

@@ -35,7 +35,7 @@ class PostRoutes {
         this.router.delete(`${prefix}/:postId/like`, this.controller.deletePostLike);
 
         // 게시글 신고 API
-        this.router.post(`${prefix}/:postId/report`, this.controller.createReport)
+        this.router.post(`${prefix}/:postId/report`, validationMiddleware(dto.CreatePostReportReqDTO), this.controller.createReport)
     }
 }
 

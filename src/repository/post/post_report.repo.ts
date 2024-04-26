@@ -19,7 +19,7 @@ export default class PostReportRepo {
         });
     };
 
-    getPostLike = async (postId: any, userId: any) => {
+    getPostReport = async (postId: any, userId: any) => {
         return await PostReport.findOne({
             where: {
                 postId: postId,
@@ -28,7 +28,7 @@ export default class PostReportRepo {
         });
     };
 
-    createPostLike = async (postId: any, userId: any, reason: any) => {
+    createPostReport = async (postId: any, userId: any, reason: any) => {
         return await PostReport.create({
             postId: postId,
             userId: userId,
