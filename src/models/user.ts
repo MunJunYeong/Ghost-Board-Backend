@@ -7,6 +7,7 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
     declare password: string;
     declare username: string;
     declare email: string;
+    declare role?: string;
     declare activate?: boolean;
     declare createdAt: CreationOptional<Date>;
     declare updatedAt: CreationOptional<Date>;
@@ -42,6 +43,11 @@ export const initUser = (sequelize: Sequelize) => {
             activate: {
                 type: DataTypes.BOOLEAN,
                 defaultValue: true,
+            },
+            role: {
+                type: DataTypes.STRING,
+                allowNull: false,
+                defaultValue: "usual",
             },
             createdAt: {
                 type: DataTypes.DATE,

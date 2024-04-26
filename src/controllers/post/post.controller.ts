@@ -41,10 +41,10 @@ export default class PostController {
 
     getPost = async (req: Request, res: Response) => {
         try {
-            const boardId = req.params.boardId;
+            // const boardId = req.params.boardId;
             const postId = req.params.postId;
 
-            const result = await this.postService.getPost(boardId, postId);
+            const result = await this.postService.getPost(postId);
             sendJSONResponse(res, `success get post (post_id : ${postId})`, result.toJSON());
         } catch (err: any) {
             throw handleError(err);
@@ -53,11 +53,11 @@ export default class PostController {
 
     updatePost = async (req: Request, res: Response) => {
         try {
-            const boardId = req.params.boardId;
+            // const boardId = req.params.boardId;
             const postId = req.params.postId;
             const body: dto.UpdatePostReqDTO = req.body;
 
-            const result = await this.postService.updatePost(body, boardId, postId);
+            const result = await this.postService.updatePost(body, postId);
             sendJSONResponse(res, "success update boards", result.toJSON());
         } catch (err: any) {
             throw handleError(err);
@@ -66,11 +66,46 @@ export default class PostController {
 
     deletePost = async (req: Request, res: Response) => {
         try {
-            const boardId = req.params.boardId;
+            // const boardId = req.params.boardId; 실제로 boardID는 사용하지 않음.
             const postId = req.params.postId;
 
-            const result = await this.postService.deletePost(boardId, postId);
+            const result = await this.postService.deletePost(postId);
             sendJSONResponse(res, "success get boards", result);
+        } catch (err: any) {
+            throw handleError(err);
+        }
+    };
+
+    getPostLike = async (req: Request, res: Response) => {
+        try {
+            const postId = req.params.postId;
+
+            const result = await this.postService.getPostLikeCount(postId);
+            sendJSONResponse(res, "success get post like", result);
+        } catch (err: any) {
+            throw handleError(err);
+        }
+    };
+
+    createPostLike = async (req: Request, res: Response) => {
+        try {
+            const postId = req.params.postId;
+            const userId = req.user?.userId;
+
+            await this.postService.createPostLike(postId, userId);
+            sendJSONResponse(res, "success create post like", true);
+        } catch (err: any) {
+            throw handleError(err);
+        }
+    };
+
+    deletePostLike = async (req: Request, res: Response) => {
+        try {
+            const postId = req.params.postId;
+            const userId = req.user?.userId;
+
+            await this.postService.deletePostLike(postId, userId);
+            sendJSONResponse(res, "success delete post like", true);
         } catch (err: any) {
             throw handleError(err);
         }
