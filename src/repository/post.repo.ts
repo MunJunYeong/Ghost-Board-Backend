@@ -125,6 +125,15 @@ export default class PostRepo {
         });
     };
 
+    getPostLike = async (postId: any, userId: any) => {
+        return await PostLike.findOne({
+            where: {
+                postId: postId,
+                userId: userId,
+            },
+        });
+    };
+
     createPostLike = async (postId: any, userId: any) => {
         return await PostLike.create({
             postId: postId,

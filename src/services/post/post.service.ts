@@ -1,4 +1,4 @@
-import { ErrNotFound } from "@errors/handler";
+import { ErrAlreadyExist, ErrNotFound } from "@errors/handler";
 import { logger } from "@configs/logger";
 import * as dto from "@controllers/post/dto/post.dto";
 import Post from "@models/post";
@@ -113,6 +113,12 @@ export default class PostService {
         if (!(await this.postRepo.getPost(postId))) {
             logger.error(`cant find post (post_id : ${postId})`);
             throw ErrNotFound;
+        }
+
+        // 중복 like check
+        if (await this.postRepo.getPostLike(postId, userId)) {
+            logger.error(`Is alreay exist post_like`);
+            throw ErrAlreadyExist;
         }
 
         await this.postRepo.createPostLike(postId, userId);
