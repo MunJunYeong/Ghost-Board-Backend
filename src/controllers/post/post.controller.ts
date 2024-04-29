@@ -4,6 +4,7 @@ import * as dto from "@controllers/post/dto/post.dto";
 import { handleError } from "@errors/error-handler";
 import PostService from "@services/post/post.service";
 import { sendJSONResponse } from "@utils/response";
+import { PaginationReqDTO } from "@controllers/common.dto";
 
 export default class PostController {
     private postService: PostService;
@@ -70,6 +71,29 @@ export default class PostController {
             const postId = req.params.postId;
 
             const result = await this.postService.deletePost(postId);
+            sendJSONResponse(res, "success get boards", result);
+        } catch (err: any) {
+            throw handleError(err);
+        }
+    };
+
+    getPostListByUser = async (req: Request, res: Response) => {
+        try {
+            const userId = req.params.userId;
+            let pagination: PaginationReqDTO;
+            {
+                let pageIndex = parseInt(req.query.pageIndex as string);
+                pageIndex = isNaN(pageIndex) ? 0 : pageIndex; // default : 0
+                let pageSize = parseInt(req.query.pageSize as string);
+                pageSize = isNaN(pageSize) ? 10 : pageSize; // default : 10
+                const search = (req.query.search as string) || "";
+                pagination = {
+                    pageIndex,
+                    pageSize,
+                    search,
+                };
+            }
+            const result = await this.postService.getPostListByUser(userId, pagination);
             sendJSONResponse(res, "success get boards", result);
         } catch (err: any) {
             throw handleError(err);

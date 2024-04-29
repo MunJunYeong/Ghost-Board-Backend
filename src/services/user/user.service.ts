@@ -36,9 +36,6 @@ export default class UserService {
         if (!u) {
             throw ErrNotFound;
         }
-        if (userData.email) {
-            u.email = userData.email;
-        }
         if (userData.password) {
             u.password = await hashing(userData.password);
         }
