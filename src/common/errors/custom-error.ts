@@ -1,6 +1,3 @@
-import BadRequestError from "./bad_request";
-import InternalError from "./internal_server";
-
 export abstract class CustomError extends Error {
     abstract readonly statusCode: number;
     abstract readonly message: string;
@@ -14,4 +11,3 @@ export abstract class CustomError extends Error {
         Object.setPrototypeOf(this, CustomError.prototype);
     }
 }
-

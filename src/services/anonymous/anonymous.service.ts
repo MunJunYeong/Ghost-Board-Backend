@@ -2,7 +2,7 @@ import UserRepo from "@repo/user.repo";
 import { issueAccessToken, issueRefreshToken } from "@utils/lib/jwt";
 import * as dto from "@controllers/anonymous/dto/anonymous.dto";
 import { convSignupToUser } from "./anonymous.conv";
-import { ErrAlreadyExist, ErrNotFound, ErrUnauthorized } from "@errors/handler";
+import { ErrAlreadyExist, ErrNotFound, ErrUnauthorized } from "@errors/error-handler";
 import { compareHashedValue, hashing } from "@utils/lib/encryption";
 import { createUserResponse } from "@services/user/user.conv";
 import { logger } from "@configs/logger";

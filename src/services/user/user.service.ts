@@ -1,5 +1,5 @@
 // common
-import { ErrNotFound } from "@errors/handler";
+import { ErrNotFound } from "@errors/error-handler";
 import { hashing } from "@utils/lib/encryption";
 
 // server
