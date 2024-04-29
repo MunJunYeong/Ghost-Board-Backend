@@ -8,6 +8,7 @@ import BoardRepo from "@repo/board.repo";
 import { convToFile, convToPost } from "./post.conv";
 import PostLikeRepo from "@repo/post/post_like.repo";
 import PostReportRepo from "@repo/post/post_report.repo";
+import { PaginationReqDTO } from "@controllers/common.dto";
 
 export default class PostService {
     private userRepo: UserRepo;
@@ -68,8 +69,12 @@ export default class PostService {
         return { posts: postList, nextCursor };
     };
 
-    getPostListByUser = async (userId: any) => {
-        // TODO:
+    getPostListByUser = async (userId: any, pagination: PaginationReqDTO) => {
+        if (!(await this.userRepo.getUserByPkID(userId))) {
+            logger.error(`cant find user (pk user_id - ${userId}`);
+            throw ErrNotFound;
+        }
+        return await this.postRepo.getPostListOffset(userId, pagination);
     };
 
     getPost = async (postId: any): Promise<Post> => {

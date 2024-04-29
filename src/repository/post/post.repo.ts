@@ -4,6 +4,7 @@ import File from "@models/file";
 import Post from "@models/post";
 import Database from "@configs/database";
 import { DeleteS3File } from "@configs/s3";
+import { PaginationReqDTO } from "@controllers/common.dto";
 
 export default class PostRepo {
     private sequelize: Sequelize;
@@ -52,6 +53,21 @@ export default class PostRepo {
             },
             include: [File],
             limit: 10,
+            order: [["created_at", "DESC"]],
+        });
+    };
+
+    getPostListOffset = async (userId: any, pagination: PaginationReqDTO) => {
+        const { pageIndex, pageSize, search } = pagination;
+        const offset = pageIndex * pageSize; // calc offset
+
+        return await Post.findAll({
+            where: {
+                userId: userId,
+                title: { [Op.like]: `%${search}%` }, // 제목에 검색어가 포함된 게시글 필터링 (예시)
+            },
+            offset: offset,
+            limit: pageSize,
             order: [["created_at", "DESC"]],
         });
     };
