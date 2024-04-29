@@ -82,8 +82,10 @@ export default class PostController {
             const userId = req.params.userId;
             let pagination: PaginationReqDTO;
             {
-                const pageIndex = parseInt(req.query.page as string) || 1; // default - 1
-                const pageSize = parseInt(req.query.pageSize as string) || 10; // default - 10
+                let pageIndex = parseInt(req.query.pageIndex as string);
+                pageIndex = isNaN(pageIndex) ? 0 : pageIndex; // default : 0
+                let pageSize = parseInt(req.query.pageSize as string);
+                pageSize = isNaN(pageSize) ? 10 : pageSize; // default : 10
                 const search = (req.query.search as string) || "";
                 pagination = {
                     pageIndex,
@@ -91,7 +93,6 @@ export default class PostController {
                     search,
                 };
             }
-
             const result = await this.postService.getPostListByUser(userId, pagination);
             sendJSONResponse(res, "success get boards", result);
         } catch (err: any) {

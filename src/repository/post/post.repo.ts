@@ -59,9 +59,9 @@ export default class PostRepo {
 
     getPostListOffset = async (userId: any, pagination: PaginationReqDTO) => {
         const { pageIndex, pageSize, search } = pagination;
-        const offset = pageIndex * pageSize; // calc offset
+        const offset = pageIndex * pageSize; // offset 계산
 
-        return await Post.findAll({
+        const { count, rows } = await Post.findAndCountAll({
             where: {
                 userId: userId,
                 title: { [Op.like]: `%${search}%` }, // 제목에 검색어가 포함된 게시글 필터링 (예시)
@@ -70,6 +70,13 @@ export default class PostRepo {
             limit: pageSize,
             order: [["created_at", "DESC"]],
         });
+
+        return {
+            totalCount: count,
+            posts: rows,
+            currentPageIndex: pageIndex,
+            totalPages: Math.ceil(count / pageSize),
+        };
     };
 
     getPost = async (postId: number) => {

@@ -74,7 +74,9 @@ export default class PostService {
             logger.error(`cant find user (pk user_id - ${userId}`);
             throw ErrNotFound;
         }
-        return await this.postRepo.getPostListOffset(userId, pagination);
+        const result = await this.postRepo.getPostListOffset(userId, pagination);
+        console.log(result.posts.length);
+        return result;
     };
 
     getPost = async (postId: any): Promise<Post> => {
