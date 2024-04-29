@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 
 import * as dto from "@controllers/post/dto/post.dto";
-import { handleError } from "@errors/handler";
+import { handleError } from "@errors/error-handler";
 import PostService from "@services/post/post.service";
 import { sendJSONResponse } from "@utils/response";
 

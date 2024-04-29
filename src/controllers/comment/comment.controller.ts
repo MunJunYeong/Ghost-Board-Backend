@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 
 import * as dto from "@controllers/comment/dto/comment.dto";
 import CommentService from "@services/comment/comment.service";
-import { handleError } from "@errors/handler";
+import { handleError } from "@errors/error-handler";
 import { sendJSONResponse } from "@utils/response";
 
 export default class CommentController {

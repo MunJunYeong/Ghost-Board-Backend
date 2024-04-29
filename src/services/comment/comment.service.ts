@@ -1,4 +1,4 @@
-import { ErrInvalidArgument, ErrNotFound } from "@errors/handler";
+import { ErrInvalidArgument, ErrNotFound } from "@errors/error-handler";
 import { logger } from "@configs/logger";
 import * as dto from "@controllers/comment/dto/comment.dto";
 import { convCreateDtoToComment } from "./comment.conv";

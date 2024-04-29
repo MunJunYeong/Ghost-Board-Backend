@@ -1,4 +1,4 @@
-import { ErrAlreadyExist, ErrNotFound } from "@errors/handler";
+import { ErrAlreadyExist, ErrNotFound } from "@errors/error-handler";
 import { logger } from "@configs/logger";
 import * as dto from "@controllers/post/dto/post.dto";
 import Post from "@models/post";

@@ -11,7 +11,7 @@ import {
     ErrTooManyRequest,
     ErrUnauthorized,
     handleError,
-} from "@errors/handler";
+} from "@errors/error-handler";
 import { issueAccessToken, verifyAccessToken, verifyRefreshToken } from "@utils/lib/jwt";
 import { sendJSONResponse } from "@utils/response";
 import { sendIDMail, sendPasswordMail, sendSignUpMail } from "@utils/lib/mailer";

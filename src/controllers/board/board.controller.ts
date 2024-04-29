@@ -3,7 +3,7 @@ import { Request, Response } from "express";
 import BoardService from "@services/board/board.service";
 import * as dto from "@controllers/board/dto/board.dto";
 import { sendJSONResponse } from "@utils/response";
-import { handleError } from "@errors/handler";
+import { handleError } from "@errors/error-handler";
 
 export default class BoardController {
     private boardService: BoardService;

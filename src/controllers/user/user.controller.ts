@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 
 // common
-import { handleError } from "@errors/handler";
+import { handleError } from "@errors/error-handler";
 import RedisClient, { Redis } from "@configs/redis";
 
 // server

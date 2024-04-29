@@ -1,6 +1,6 @@
 import BoardRepo from "@repo/board.repo";
 import * as dto from "@controllers/board/dto/board.dto";
-import { ErrAlreadyExist, ErrNotFound } from "@errors/handler";
+import { ErrAlreadyExist, ErrNotFound } from "@errors/error-handler";
 import { convCreateBoardToBoard } from "./board.conv";
 import Board from "@models/board";
 import { logger } from "@configs/logger";

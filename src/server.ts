@@ -12,6 +12,7 @@ import "express-async-errors";
 import { morganMiddleware } from "@middlewares/morgan";
 import { logger } from "@configs/logger";
 import Database from "@configs/database";
+import { apiLimiter } from "@utils/lib/rate-limit";
 
 export default class Server {
     private app: Application;
@@ -35,6 +36,7 @@ export default class Server {
         this.app.use(cors(corsOptions));
         this.app.use(bodyParser.json());
         this.app.use(express.urlencoded({ extended: true }));
+        this.app.use(apiLimiter);
         this.app.use(morganMiddleware);
         this.app.use(helmet());
     };
