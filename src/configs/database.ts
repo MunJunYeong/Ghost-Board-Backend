@@ -4,7 +4,7 @@ import { initUser } from "@models/user";
 import { initBoard } from "@models/board";
 import { initPost, relationPost } from "@models/post/post";
 import { initFile, relationFile } from "@models/file";
-import { initComment, relationComment } from "@models/comment";
+import { initComment, relationComment } from "@models/comment/comment";
 import { initPostLike, relationPostLike } from "@models/post/post_like";
 import { initPostReport, relationPostReport } from "@models/post/post_report";
 

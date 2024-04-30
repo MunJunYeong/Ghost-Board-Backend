@@ -1,4 +1,4 @@
-import Comment from "@models/comment";
+import Comment from "@models/comment/comment";
 import { Op } from "sequelize";
 
 export default class CommentRepo {
