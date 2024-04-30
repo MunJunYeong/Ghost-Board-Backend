@@ -1,6 +1,6 @@
 import { Model, DataTypes, Sequelize, InferCreationAttributes, InferAttributes, CreationOptional } from "sequelize";
 import Post from "./post";
-import User from "./user";
+import User from "../user";
 
 export enum ReportReason {
     NotLiked = "마음에들지않아요",

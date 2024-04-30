@@ -1,6 +1,6 @@
 import { Model, DataTypes, Sequelize, InferCreationAttributes, InferAttributes, CreationOptional } from "sequelize";
 
-import Post from "./post";
+import Post from "./post/post";
 
 class File extends Model<InferAttributes<File>, InferCreationAttributes<File>> {
     declare fileId: CreationOptional<number>;

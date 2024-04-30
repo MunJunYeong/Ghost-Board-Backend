@@ -1,7 +1,7 @@
 import { Model, DataTypes, Sequelize, InferCreationAttributes, InferAttributes, CreationOptional } from "sequelize";
 
 import User from "./user";
-import Post from "./post";
+import Post from "./post/post";
 
 class Comment extends Model<InferAttributes<Comment>, InferCreationAttributes<Comment>> {
     declare commentId: CreationOptional<number>;

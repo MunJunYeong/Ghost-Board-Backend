@@ -1,7 +1,7 @@
 import { ErrAlreadyExist, ErrNotFound } from "@errors/error-handler";
 import { logger } from "@configs/logger";
 import * as dto from "@controllers/post/dto/post.dto";
-import Post from "@models/post";
+import Post from "@models/post/post";
 import PostRepo from "@repo/post/post.repo";
 import UserRepo from "@repo/user.repo";
 import BoardRepo from "@repo/board.repo";

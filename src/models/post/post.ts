@@ -1,8 +1,8 @@
 import { Model, DataTypes, Sequelize, InferCreationAttributes, InferAttributes, CreationOptional } from "sequelize";
 
-import User from "./user";
-import Board from "./board";
-import File from "./file";
+import User from "../user";
+import Board from "../board";
+import File from "../file";
 
 class Post extends Model<InferAttributes<Post>, InferCreationAttributes<Post>> {
     declare postId: CreationOptional<number>;
