@@ -14,11 +14,23 @@ class CommentRoutes {
 
     initializeRoutes() {
         const prefix = "/boards/:boardId/posts/:postId/comments";
-                        
+                     
+        // Create 댓글  API
         this.router.post(`${prefix}`, validationMiddleware(dto.CreateCommentReqDTO), this.controller.createComment);
+
+        // Get 댓글  API
         this.router.get(`${prefix}`, this.controller.getCommentList);
+
+        // Update 댓글  API
         this.router.put(`${prefix}/:commentId`, validationMiddleware(dto.CreateCommentReqDTO), this.controller.updateComment);
+
+        // delete 댓글  API
         this.router.delete(`${prefix}/:commentId`, this.controller.deleteComment);
+
+        // 좋아요 API
+        this.router.get(`${prefix}/:commentId/like`, this.controller.getCommentLike);
+        this.router.post(`${prefix}/:commentId/like`, this.controller.createCommentLike);
+        this.router.delete(`${prefix}/:commentId/like`, this.controller.deleteCommentLike);
     }
 }
 

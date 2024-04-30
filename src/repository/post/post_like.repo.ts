@@ -1,7 +1,7 @@
 import { Sequelize } from "sequelize";
 
 import Database from "@configs/database";
-import PostLike from "@models/post_like";
+import PostLike from "@models/post/post_like";
 
 export default class PostLikeRepo {
     private sequelize: Sequelize;

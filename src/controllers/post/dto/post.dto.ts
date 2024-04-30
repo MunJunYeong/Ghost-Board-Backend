@@ -1,4 +1,4 @@
-import { ReportReason } from "@models/post_report";
+import { ReportReason } from "@models/post/post_report";
 import { IsEnum, IsNotEmpty, IsOptional, IsString, MaxLength, MinLength } from "@utils/validation";
 
 interface UploadedImage {

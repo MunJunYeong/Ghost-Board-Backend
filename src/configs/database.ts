@@ -2,11 +2,13 @@ import { Sequelize, Dialect } from "sequelize";
 
 import { initUser } from "@models/user";
 import { initBoard } from "@models/board";
-import { initPost, relationPost } from "@models/post";
+import { initPost, relationPost } from "@models/post/post";
 import { initFile, relationFile } from "@models/file";
-import { initComment, relationComment } from "@models/comment";
-import { initPostLike, relationPostLike } from "@models/post_like";
-import { initPostReport, relationPostReport } from "@models/post_report";
+import { initComment, relationComment } from "@models/comment/comment";
+import { initPostLike, relationPostLike } from "@models/post/post_like";
+import { initPostReport, relationPostReport } from "@models/post/post_report";
+import { initCommentLike, relationCommentLike } from "@models/comment/comment_like";
+import { initCommentReport, relationCommentReport } from "@models/comment/comment_report";
 
 const DBConfigs = {
     username: process.env.DB_USERNAME || "postgres",
@@ -46,6 +48,8 @@ export default class Database {
             initPostLike(this.sequelizeInstance);
             initPostReport(this.sequelizeInstance);
             initComment(this.sequelizeInstance);
+            initCommentLike(this.sequelizeInstance);
+            initCommentReport(this.sequelizeInstance);
 
             // relation init
             relationPost();
@@ -53,6 +57,8 @@ export default class Database {
             relationPostReport();
             relationComment();
             relationFile();
+            relationCommentLike();
+            relationCommentReport();
 
             // await this.sequelizeInstance.sync();
             await this.sequelizeInstance.sync({ logging: false });

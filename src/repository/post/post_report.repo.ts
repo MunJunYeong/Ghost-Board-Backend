@@ -1,7 +1,7 @@
 import { Sequelize } from "sequelize";
 
 import Database from "@configs/database";
-import PostReport from "@models/post_report";
+import PostReport from "@models/post/post_report";
 
 export default class PostReportRepo {
     private sequelize: Sequelize;

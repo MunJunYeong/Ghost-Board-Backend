@@ -1,4 +1,4 @@
-import Post from "@models/post";
+import Post from "@models/post/post";
 import * as dto from "@controllers/post/dto/post.dto";
 import File from "@models/file";
 import { generateRandomName } from "@utils/random";

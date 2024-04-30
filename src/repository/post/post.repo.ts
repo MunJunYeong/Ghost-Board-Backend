@@ -1,7 +1,7 @@
 import { Op, Sequelize } from "sequelize";
 
 import File from "@models/file";
-import Post from "@models/post";
+import Post from "@models/post/post";
 import Database from "@configs/database";
 import { DeleteS3File } from "@configs/s3";
 import { PaginationReqDTO } from "@controllers/common.dto";

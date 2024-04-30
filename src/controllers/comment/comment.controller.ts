@@ -56,4 +56,41 @@ export default class CommentController {
             throw handleError(err);
         }
     };
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // like
+    getCommentLike = async (req: Request, res: Response) => {
+        try {
+            const commentId = req.params.commentId;
+
+            const result = await this.commentService.getCommentLikeCount(commentId);
+            sendJSONResponse(res, "success get comment like", result);
+        } catch (err: any) {
+            throw handleError(err);
+        }
+    };
+
+    createCommentLike = async (req: Request, res: Response) => {
+        try {
+            const commentId = req.params.commentId;
+            const userId = req.user?.userId;
+
+            const result = await this.commentService.createCommentLike(commentId, userId);
+            sendJSONResponse(res, `success create comment like (commentId : ${commentId})`, result);
+        } catch (err: any) {
+            throw handleError(err);
+        }
+    };
+
+    deleteCommentLike = async (req: Request, res: Response) => {
+        try {
+            const commentId = req.params.commentId;
+            const userId = req.user?.userId;
+
+            const result = await this.commentService.deleteCommentLike(commentId, userId);
+            sendJSONResponse(res, `success delete comment like (commentId : ${commentId})`, result);
+        } catch (err: any) {
+            throw handleError(err);
+        }
+    };
 }

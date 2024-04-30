@@ -1,29 +1,19 @@
 import { Model, DataTypes, Sequelize, InferCreationAttributes, InferAttributes, CreationOptional } from "sequelize";
-import Post from "./post";
-import User from "./user";
+import User from "../user";
+import { ReportReason } from "@models/post/post_report";
+import Comment from "./comment";
 
-export enum ReportReason {
-    NotLiked = "마음에들지않아요",
-    Inappropriate = "선정적이에요",
-    IncitementOfTerror = "테러를조장해요",
-    InappropriateContent = "부적절해요",
-    Spam = "스팸이에요",
-    HateSpeech = "혐오발언이에요",
-    AggressiveContent = "공격적인내용이있어요",
-    FalseInformation = "거짓정보가포함돼있어요",
-}
-
-class PostReport extends Model<InferAttributes<PostReport>, InferCreationAttributes<PostReport>> {
+class CommentReport extends Model<InferAttributes<CommentReport>, InferCreationAttributes<CommentReport>> {
     declare reportId: CreationOptional<number>;
     declare userId: number;
-    declare postId: number;
+    declare commentId: number;
     declare reason: ReportReason;
     declare createdAt: CreationOptional<Date>;
     declare updatedAt: CreationOptional<Date>;
 }
 
-export const initPostReport = (sequelize: Sequelize) => {
-    PostReport.init(
+export const initCommentReport = (sequelize: Sequelize) => {
+    CommentReport.init(
         {
             reportId: {
                 type: DataTypes.INTEGER,
@@ -44,22 +34,22 @@ export const initPostReport = (sequelize: Sequelize) => {
                 type: DataTypes.INTEGER,
                 allowNull: false,
             },
-            postId: {
+            commentId: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
             },
         },
         {
             sequelize,
-            tableName: "post_report",
+            tableName: "comment_report",
         }
     );
 };
 
-export const relationPostReport = () => {
-    // Like 테이블은 User와 Post에 속합니다.
-    PostReport.belongsTo(User, { foreignKey: "userId" });
-    PostReport.belongsTo(Post, { foreignKey: "postId" });
+export const relationCommentReport = () => {
+    // Like 테이블은 User와 Comment에 속합니다.
+    CommentReport.belongsTo(User, { foreignKey: "userId" });
+    CommentReport.belongsTo(Comment, { foreignKey: "commentId" });
 };
 
-export default PostReport;
+export default CommentReport;

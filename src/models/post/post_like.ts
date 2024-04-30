@@ -1,6 +1,6 @@
 import { Model, DataTypes, Sequelize, InferCreationAttributes, InferAttributes, CreationOptional } from "sequelize";
 import Post from "./post";
-import User from "./user";
+import User from "../user";
 
 class PostLike extends Model<InferAttributes<PostLike>, InferCreationAttributes<PostLike>> {
     declare likeId: CreationOptional<number>;

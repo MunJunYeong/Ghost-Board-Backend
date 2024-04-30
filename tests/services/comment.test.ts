@@ -2,8 +2,8 @@ import request from "supertest";
 import app, { defaultID, defaultPwd } from "../setup";
 
 import Board from "@models/board";
-import Post from "@models/post";
-import Comment from "@models/comment";
+import Post from "@models/post/post";
+import Comment from "@models/comment/comment";
 import { CreateCommentReqDTO } from "@controllers/comment/dto/comment.dto";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
