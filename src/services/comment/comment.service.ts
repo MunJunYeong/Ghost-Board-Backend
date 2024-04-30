@@ -85,4 +85,24 @@ export default class CommentService {
         }
         return true;
     };
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // like
+    createCommentLike = async (commentId: any, userId: any) => {
+        // validation post
+        if (!(await this.commentRepo.getCommentByID(commentId))) {
+            logger.error(`cant find comment (comment_id : ${commentId})`);
+            throw ErrNotFound;
+        }
+
+        // 중복 like check
+        // if (await this.postLikeRepo.getPostLike(postId, userId)) {
+        //     logger.error(`Is alreay exist post_like`);
+        //     throw ErrAlreadyExist;
+        // }
+
+        // await this.postLikeRepo.createPostLike(postId, userId);
+        return true;
+    };
+
 }
