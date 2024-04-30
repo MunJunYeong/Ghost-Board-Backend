@@ -1,20 +1,23 @@
-import { ErrInvalidArgument, ErrNotFound } from "@errors/error-handler";
+import { ErrAlreadyExist, ErrInvalidArgument, ErrNotFound } from "@errors/error-handler";
 import { logger } from "@configs/logger";
 import * as dto from "@controllers/comment/dto/comment.dto";
 import { convCreateDtoToComment } from "./comment.conv";
 import CommentRepo from "@repo/comment/comment.repo";
 import UserRepo from "@repo/user.repo";
 import PostRepo from "@repo/post/post.repo";
+import CommentLikeRepo from "@repo/comment/comment_like.repo";
 
 export default class CommentService {
     private userRepo: UserRepo;
     private postRepo: PostRepo;
     private commentRepo: CommentRepo;
+    private commentLikeRepo: CommentLikeRepo;
 
     constructor() {
         this.userRepo = new UserRepo();
         this.postRepo = new PostRepo();
         this.commentRepo = new CommentRepo();
+        this.commentLikeRepo = new CommentLikeRepo();
     }
 
     createComment = async (commentDTO: dto.CreateCommentReqDTO, userId: any, postId: any) => {
@@ -88,21 +91,40 @@ export default class CommentService {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // like
+    getCommentLikeCount = async (commentId: any) => {
+        // validation comment
+        if (!(await this.commentRepo.getCommentByID(commentId))) {
+            logger.error(`cant find comment (comment_id : ${commentId})`);
+            throw ErrNotFound;
+        }
+        return await this.commentLikeRepo.getCommentLikeCount(commentId);
+    };
+
     createCommentLike = async (commentId: any, userId: any) => {
-        // validation post
+        // validation comment
         if (!(await this.commentRepo.getCommentByID(commentId))) {
             logger.error(`cant find comment (comment_id : ${commentId})`);
             throw ErrNotFound;
         }
 
         // 중복 like check
-        // if (await this.postLikeRepo.getPostLike(postId, userId)) {
-        //     logger.error(`Is alreay exist post_like`);
-        //     throw ErrAlreadyExist;
-        // }
+        if (await this.commentLikeRepo.getCommentLike(commentId, userId)) {
+            logger.error(`Is alreay exist comment_like`);
+            throw ErrAlreadyExist;
+        }
 
-        // await this.postLikeRepo.createPostLike(postId, userId);
+        await this.commentLikeRepo.createCommentLike(commentId, userId);
         return true;
     };
 
+    deleteCommentLike = async (commentId: any, userId: any) => {
+        // validation comment
+        if (!(await this.commentRepo.getCommentByID(commentId))) {
+            logger.error(`cant find comment (comment_id : ${commentId})`);
+            throw ErrNotFound;
+        }
+
+        await this.commentLikeRepo.deleteCommentLike(commentId, userId);
+        return true;
+    };
 }

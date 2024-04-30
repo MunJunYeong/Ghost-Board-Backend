@@ -11,6 +11,14 @@ export default class CommentLikeRepo {
         this.sequelize = dbInstance.getSequelize();
     }
 
+    getCommentLikeCount = async (commentId: any) => {
+        return await CommentLike.count({
+            where: {
+                commentId: commentId,
+            },
+        });
+    };
+
     getCommentLike = async (commentId: any, userId: any) => {
         return await CommentLike.findOne({
             where: {

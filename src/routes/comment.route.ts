@@ -28,8 +28,9 @@ class CommentRoutes {
         this.router.delete(`${prefix}/:commentId`, this.controller.deleteComment);
 
         // 좋아요 API
+        this.router.get(`${prefix}/:commentId/like`, this.controller.getCommentLike);
         this.router.post(`${prefix}/:commentId/like`, this.controller.createCommentLike);
-
+        this.router.delete(`${prefix}/:commentId/like`, this.controller.deleteCommentLike);
     }
 }
 
