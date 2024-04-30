@@ -57,9 +57,13 @@ export default class CommentController {
         }
     };
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // like
     createCommentLike = async (req: Request, res: Response) => {
         try {
             const commentId = req.params.commentId;
+            const userId = req.user?.userId;
+            
             const result = await this.commentService.deleteComment(commentId);
             sendJSONResponse(res, `success delete comment (commentId : ${commentId})`, result);
         } catch (err: any) {

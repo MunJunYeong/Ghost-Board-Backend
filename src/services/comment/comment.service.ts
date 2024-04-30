@@ -2,7 +2,7 @@ import { ErrInvalidArgument, ErrNotFound } from "@errors/error-handler";
 import { logger } from "@configs/logger";
 import * as dto from "@controllers/comment/dto/comment.dto";
 import { convCreateDtoToComment } from "./comment.conv";
-import CommentRepo from "@repo/comment.repo";
+import CommentRepo from "@repo/comment/comment.repo";
 import UserRepo from "@repo/user.repo";
 import PostRepo from "@repo/post/post.repo";
 
