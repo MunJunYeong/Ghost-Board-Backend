@@ -6,18 +6,21 @@ import CommentRepo from "@repo/comment/comment.repo";
 import UserRepo from "@repo/user.repo";
 import PostRepo from "@repo/post/post.repo";
 import CommentLikeRepo from "@repo/comment/comment_like.repo";
+import CommentReportRepo from "@repo/comment/comment_report.repo";
 
 export default class CommentService {
     private userRepo: UserRepo;
     private postRepo: PostRepo;
     private commentRepo: CommentRepo;
     private commentLikeRepo: CommentLikeRepo;
+    private commentReportRepo: CommentReportRepo;
 
     constructor() {
         this.userRepo = new UserRepo();
         this.postRepo = new PostRepo();
         this.commentRepo = new CommentRepo();
         this.commentLikeRepo = new CommentLikeRepo();
+        this.commentReportRepo = new CommentReportRepo();
     }
 
     createComment = async (commentDTO: dto.CreateCommentReqDTO, userId: any, postId: any) => {
@@ -125,6 +128,33 @@ export default class CommentService {
         }
 
         await this.commentLikeRepo.deleteCommentLike(commentId, userId);
+        return true;
+    };
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // comment_report
+    createPostReport = async (commentId: any, userId: any, reason: string) => {
+        // validation comment
+        const comment = await this.commentRepo.getCommentByID(commentId);
+        if (!comment) {
+            logger.error(`cant find comment (comment_id : ${commentId})`);
+            throw ErrNotFound;
+        }
+
+        // 중복 report check
+        if (await this.commentReportRepo.getCommentReport(commentId, userId)) {
+            logger.error(`Is alreay exist comment_report`);
+            throw ErrAlreadyExist;
+        }
+
+        await this.commentReportRepo.createCommentReport(commentId, userId, reason);
+
+        // 해당 댓글의 신고가 10건 이상일 경우 비활성화
+        const count = await this.commentReportRepo.getCommentReportCount(commentId);
+        if (count >= 10) {
+            comment.activate = false;
+            await this.commentRepo.updateComment(comment);
+        }
         return true;
     };
 }

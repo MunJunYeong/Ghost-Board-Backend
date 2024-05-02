@@ -3,6 +3,7 @@ import { Router } from "express";
 import { validationMiddleware } from "@middlewares/requestValidate";
 import * as dto from "@controllers/comment/dto/comment.dto";
 import CommentController from "@controllers/comment/comment.controller";
+import { CreatePostReportReqDTO } from "@controllers/post/dto/post.dto";
 
 class CommentRoutes {
     router = Router();
@@ -31,6 +32,9 @@ class CommentRoutes {
         this.router.get(`${prefix}/:commentId/like`, this.controller.getCommentLike);
         this.router.post(`${prefix}/:commentId/like`, this.controller.createCommentLike);
         this.router.delete(`${prefix}/:commentId/like`, this.controller.deleteCommentLike);
+
+        // 댓글 신고 API - 우선 DTO가 중복되니 post의 DTO 빌려서 사용 추후 수정
+        this.router.post(`${prefix}/:commentId/report`, validationMiddleware(CreatePostReportReqDTO), this.controller.createReport)
     }
 }
 
