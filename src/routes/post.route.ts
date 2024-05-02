@@ -3,7 +3,8 @@ import * as dto from "@controllers/post/dto/post.dto";
 import PostController from "@controllers/post/post.controller";
 import { validationMiddleware } from "@middlewares/requestValidate";
 import { uploadMiddleware } from "@middlewares/uploader";
-import { Permission, guardMiddleware } from "@middlewares/guard";
+import { guardMiddleware } from "@middlewares/guard";
+import { Permission } from "@utils/enums";
 
 class PostRoutes {
     router = Router();

@@ -1,13 +1,8 @@
 import BadRequestError from "@errors/bad_request";
 import { ErrForbidden } from "@errors/error-handler";
+import { Permission } from "@utils/enums";
 import { verifyAccessToken } from "@utils/lib/jwt";
 import { Request, Response, NextFunction } from "express";
-
-export enum Permission {
-    USER = "USER",
-    ADMIN = "ADMIN",
-    // SUPER_ADMIN = "SUPER_ADMIN",
-}
 
 export const guardMiddleware = (requiredPermission: Permission) => {
     return (req: Request, res: Response, next: NextFunction) => {

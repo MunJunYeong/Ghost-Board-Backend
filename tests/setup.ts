@@ -53,18 +53,40 @@ server.start(3000);
 export const defaultID = "admin123";
 export const defaultPwd = "admin456";
 export const defaultUsername = "default123";
+
+export const usualID = "usual123";
+export const usualPwd = "usual456";
+export const usualUsername = "usual123";
+
 beforeAll(async () => {
     const userRepo = new UserRepo();
+    // admin 계정 생성
     if (!(await userRepo.getUserByUsername(defaultUsername))) {
         const pwd = await hashing(defaultPwd);
         const mail = await hashing("defaultEmail123@corelinesoft.com");
-        userRepo.createUser(
+        await userRepo.createUser(
             new User({
                 id: defaultID,
                 password: pwd,
                 email: mail,
                 username: defaultUsername,
                 activate: true,
+                role: "ADMIN",
+            })
+        );
+    }
+    // usual 계정 생성
+    if (!(await userRepo.getUserByUsername(usualUsername))) {
+        const pwd = await hashing(usualPwd);
+        const mail = await hashing("usualEmail123@corelinesoft.com");
+        await userRepo.createUser(
+            new User({
+                id: usualID,
+                password: pwd,
+                email: mail,
+                username: usualUsername,
+                activate: true,
+                role: "USER",
             })
         );
     }

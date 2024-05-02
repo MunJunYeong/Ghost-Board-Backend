@@ -4,13 +4,12 @@ export default class UserRepo {
     constructor() {}
 
     createUser = async (user: User) => {
-        // TODO: 왜 model로 삽입 시 안되는지 추후에 해결해보기
-        // const u = await User.create(user);
         const u = await User.create({
             id: user.id,
             password: user.password,
             username: user.username,
             email: user.email,
+            role: user.role,
         });
         return u;
     };
