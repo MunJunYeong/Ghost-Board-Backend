@@ -5,6 +5,7 @@ import { handleError } from "@errors/error-handler";
 import PostService from "@services/post/post.service";
 import { sendJSONResponse } from "@utils/response";
 import { PaginationReqDTO } from "@controllers/common.dto";
+import { createOffsetQueyr } from "@utils/query";
 
 export default class PostController {
     private postService: PostService;
@@ -22,6 +23,17 @@ export default class PostController {
 
             const result = await this.postService.createPost(body, boardId, userId);
             sendJSONResponse(res, "success create post", result);
+        } catch (err: any) {
+            throw handleError(err);
+        }
+    };
+
+    getDeactivatePostList = async (req: Request, res: Response) => {
+        try {
+            const pagination: PaginationReqDTO = createOffsetQueyr(req.query);
+
+            const result = await this.postService.getDeactivatePostList(pagination);
+            sendJSONResponse(res, "success get deactivate post list", result);
         } catch (err: any) {
             throw handleError(err);
         }
@@ -80,19 +92,8 @@ export default class PostController {
     getPostListByUser = async (req: Request, res: Response) => {
         try {
             const userId = req.params.userId;
-            let pagination: PaginationReqDTO;
-            {
-                let pageIndex = parseInt(req.query.pageIndex as string);
-                pageIndex = isNaN(pageIndex) ? 0 : pageIndex; // default : 0
-                let pageSize = parseInt(req.query.pageSize as string);
-                pageSize = isNaN(pageSize) ? 10 : pageSize; // default : 10
-                const search = (req.query.search as string) || "";
-                pagination = {
-                    pageIndex,
-                    pageSize,
-                    search,
-                };
-            }
+            const pagination: PaginationReqDTO = createOffsetQueyr(req.query);
+
             const result = await this.postService.getPostListByUser(userId, pagination);
             sendJSONResponse(res, "success get boards", result);
         } catch (err: any) {

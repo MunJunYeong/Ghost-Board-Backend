@@ -35,6 +35,7 @@ export default class CommentRepo {
             where: {
                 postId: postId,
                 parentId: null,
+                activate: true,
             },
             include: {
                 model: Comment,

@@ -7,6 +7,7 @@ class Comment extends Model<InferAttributes<Comment>, InferCreationAttributes<Co
     declare commentId: CreationOptional<number>;
     declare content: string;
     declare author: string;
+    declare activate?: boolean;
     declare createdAt: CreationOptional<Date>;
     declare updatedAt: CreationOptional<Date>;
 
@@ -31,6 +32,10 @@ export const initComment = (sequelize: Sequelize) => {
             author: {
                 type: DataTypes.STRING,
                 allowNull: false,
+            },
+            activate: {
+                type: DataTypes.BOOLEAN,
+                defaultValue: true,
             },
             createdAt: {
                 type: DataTypes.DATE,

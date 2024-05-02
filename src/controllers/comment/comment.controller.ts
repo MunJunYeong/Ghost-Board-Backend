@@ -4,6 +4,7 @@ import * as dto from "@controllers/comment/dto/comment.dto";
 import CommentService from "@services/comment/comment.service";
 import { handleError } from "@errors/error-handler";
 import { sendJSONResponse } from "@utils/response";
+import { CreatePostReportReqDTO } from "@controllers/post/dto/post.dto";
 
 export default class CommentController {
     private commentService: CommentService;
@@ -89,6 +90,21 @@ export default class CommentController {
 
             const result = await this.commentService.deleteCommentLike(commentId, userId);
             sendJSONResponse(res, `success delete comment like (commentId : ${commentId})`, result);
+        } catch (err: any) {
+            throw handleError(err);
+        }
+    };
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // report
+    createReport = async (req: Request, res: Response) => {
+        try {
+            const commentId = req.params.commentId;
+            const userId = req.user?.userId;
+            const body: CreatePostReportReqDTO = req.body;
+
+            await this.commentService.createPostReport(commentId, userId, body.reason);
+            sendJSONResponse(res, `success create comment report (commentId : ${commentId})`, true);
         } catch (err: any) {
             throw handleError(err);
         }

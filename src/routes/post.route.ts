@@ -36,6 +36,11 @@ class PostRoutes {
 
         // 게시글 신고 API
         this.router.post(`${prefix}/:postId/report`, validationMiddleware(dto.CreatePostReportReqDTO), this.controller.createReport)
+
+        // 관리자 기능
+        // activate가 false인 게시글만 가지고 오는 API TODO: admin 계정에 대한 `guard` middleware추가
+        this.router.get(`${prefix}/report`, this.controller.getDeactivatePostList);
+
     }
 }
 

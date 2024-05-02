@@ -9,6 +9,7 @@ import { convToFile, convToPost } from "./post.conv";
 import PostLikeRepo from "@repo/post/post_like.repo";
 import PostReportRepo from "@repo/post/post_report.repo";
 import { PaginationReqDTO } from "@controllers/common.dto";
+import { Op } from "sequelize";
 
 export default class PostService {
     private userRepo: UserRepo;
@@ -69,13 +70,27 @@ export default class PostService {
         return { posts: postList, nextCursor };
     };
 
+    // deactivate상태의 post list - admin 기능
+    getDeactivatePostList = async (pagination: PaginationReqDTO) => {
+        const whereClause = {
+            activate: false,
+            title: { [Op.like]: `%${pagination.search}%` },
+        };
+        return await this.postRepo.getPostListOffset(pagination, whereClause);
+    };
+
+    // 본인이 쓴 게시글 확인
     getPostListByUser = async (userId: any, pagination: PaginationReqDTO) => {
         if (!(await this.userRepo.getUserByPkID(userId))) {
             logger.error(`cant find user (pk user_id - ${userId}`);
             throw ErrNotFound;
         }
-        const result = await this.postRepo.getPostListOffset(userId, pagination);
-        console.log(result.posts.length);
+
+        const whereClause = {
+            userId: userId,
+            title: { [Op.like]: `%${pagination.search}%` },
+        };
+        const result = await this.postRepo.getPostListOffset(pagination, whereClause);
         return result;
     };
 
