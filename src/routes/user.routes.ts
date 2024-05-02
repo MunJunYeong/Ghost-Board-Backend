@@ -23,7 +23,7 @@ class UserRoutes {
         this.router.put(`${prefix}`, validationMiddleware(dto.UpdateUserReqDTO), this.controller.updateUser);
 
         // user가 쓴 Post list
-        this.router.get(`${prefix}/posts`, guardMiddleware(Permission.ADMIN), this.postController.getPostListByUser);
+        this.router.get(`${prefix}/posts`, this.postController.getPostListByUser);
     }
 }
 
