@@ -59,18 +59,15 @@ export default class PostRepo {
         });
     };
 
-    getPostListOffset = async (userId: any, pagination: PaginationReqDTO) => {
-        const { pageIndex, pageSize, search } = pagination;
-        const offset = pageIndex * pageSize; // offset 계산
+    async getPostListOffset(pagination: PaginationReqDTO, whereClause: any) {
+        const { pageIndex, pageSize } = pagination;
+        const offset = pageIndex * pageSize;
 
         const { count, rows } = await Post.findAndCountAll({
-            where: {
-                userId: userId,
-                title: { [Op.like]: `%${search}%` }, // 제목에 검색어가 포함된 게시글 필터링 (예시)
-            },
+            where: whereClause,
             offset: offset,
             limit: pageSize,
-            order: [["created_at", "DESC"]],
+            order: [['created_at', 'DESC']],
         });
 
         return {
@@ -79,7 +76,7 @@ export default class PostRepo {
             currentPageIndex: pageIndex,
             totalPages: Math.ceil(count / pageSize),
         };
-    };
+    }
 
     getPost = async (postId: number) => {
         return await Post.findOne({

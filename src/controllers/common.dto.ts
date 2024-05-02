@@ -1,4 +1,3 @@
-import { IsString } from "@utils/validation";
 
 export class DecodedUser {
     userId!: number;
