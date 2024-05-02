@@ -38,6 +38,7 @@ export default class PostRepo {
         return await Post.findAll({
             where: {
                 boardId: boardId,
+                activate: true,
             },
             include: [File],
             limit: 10,
@@ -50,6 +51,7 @@ export default class PostRepo {
             where: {
                 boardId: boardId,
                 postId: { [Op.lt]: postId }, //  [Op.lte]:10,   < 10
+                activate: true,
             },
             include: [File],
             limit: 10,
