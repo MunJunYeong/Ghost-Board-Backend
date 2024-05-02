@@ -4,6 +4,7 @@ import UserController from "@controllers/user/user.controller";
 import PostController from "@controllers/post/post.controller";
 import * as dto from "@controllers/user/dto/user.dto";
 import { validationMiddleware } from "@middlewares/requestValidate";
+import { Permission, guardMiddleware } from "@middlewares/guard";
 
 class UserRoutes {
     router = Router();
@@ -21,7 +22,7 @@ class UserRoutes {
         this.router.put(`${prefix}`, validationMiddleware(dto.UpdateUserReqDTO), this.controller.updateUser);
 
         // user가 쓴 Post list
-        this.router.get(`${prefix}/posts`, this.postController.getPostListByUser);
+        this.router.get(`${prefix}/posts`, guardMiddleware(Permission.ADMIN), this.postController.getPostListByUser);
     }
 }
 

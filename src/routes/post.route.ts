@@ -3,6 +3,7 @@ import * as dto from "@controllers/post/dto/post.dto";
 import PostController from "@controllers/post/post.controller";
 import { validationMiddleware } from "@middlewares/requestValidate";
 import { uploadMiddleware } from "@middlewares/uploader";
+import { Permission, guardMiddleware } from "@middlewares/guard";
 
 class PostRoutes {
     router = Router();
@@ -38,9 +39,7 @@ class PostRoutes {
         this.router.post(`${prefix}/:postId/report`, validationMiddleware(dto.CreatePostReportReqDTO), this.controller.createReport)
 
         // 관리자 기능
-        // activate가 false인 게시글만 가지고 오는 API TODO: admin 계정에 대한 `guard` middleware추가
-        this.router.get(`${prefix}/report`, this.controller.getDeactivatePostList);
-
+        this.router.get(`${prefix}/report`,guardMiddleware(Permission.ADMIN), this.controller.getDeactivatePostList);
     }
 }
 

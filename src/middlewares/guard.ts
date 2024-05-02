@@ -1,5 +1,6 @@
 import BadRequestError from "@errors/bad_request";
 import { ErrForbidden } from "@errors/error-handler";
+import { verifyAccessToken } from "@utils/lib/jwt";
 import { Request, Response, NextFunction } from "express";
 
 export enum Permission {
@@ -10,7 +11,29 @@ export enum Permission {
 
 export const guardMiddleware = (requiredPermission: Permission) => {
     return (req: Request, res: Response, next: NextFunction) => {
-        const userPermission = req.user?.role;
+        // req.user 값이 없을 경우
+        if (!req.user) {
+            const authHeader = req.headers["authorization"];
+            const token = authHeader && authHeader.split(" ")[1];
+
+            // check token empty
+            if (!token) {
+                throw new BadRequestError({
+                    error: new Error("empty token"),
+                    code: 401,
+                });
+            }
+            const decoded = verifyAccessToken(token);
+            if (!decoded.valid) {
+                throw new BadRequestError({
+                    error: decoded.error,
+                    code: 401,
+                });
+            }
+            req.user = decoded.user;
+        }
+
+        const userPermission = req.user.role;
 
         if (!userPermission || !isPermissionGranted(userPermission as Permission, requiredPermission)) {
             throw new BadRequestError({
