@@ -5,6 +5,7 @@ import Board from "@models/board";
 import Post from "@models/post/post";
 import Comment from "@models/comment/comment";
 import { CreateCommentReqDTO } from "@controllers/comment/dto/comment.dto";
+import { TestDELETE, TestGET, TestPOST, TestPUT } from "tests/common";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // precondition
@@ -86,15 +87,10 @@ describe("Comment API", () => {
         describe("Exception", () => {
             test("invalid content", async () => {
                 body.content = "";
-                const response: any = await request(app)
-                    .post(`${endpoint}`)
-                    .set("Authorization", `Bearer ${accessToken}`)
-                    .send(body);
-                expect(response.statusCode).toBe(400);
+                await TestPOST(endpoint, body, 400, accessToken);
             });
             test("invalid token", async () => {
-                const response: any = await request(app).post(`${endpoint}`).send(body);
-                expect(response.statusCode).toBe(401);
+                await TestPOST(endpoint, body, 401, "");
             });
         });
     });
@@ -120,8 +116,7 @@ describe("Comment API", () => {
         });
         describe("Exception", () => {
             test("invalid token", async () => {
-                const response: any = await request(app).get(`${endpoint}`).send(body);
-                expect(response.statusCode).toBe(401);
+                await TestGET(endpoint, 401);
             });
         });
     });
@@ -155,8 +150,7 @@ describe("Comment API", () => {
         });
         describe("Exception", () => {
             test("invalid token", async () => {
-                const response: any = await request(app).get(`${endpoint}`).send(body);
-                expect(response.statusCode).toBe(401);
+                await TestPUT(endpoint, body, 401);
             });
         });
     });
@@ -164,16 +158,12 @@ describe("Comment API", () => {
     describe("Delete Comment API", () => {
         describe("성공", () => {
             test("Delete - api/boards/:boardId/posts/:postId/comments/:commentId", async () => {
-                const response: any = await request(app)
-                    .delete(`${endpoint}/${newComment.commentId}`)
-                    .set("Authorization", `Bearer ${accessToken}`);
-                expect(response.statusCode).toBe(200);
+                await TestDELETE(`${endpoint}/${newComment.commentId}`, 200, accessToken);
             });
         });
         describe("Exception", () => {
-            test("invalid content", async () => {
-                const response: any = await request(app).delete(`${endpoint}/${newComment.commentId}`);
-                expect(response.statusCode).toBe(401);
+            test("invalid token", async () => {
+                await TestDELETE(`${endpoint}/${newComment.commentId}`, 401);
             });
         });
     });
