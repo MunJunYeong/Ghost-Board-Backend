@@ -7,7 +7,9 @@ export const createUserResponse = (user: User) => {
         userId: user.userId,
         id: user.id,
         username: user.username,
-        email: user.email
+        email: user.email,
+        activate: user.activate ?? true,
+        role: user.role,
     };
     return userResponse;
 };

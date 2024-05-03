@@ -1,9 +1,10 @@
 import request from "supertest";
-import app, { defaultID, defaultPwd } from "../setup";
+import app, { defaultID, defaultPwd, usualID, usualPwd } from "../setup";
 import Board from "@models/board";
 import Post from "@models/post/post";
 
 import { CreatePostReqDTO } from "@controllers/post/dto/post.dto";
+import { TestDELETE, TestGET, TestPOST, TestPUT } from "../common";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const postTitle = "test post title";
@@ -23,6 +24,7 @@ describe("Post API", () => {
         };
         const loginRes: any = await request(app).post(`/api/login`).send(loginBody);
         accessToken = loginRes.body.data.accessToken;
+        console.log(accessToken)
 
         // board
         const boardBody = {
@@ -83,21 +85,12 @@ describe("Post API", () => {
             });
             async function testTitleLength(title: string) {
                 body.title = title;
-                const response = await request(app)
-                    .post(`${endpoint}`)
-                    .set("Authorization", `Bearer ${accessToken}`)
-                    .send(body);
-                expect(response.statusCode).toBe(400);
+                await TestPOST(endpoint, body, 400, accessToken);
             }
 
             async function testDescLength(desc: string) {
                 body.content = desc;
-                const response = await request(app)
-                    .post(`${endpoint}`)
-                    .set("Authorization", `Bearer ${accessToken}`)
-                    .send(body);
-
-                expect(response.statusCode).toBe(400);
+                await TestPOST(endpoint, body, 400, accessToken);
             }
         });
     });
@@ -105,10 +98,7 @@ describe("Post API", () => {
     describe("Get Post & Post list API", () => {
         describe("성공", () => {
             test("Get - api/boards/:boardId/posts", async () => {
-                const response: any = await request(app)
-                    .get(`${endpoint}`)
-                    .set("Authorization", `Bearer ${accessToken}`);
-                expect(response.statusCode).toBe(200);
+                await TestGET(endpoint, 200, accessToken);
             });
             test("Get - api/boards/:boardId/posts/:postId", async () => {
                 const response: any = await request(app)
@@ -124,16 +114,11 @@ describe("Post API", () => {
         });
         describe("Exception", () => {
             test("invalid token", async () => {
-                let response: any = await request(app).get(`${endpoint}`);
-                expect(response.statusCode).toBe(401);
-                response = await request(app).get(`${endpoint}/${newPost.postId}`);
-                expect(response.statusCode).toBe(401);
+                await TestGET(endpoint, 401);
+                await TestGET(`${endpoint}/${newPost.postId}`, 401);
             });
             test("not found", async () => {
-                const response: any = await request(app)
-                    .get(`${endpoint}/${newPost.postId + 100}`)
-                    .set("Authorization", `Bearer ${accessToken}`);
-                expect(response.statusCode).toBe(404);
+                await TestGET(`${endpoint}/${newPost.postId + 100}`, 404, accessToken);
             });
         });
     });
@@ -176,16 +161,34 @@ describe("Post API", () => {
         });
         describe("Exception", () => {
             test("invalid title", async () => {
-                const response: any = await sendUpdatePost({ title: "1234" });
-                expect(response.statusCode).toBe(400);
+                await TestPUT(`${endpoint}/${newPost.postId}`, { title: "1234" }, 400, accessToken);
             });
             test("invalid content", async () => {
-                const response: any = await sendUpdatePost({ content: "123456789" });
-                expect(response.statusCode).toBe(400);
+                await TestPUT(`${endpoint}/${newPost.postId}`, { content: "123456789" }, 400, accessToken);
             });
             test("invalid token", async () => {
-                let response: any = await request(app).put(`${endpoint}/${newPost.postId}`);
-                expect(response.statusCode).toBe(401);
+                await TestPUT(`${endpoint}/${newPost.postId}`, { content: "123456789" }, 401);
+            });
+        });
+    });
+
+    // only for admin user
+    describe("Get deactivate post list", () => {
+        beforeAll(async () => {});
+        describe("성공", () => {
+            test("Get - api/boards/:boardId/posts/report", async () => {
+                await TestGET(`${endpoint}/report`, 200, accessToken);
+            });
+        });
+        describe("Exception", () => {
+            test("Not admin access", async () => {
+                const loginBody = { id: usualID, password: usualPwd };
+                const loginRes: any = await request(app).post(`/api/login`).send(loginBody);
+                await TestGET(`${endpoint}/report`, 403, loginRes.body.data.accessToken);
+            });
+            test("invalid token", async () => {
+                await TestGET(endpoint, 401);
+                await TestGET(`${endpoint}/report`, 401);
             });
         });
     });
@@ -198,54 +201,39 @@ describe("Post API", () => {
         describe("Create post_like API", () => {
             describe("성공", () => {
                 test("Post - api/boards/:boardId/posts/:postId/like", async () => {
-                    const response: any = await request(app)
-                        .post(likeEndpoint)
-                        .set("Authorization", `Bearer ${accessToken}`);
-                    expect(response.statusCode).toBe(200);
+                    await TestPOST(likeEndpoint, "", 200, accessToken);
                 });
             });
             describe("Exception", () => {
                 test("already exist", async () => {
-                    const response = await request(app)
-                        .post(likeEndpoint)
-                        .set("Authorization", `Bearer ${accessToken}`);
-                    expect(response.statusCode).toBe(400);
+                    await TestPOST(likeEndpoint, "", 400, accessToken);
                 });
                 test("invalid token", async () => {
-                    const response = await request(app).post(likeEndpoint);
-                    expect(response.statusCode).toBe(401);
+                    await TestPOST(likeEndpoint, "", 401, "");
                 });
             });
         });
         describe("Get post_like API", () => {
             describe("성공", () => {
                 test("Get - api/boards/:boardId/posts/:postId/like", async () => {
-                    const response: any = await request(app)
-                        .get(likeEndpoint)
-                        .set("Authorization", `Bearer ${accessToken}`);
-                    expect(response.statusCode).toBe(200);
+                    await TestGET(likeEndpoint, 200, accessToken);
                 });
             });
             describe("Exception", () => {
                 test("invalid token", async () => {
-                    const response = await request(app).post(likeEndpoint);
-                    expect(response.statusCode).toBe(401);
+                    await TestGET(likeEndpoint, 401, "");
                 });
             });
         });
         describe("Delete post_like API", () => {
             describe("성공", () => {
-                test("Get - api/boards/:boardId/posts/:postId/like", async () => {
-                    const response: any = await request(app)
-                        .delete(likeEndpoint)
-                        .set("Authorization", `Bearer ${accessToken}`);
-                    expect(response.statusCode).toBe(200);
+                test("Delete - api/boards/:boardId/posts/:postId/like", async () => {
+                    await TestDELETE(likeEndpoint, 200, accessToken);
                 });
             });
             describe("Exception", () => {
                 test("invalid token", async () => {
-                    const response = await request(app).post(likeEndpoint);
-                    expect(response.statusCode).toBe(401);
+                    await TestDELETE(likeEndpoint, 401, "");
                 });
             });
         });
@@ -254,22 +242,15 @@ describe("Post API", () => {
     describe("Delete Post API", () => {
         describe("성공", () => {
             test("Delete - api/boards/:boardId/posts/:postId", async () => {
-                const res: any = await request(app)
-                    .delete(`${endpoint}/${newPost.postId}`)
-                    .set("Authorization", `Bearer ${accessToken}`);
-                expect(res.statusCode).toBe(200);
+                await TestDELETE(`${endpoint}/${newPost.postId}`, 200, accessToken);
             });
         });
         describe("Exception", () => {
             test("not found", async () => {
-                const res: any = await request(app)
-                    .delete(`${endpoint}/${newPost.postId + 100}`)
-                    .set("Authorization", `Bearer ${accessToken}`);
-                expect(res.statusCode).toBe(404);
+                await TestDELETE(`${endpoint}/${newPost.postId + 100}`, 404, accessToken);
             });
             test("invalid token", async () => {
-                const res: any = await request(app).delete(`${endpoint}/${newPost.postId}`);
-                expect(res.statusCode).toBe(401);
+                await TestDELETE(`${endpoint}/${newPost.postId}`, 401, "");
             });
         });
     });

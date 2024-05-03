@@ -8,6 +8,7 @@ import { createUserResponse } from "@services/user/user.conv";
 import { logger } from "@configs/logger";
 import User from "@models/user";
 import { createCode } from "@utils/lib/crypto";
+import { Permission } from "@utils/enums";
 
 export default class AnonymousService {
     private userRepo: UserRepo;
@@ -38,8 +39,7 @@ export default class AnonymousService {
         u.password = await hashing(u.password);
         u.email = await hashing(u.email);
 
-        u = await this.userRepo.createUser(u);
-
+        await u.save();
         const user = createUserResponse(u);
         return user;
     };
@@ -58,6 +58,7 @@ export default class AnonymousService {
                 email: hashedMail,
                 password: pwd,
                 username: randomName,
+                role: Permission.USER,
             });
             u = await u.save();
         }

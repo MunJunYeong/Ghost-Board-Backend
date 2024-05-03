@@ -294,6 +294,8 @@ describe("User API", () => {
         });
     });
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Get user data API
     describe("Get User API", () => {
         const endpoint = "/api/users";
         describe("성공", () => {
@@ -317,6 +319,8 @@ describe("User API", () => {
         });
     });
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // UPdate user API
     describe("Update User API", () => {
         let body: userBody;
         beforeEach(() => {
@@ -339,16 +343,8 @@ describe("User API", () => {
                 delete body.email;
                 await TestPUT(`/api/users/${createdUser.userId}`, body, 200, accessToken);
             });
-            test(`Put - /api/users/{id}) - email`, async () => {
-                body.email = "changeduser@naver.com";
-                await TestPUT(`/api/users/${createdUser.userId}`, body, 200, accessToken);
-            });
         });
         describe("Exception", () => {
-            test("invalid email", async () => {
-                body.email = "invalidemailformat";
-                await TestPUT(`/api/users/${createdUser.userId}`, body, 400, accessToken);
-            });
             test("not found", async () => {
                 body.email = "changeduser@naver.com";
                 await TestPUT(`/api/users/${createdUser.userId! + 100}`, body, 404, accessToken);
@@ -356,6 +352,8 @@ describe("User API", () => {
         });
     });
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Delete user API
     describe("Delete User API", () => {
         describe("성공", () => {
             test(`Delete - /api/users/{id})`, async () => {

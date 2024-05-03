@@ -3,9 +3,10 @@ import InternalError from "./internal_server";
 
 export const ErrInvalidArgument = new Error("invalid argument");
 export const ErrAlreadyExist = new Error("already exist");
-export const ErrNotFound = new Error("not found");
-export const ErrUnauthorized = new Error("Unauthorized");
-export const ErrTooManyRequest = new Error("too many request");
+export const ErrNotFound = new Error("not found"); // 404
+export const ErrUnauthorized = new Error("Unauthorized"); // 401
+export const ErrForbidden = new Error("Forbidden"); // 403
+export const ErrTooManyRequest = new Error("too many request"); // 429
 
 export const isEqualNotFound = (err: any) => {
     if (err.message === ErrNotFound) {

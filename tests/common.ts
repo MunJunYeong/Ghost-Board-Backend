@@ -13,6 +13,9 @@ export const TestPOST = async (endpoint: string, body: any, statusCode: number, 
 
 export const TestPUT = async (endpoint: string, body: any, statusCode: number, token?: string) => {
     let response: any = await request(app).put(endpoint).send(body).set("Authorization", `Bearer ${token}`);
+    if (response.statusCode !== statusCode) {
+        console.log(response.body);
+    }
     expect(response.statusCode).toBe(statusCode);
 };
 
