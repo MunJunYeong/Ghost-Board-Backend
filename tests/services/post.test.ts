@@ -4,7 +4,7 @@ import Board from "@models/board";
 import Post from "@models/post/post";
 
 import { CreatePostReqDTO } from "@controllers/post/dto/post.dto";
-import { TestDELETE, TestGET, TestPOST, TestPUT } from "tests/common";
+import { TestDELETE, TestGET, TestPOST, TestPUT } from "../common";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const postTitle = "test post title";
@@ -160,10 +160,10 @@ describe("Post API", () => {
         });
         describe("Exception", () => {
             test("invalid title", async () => {
-                await TestPUT(endpoint, { title: "1234" }, 400, accessToken);
+                await TestPUT(`${endpoint}/${newPost.postId}`, { title: "1234" }, 400, accessToken);
             });
             test("invalid content", async () => {
-                await TestPUT(endpoint, { content: "123456789" }, 400, accessToken);
+                await TestPUT(`${endpoint}/${newPost.postId}`, { content: "123456789" }, 400, accessToken);
             });
             test("invalid token", async () => {
                 await TestPUT(`${endpoint}/${newPost.postId}`, { content: "123456789" }, 401);
@@ -205,7 +205,7 @@ describe("Post API", () => {
         });
         describe("Delete post_like API", () => {
             describe("성공", () => {
-                test("Get - api/boards/:boardId/posts/:postId/like", async () => {
+                test("Delete - api/boards/:boardId/posts/:postId/like", async () => {
                     await TestDELETE(likeEndpoint, 200, accessToken);
                 });
             });

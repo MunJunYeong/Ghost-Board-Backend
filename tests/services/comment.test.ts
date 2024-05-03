@@ -5,7 +5,7 @@ import Board from "@models/board";
 import Post from "@models/post/post";
 import Comment from "@models/comment/comment";
 import { CreateCommentReqDTO } from "@controllers/comment/dto/comment.dto";
-import { TestDELETE, TestGET, TestPOST, TestPUT } from "tests/common";
+import { TestDELETE, TestGET, TestPOST, TestPUT } from "../common";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // precondition
@@ -151,6 +151,52 @@ describe("Comment API", () => {
         describe("Exception", () => {
             test("invalid token", async () => {
                 await TestPUT(endpoint, body, 401);
+            });
+        });
+    });
+
+    describe("Comment Like API", () => {
+        let likeEndpoint: string;
+        beforeAll(async () => {
+            likeEndpoint = `${endpoint}/${newComment.commentId}/like`;
+        });
+        describe("Create comment_like API", () => {
+            describe("성공", () => {
+                test("Post - api/boards/:boardId/posts/:postId/comments/:commentId/like", async () => {
+                    await TestPOST(likeEndpoint, "", 200, accessToken);
+                });
+            });
+            describe("Exception", () => {
+                test("already exist", async () => {
+                    await TestPOST(likeEndpoint, "", 400, accessToken);
+                });
+                test("invalid token", async () => {
+                    await TestPOST(likeEndpoint, "", 401, "");
+                });
+            });
+        });
+        describe("Get comment_like API", () => {
+            describe("성공", () => {
+                test("Get - api/boards/:boardId/posts/:postId/comments/:commentId/like", async () => {
+                    await TestGET(likeEndpoint, 200, accessToken);
+                });
+            });
+            describe("Exception", () => {
+                test("invalid token", async () => {
+                    await TestGET(likeEndpoint, 401, "");
+                });
+            });
+        });
+        describe("Delete comment_like API", () => {
+            describe("성공", () => {
+                test("Delete - api/boards/:boardId/posts/:postId/comments/:commentId/like", async () => {
+                    await TestDELETE(likeEndpoint, 200, accessToken);
+                });
+            });
+            describe("Exception", () => {
+                test("invalid token", async () => {
+                    await TestDELETE(likeEndpoint, 401, "");
+                });
             });
         });
     });
