@@ -1,5 +1,5 @@
 import request from "supertest";
-import app, { defaultID, defaultPwd } from "../setup";
+import app, { defaultID, defaultPwd, usualID, usualPwd } from "../setup";
 import Board from "@models/board";
 import Post from "@models/post/post";
 
@@ -24,6 +24,7 @@ describe("Post API", () => {
         };
         const loginRes: any = await request(app).post(`/api/login`).send(loginBody);
         accessToken = loginRes.body.data.accessToken;
+        console.log(accessToken)
 
         // board
         const boardBody = {
@@ -167,6 +168,27 @@ describe("Post API", () => {
             });
             test("invalid token", async () => {
                 await TestPUT(`${endpoint}/${newPost.postId}`, { content: "123456789" }, 401);
+            });
+        });
+    });
+
+    // only for admin user
+    describe("Get deactivate post list", () => {
+        beforeAll(async () => {});
+        describe("성공", () => {
+            test("Get - api/boards/:boardId/posts/report", async () => {
+                await TestGET(`${endpoint}/report`, 200, accessToken);
+            });
+        });
+        describe("Exception", () => {
+            test("Not admin access", async () => {
+                const loginBody = { id: usualID, password: usualPwd };
+                const loginRes: any = await request(app).post(`/api/login`).send(loginBody);
+                await TestGET(`${endpoint}/report`, 403, loginRes.body.data.accessToken);
+            });
+            test("invalid token", async () => {
+                await TestGET(endpoint, 401);
+                await TestGET(`${endpoint}/report`, 401);
             });
         });
     });

@@ -30,6 +30,7 @@ export default class PostController {
 
     getDeactivatePostList = async (req: Request, res: Response) => {
         try {
+            console.log("fdasfdsafasfsa")
             const pagination: PaginationReqDTO = createOffsetQueyr(req.query);
 
             const result = await this.postService.getDeactivatePostList(pagination);

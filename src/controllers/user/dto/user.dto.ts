@@ -1,5 +1,5 @@
 import User from "@models/user";
-import { IsEmail, IsNotEmpty, IsNumber, IsOptional, IsString } from "@utils/validation";
+import { IsBoolean, IsEmail, IsNotEmpty, IsNumber, IsOptional, IsString } from "@utils/validation";
 
 export class UpdateUserReqDTO {
     @IsString()
@@ -27,4 +27,12 @@ export class UserResponseDTO {
     @IsString()
     @IsNotEmpty()
     email!: string;
+
+    @IsBoolean()
+    @IsNotEmpty()
+    activate!: boolean;
+
+    @IsString()
+    @IsNotEmpty()
+    role!: string;
 }

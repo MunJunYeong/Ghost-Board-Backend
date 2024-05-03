@@ -18,6 +18,9 @@ class PostRoutes {
     initializeRoutes() {
         const prefix = "/boards/:boardId/posts";
 
+        // 관리자 기능
+        this.router.get(`${prefix}/report`,guardMiddleware(Permission.ADMIN), this.controller.getDeactivatePostList);
+
         // Create 게시글  API
         this.router.post(`${prefix}`, uploadMiddleware.single("image"), validationMiddleware(dto.CreatePostReqDTO), this.controller.createPost);
         
@@ -38,9 +41,6 @@ class PostRoutes {
 
         // 게시글 신고 API
         this.router.post(`${prefix}/:postId/report`, validationMiddleware(dto.CreatePostReportReqDTO), this.controller.createReport)
-
-        // 관리자 기능
-        this.router.get(`${prefix}/report`,guardMiddleware(Permission.ADMIN), this.controller.getDeactivatePostList);
     }
 }
 
