@@ -1,0 +1,11 @@
+openapi: 3.0.0
+info:
+  version: 0.4.0
+  title: 코어실록 API docs
+  description: 코어실록의 API 문서입니다
+  license:
+    name: MIT
+servers:
+  - url: 'http://localhost:3000/'
+paths: null
+components: null
