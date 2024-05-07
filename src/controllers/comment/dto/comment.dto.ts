@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString, MaxLength, MinLength } from "@utils/validation";
+import { IsBoolean, IsNotEmpty, IsOptional, IsString, MaxLength, MinLength } from "@utils/validation";
 
 export class CreateCommentReqDTO {
     @IsString()
@@ -8,4 +8,7 @@ export class CreateCommentReqDTO {
 
     @IsOptional()
     parentCommentId!: any;
+
+    @IsBoolean()
+    isAnonymous!: boolean;
 }

@@ -33,12 +33,13 @@ export default class PostService {
             throw ErrNotFound;
         }
         // exist user check
-        if (!(await this.userRepo.getUserByPkID(userId))) {
+        const user = await this.userRepo.getUserByPkID(userId);
+        if (!user) {
             logger.error(`cant find user data (id - ${userId})`);
             throw ErrNotFound;
         }
 
-        const post = convToPost(postData, boardId, userId);
+        const post = convToPost(postData, user.username, boardId, userId);
         if (postData.image) {
             const { location, key } = postData.image;
             const file = convToFile(location, key);

@@ -7,6 +7,8 @@ import UserRepo from "@repo/user.repo";
 import PostRepo from "@repo/post/post.repo";
 import CommentLikeRepo from "@repo/comment/comment_like.repo";
 import CommentReportRepo from "@repo/comment/comment_report.repo";
+import Post from "@models/post/post";
+import User from "@models/user";
 
 export default class CommentService {
     private userRepo: UserRepo;
@@ -23,12 +25,35 @@ export default class CommentService {
         this.commentReportRepo = new CommentReportRepo();
     }
 
+    private getAuthor = async (isAnonymous: boolean, post: Post, user: User) => {
+        // 1. 작성자인지 확인
+        if (post.userId === user.userId) {
+            return "작성자";
+        }
+        // 2. 작성자가 아니고 익명이 아닐 경우 username 공개
+        if (!isAnonymous) {
+            return user.username;
+        }
+
+        // 3. 이전에 작성했는지 확인
+        const userComment = await this.commentRepo.getAnonymousCommentByUserId(user.userId);
+        if (userComment) {
+            return userComment.author;
+        }
+
+        // 4. `익명{next_number}`로 이름 배정
+        const previousComment = await this.commentRepo.getLastAnonymousCommentByPostId(post.postId);
+        const anonymousNumber = previousComment ? parseInt(previousComment.author.replace("익명", "")) + 1 : 1; // 처음 댓글 시 1로 시작
+        return `익명${anonymousNumber}`;
+    };
+
     createComment = async (commentDTO: dto.CreateCommentReqDTO, userId: any, postId: any) => {
         const post = await this.postRepo.getPostByID(postId);
+        const user = await this.userRepo.getUserByPkID(userId);
         // validation check
         {
             // 유효한 user, post인지 확인
-            if (!(await this.userRepo.getUserByPkID(userId)) || !post) {
+            if (!user || !post) {
                 throw ErrInvalidArgument;
             }
 
@@ -41,27 +66,7 @@ export default class CommentService {
         }
 
         // 댓글 author 설정
-        let author: string;
-        {
-            // 1. 작성자인지 확인
-            if (post.userId === userId) {
-                author = "작성자";
-            } else {
-                // 2. 이전에 작성했는지 확인
-                const userComment = await this.commentRepo.getCommentByUserId(userId);
-                if (userComment) {
-                    author = userComment.author;
-                } else {
-                    // 3. `익명{next_number}`로 이름 배정
-                    const previousComment = await this.commentRepo.getLastAnonymousCommentByPostId(postId);
-                    const anonymousNumber = previousComment
-                        ? parseInt(previousComment.author.replace("익명", "")) + 1
-                        : 1; // 처음 댓글 시 1로 시작
-                    author = `익명${anonymousNumber}`;
-                }
-            }
-        }
-
+        const author = await this.getAuthor(commentDTO.isAnonymous, post, user);
         const newComment = convCreateDtoToComment(commentDTO, userId, postId, author);
         return await newComment.save();
     };

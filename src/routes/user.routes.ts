@@ -4,8 +4,6 @@ import UserController from "@controllers/user/user.controller";
 import PostController from "@controllers/post/post.controller";
 import * as dto from "@controllers/user/dto/user.dto";
 import { validationMiddleware } from "@middlewares/requestValidate";
-import { guardMiddleware } from "@middlewares/guard";
-import { Permission } from "@utils/enums";
 
 class UserRoutes {
     router = Router();
