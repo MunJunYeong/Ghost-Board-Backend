@@ -22,10 +22,11 @@ export default class CommentRepo {
         });
     };
 
-    getCommentByUserId = async (userId: any) => {
+    getAnonymousCommentByUserId = async (userId: any) => {
         return await Comment.findOne({
             where: {
                 userId: userId,
+                author: { [Op.like]: "익명%" },
             },
         });
     };
