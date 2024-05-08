@@ -1,0 +1,211 @@
+# signup
+/signup/send-email:
+    post:
+        summary: Send verification email during signup
+        requestBody:
+            required: true
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            email:
+                                type: string
+        responses:
+            "200":
+                $ref: "./openapi.yaml#/components/responses/successResponse"
+/signup/check-email:
+    post:
+        summary: Check email verification code for signup
+        requestBody:
+            required: true
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            email:
+                                type: string
+                            code:
+                                type: string
+        responses:
+            "200":
+                $ref: "./openapi.yaml#/components/responses/successResponse"
+/signup/check-username:
+    post:
+        summary: check username already exist during signup
+        requestBody:
+            required: true
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            username:
+                                type: string
+        responses:
+            "200":
+                $ref: "./openapi.yaml#/components/responses/successResponse"
+/signup:
+    post:
+        summary: Create a new user account
+        requestBody:
+            required: true
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            username:
+                                type: string
+                            id:
+                                type: string
+                            password:
+                                type: string
+                            email:
+                                type: string
+        responses:
+            "200":
+                $ref: "./openapi.yaml#/components/responses/successResponse"
+
+# login
+/login:
+    post:
+        summary: Log in
+        requestBody:
+            required: true
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            id:
+                                type: string
+                            password:
+                                type: string
+        responses:
+            "200":
+                $ref: "./openapi.yaml#/components/responses/successResponse"
+
+# OAuth
+/auth-login:
+    get:
+        summary: Google OAuth2.0 login
+        responses:
+            "200":
+                $ref: "./openapi.yaml#/components/responses/successResponse"
+/auth/google/callback:
+    get:
+        summary: Google OAuth2.0 login callback
+        responses:
+            "200":
+                $ref: "./openapi.yaml#/components/responses/successResponse"
+
+# refresh token
+/refresh:
+    post:
+        summary: issue new accessToken
+        requestBody:
+            required: false
+        parameters:
+            - in: header
+              name: Authorization
+              required: true
+              schema:
+                  type: string
+                  format: jwt
+                  example: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+              description: Bearer token obtained using login credentials
+            - in: header
+              name: RefreshToken
+              required: true
+              schema:
+                  type: string
+                  format: jwt
+                  example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+              description: Refresh token obtained after initial login
+        responses:
+            "200":
+                $ref: "./openapi.yaml#/components/responses/successResponse"
+
+# find id
+/find-id/{email}:
+    get:
+        summary: find id
+        parameters:
+            - in: path
+              name: email
+              required: true
+        responses:
+            "200":
+                $ref: "./openapi.yaml#/components/responses/successResponse"
+/find-id/send-email:
+    post:
+        summary: find id to send email
+        requestBody:
+            required: true
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            email:
+                                type: string
+                            username:
+                                type: string
+        responses:
+            "200":
+                $ref: "./openapi.yaml#/components/responses/successResponse"
+
+# change password
+/change-password/send-email:
+    post:
+        summary: send email for change password
+        requestBody:
+            required: true
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            email:
+                                type: string
+        responses:
+            "200":
+                $ref: "./openapi.yaml#/components/responses/successResponse"
+/change-password/check-email:
+    post:
+        summary: check verification code for change password
+        requestBody:
+            required: true
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            email:
+                                type: string
+                            code:
+                                type: string
+        responses:
+            "200":
+                $ref: "./openapi.yaml#/components/responses/successResponse"
+/change-password:
+    post:
+        summary: change password
+        requestBody:
+            required: true
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            username:
+                                type: string
+                            email:
+                                type: string
+                            password:
+                                type: string
+        responses:
+            "200":
+                $ref: "./openapi.yaml#/components/responses/successResponse"

@@ -35,7 +35,6 @@ class AnonymousRoutes {
         this.router.post("/find-id/send-email", validationMiddleware(dto.SendIDReqDTO), this.controller.sendExactUserID);
 
         // PW 재변경 API
-        this.router.post("/change-password/send-email", validationMiddleware(dto.EmailReqDTO), this.controller.sendEmailForPassword);
         this.router.post("/change-password/check-email", validationMiddleware(dto.CheckEmailReqDTO), this.controller.checkEmailForPassword);
         this.router.post("/change-password", validationMiddleware(dto.ChangePasswordReqDTO), this.controller.changePassword);
     }
