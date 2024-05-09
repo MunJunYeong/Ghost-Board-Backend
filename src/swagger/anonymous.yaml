@@ -1,5 +1,5 @@
 # signup
-/signup/send-email:
+/api/signup/send-email:
     post:
         summary: Send verification email during signup
         requestBody:
@@ -14,7 +14,7 @@
         responses:
             "200":
                 $ref: "./openapi.yaml#/components/responses/successResponse"
-/signup/check-email:
+/api/signup/check-email:
     post:
         summary: Check email verification code for signup
         requestBody:
@@ -31,7 +31,7 @@
         responses:
             "200":
                 $ref: "./openapi.yaml#/components/responses/successResponse"
-/signup/check-username:
+/api/signup/check-username:
     post:
         summary: check username already exist during signup
         requestBody:
@@ -46,7 +46,7 @@
         responses:
             "200":
                 $ref: "./openapi.yaml#/components/responses/successResponse"
-/signup:
+/api/signup:
     post:
         summary: Create a new user account
         requestBody:
@@ -69,7 +69,7 @@
                 $ref: "./openapi.yaml#/components/responses/successResponse"
 
 # login
-/login:
+/api/login:
     post:
         summary: Log in
         requestBody:
@@ -88,13 +88,13 @@
                 $ref: "./openapi.yaml#/components/responses/successResponse"
 
 # OAuth
-/auth-login:
+/api/auth-login:
     get:
         summary: Google OAuth2.0 login
         responses:
             "200":
                 $ref: "./openapi.yaml#/components/responses/successResponse"
-/auth/google/callback:
+/api/auth/google/callback:
     get:
         summary: Google OAuth2.0 login callback
         responses:
@@ -102,7 +102,7 @@
                 $ref: "./openapi.yaml#/components/responses/successResponse"
 
 # refresh token
-/refresh:
+/api/refresh:
     post:
         summary: issue new accessToken
         requestBody:
@@ -129,7 +129,7 @@
                 $ref: "./openapi.yaml#/components/responses/successResponse"
 
 # find id
-/find-id/{email}:
+/api/find-id/{email}:
     get:
         summary: find id
         parameters:
@@ -139,7 +139,7 @@
         responses:
             "200":
                 $ref: "./openapi.yaml#/components/responses/successResponse"
-/find-id/send-email:
+/api/find-id/send-email:
     post:
         summary: find id to send email
         requestBody:
@@ -158,7 +158,7 @@
                 $ref: "./openapi.yaml#/components/responses/successResponse"
 
 # change password
-/change-password/send-email:
+/api/change-password/send-email:
     post:
         summary: send email for change password
         requestBody:
@@ -173,7 +173,7 @@
         responses:
             "200":
                 $ref: "./openapi.yaml#/components/responses/successResponse"
-/change-password/check-email:
+/api/change-password/check-email:
     post:
         summary: check verification code for change password
         requestBody:
@@ -190,7 +190,7 @@
         responses:
             "200":
                 $ref: "./openapi.yaml#/components/responses/successResponse"
-/change-password:
+/api/change-password:
     post:
         summary: change password
         requestBody:

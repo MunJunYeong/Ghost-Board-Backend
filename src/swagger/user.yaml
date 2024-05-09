@@ -1,0 +1,11 @@
+# signup
+/api/users/{userId}:
+    get:
+        summary: get user data
+        parameters:
+            - in: path
+              name: userId
+              required: true
+        responses:
+            "200":
+                $ref: "./openapi.yaml#/components/responses/successResponse"

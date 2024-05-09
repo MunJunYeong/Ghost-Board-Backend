@@ -1,45 +1,16 @@
 openapi: "3.0.0"
 info:
-    version: 0.4.0
+    version: 0.1.0
     title: 코어실록 API docs
     description: 코어실록의 API 문서입니다
     license:
         name: MIT
 servers:
-    - url: http://localhost:3001/api
+    - url: http://localhost:3001
 paths:
     # signup
-    /signup/send-email:
-        $ref: "./anonymous.yaml#/~1signup~1send-email"
-    /signup/check-email:
-        $ref: "./anonymous.yaml#/~1signup~1check-email"
-    /signup/check-username:
-        $ref: "./anonymous.yaml#/~1signup~1check-username"
-    /signup:
-        $ref: "./anonymous.yaml#/~1signup"
-    # login
-    /login:
-        $ref: "./anonymous.yaml#/~1login"
-    # OAuth
-    /auth-login:
-        $ref: "./anonymous.yaml#/~1auth-login"
-    /auth/google/callback:
-        $ref: "./anonymous.yaml#/~1auth~1google~1callback"
-    # refresh token
-    /refresh:
-        $ref: "./anonymous.yaml#/~1refresh"
-    # find id
-    /find-id/{email}:
-        $ref: "./anonymous.yaml#/~1find-id~1{email}"
-    /find-id/send-email:
-        $ref: "./anonymous.yaml#/~1find-id~1send-email"
-    # change password
-    /change-password/send-email:
-        $ref: "./anonymous.yaml#/~1change-password~1send-email"
-    /change-password/check-email:
-        $ref: "./anonymous.yaml#/~1change-password~1check-email"
-    /change-password:
-        $ref: "./anonymous.yaml#/~1change-password"
+    $ref: "./anonymous.yaml"
+    # $ref: "./user.yaml"
 
 components:
     responses:
