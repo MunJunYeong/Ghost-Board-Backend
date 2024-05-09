@@ -100,7 +100,8 @@ export default class AnonymousController {
         url += `&redirect_uri=${redirectUrl}`;
         url += "&response_type=code";
         url += "&scope=email profile";
-        res.redirect(url);
+
+        sendJSONResponse(res, "success login", { url: url });
     };
 
     // google login
@@ -117,7 +118,9 @@ export default class AnonymousController {
             // 유효기간 : 14일 - jwt.ts 파일의 refresh token `expiresIn` 값과 일치해야 함.
             this.redis.set(id, result.refreshToken, "EX", 14 * 24 * 60 * 60);
 
-            sendJSONResponse(res, "success login", result);
+            res.redirect(
+                `${process.env.DB_USERNAME}/auth/success?accessToken=${result.accessToken}&refreshToken=${result.refreshToken}`
+            );
         } catch (err: any) {
             throw handleError(err);
         }
