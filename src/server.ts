@@ -9,6 +9,11 @@ import bodyParser from "body-parser";
 import helmet from "helmet";
 import "express-async-errors";
 
+// swagger
+import swaggerUi from "swagger-ui-express";
+import YAML from "yamljs";
+import path from "path";
+
 import { morganMiddleware } from "@middlewares/morgan";
 import { logger } from "@configs/logger";
 import Database from "@configs/database";
@@ -39,6 +44,10 @@ export default class Server {
         this.app.use(apiLimiter);
         this.app.use(morganMiddleware);
         this.app.use(helmet());
+
+        // swaager
+        const swaggerSpec: any = YAML.load(path.join(__dirname, "./swagger.yaml"));
+        this.app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
     };
 
     private initDatabase = async (): Promise<void> => {
