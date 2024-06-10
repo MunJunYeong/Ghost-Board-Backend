@@ -1,4 +1,5 @@
 import { Model, DataTypes, Sequelize, InferCreationAttributes, InferAttributes, CreationOptional } from "sequelize";
+import Post from "./post/post";
 
 class Board extends Model<InferAttributes<Board>, InferCreationAttributes<Board>> {
     declare boardId: CreationOptional<number>;
@@ -37,6 +38,13 @@ export const initBoard = (sequelize: Sequelize) => {
             tableName: "board",
         }
     );
+};
+
+export const relationBoard = () => {
+    Board.hasMany(Post, {
+        foreignKey: "boardId",
+        onDelete: "CASCADE",
+    });
 };
 
 export default Board;

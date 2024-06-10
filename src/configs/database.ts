@@ -1,7 +1,7 @@
 import { Sequelize, Dialect } from "sequelize";
 
-import { initUser } from "@models/user";
-import { initBoard } from "@models/board";
+import { initUser, relationUser } from "@models/user";
+import { initBoard, relationBoard } from "@models/board";
 import { initPost, relationPost } from "@models/post/post";
 import { initFile, relationFile } from "@models/file";
 import { initComment, relationComment } from "@models/comment/comment";
@@ -52,6 +52,8 @@ export default class Database {
             initCommentReport(this.sequelizeInstance);
 
             // relation init
+            relationUser();
+            relationBoard();
             relationPost();
             relationPostLike();
             relationPostReport();
