@@ -19,7 +19,7 @@ export default class PostLikeRepo {
         });
     };
 
-    getPostLike = async (postId: any, userId: any) => {
+    getPostLike = async (userId: any, postId: any) => {
         return await PostLike.findOne({
             where: {
                 postId: postId,

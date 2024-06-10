@@ -95,13 +95,27 @@ export default class PostService {
         return result;
     };
 
-    getPost = async (postId: any): Promise<Post> => {
+    getPost = async (userId: any, postId: any): Promise<dto.GetPostResDTO> => {
         const post = await this.postRepo.getPost(postId);
         if (!post) {
             logger.error(`cant find post data (post_id - ${postId})`);
             throw ErrNotFound;
         }
-        return post;
+
+        let isUserLiked = false;
+        if (await this.postLikeRepo.getPostLike(userId, postId)) {
+            // 사용자가 like 눌렀을 경우 true로 변경
+            isUserLiked = true;
+        }
+
+        const likeCount = await this.postLikeRepo.getPostLikeCount(postId);
+
+        const result: dto.GetPostResDTO = {
+            post: post,
+            liked: isUserLiked,
+            liked_count: likeCount,
+        };
+        return result;
     };
 
     updatePost = async (postData: dto.UpdatePostReqDTO, postId: any): Promise<Post> => {
@@ -148,7 +162,7 @@ export default class PostService {
         }
 
         // 중복 like check
-        if (await this.postLikeRepo.getPostLike(postId, userId)) {
+        if (await this.postLikeRepo.getPostLike(userId, postId)) {
             logger.error(`Is alreay exist post_like`);
             throw ErrAlreadyExist;
         }
