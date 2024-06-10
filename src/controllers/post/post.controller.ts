@@ -30,7 +30,6 @@ export default class PostController {
 
     getDeactivatePostList = async (req: Request, res: Response) => {
         try {
-            console.log("fdasfdsafasfsa")
             const pagination: PaginationReqDTO = createOffsetQueyr(req.query);
 
             const result = await this.postService.getDeactivatePostList(pagination);
@@ -57,9 +56,10 @@ export default class PostController {
         try {
             // const boardId = req.params.boardId;
             const postId = req.params.postId;
+            const userId = req.user?.userId;
 
-            const result = await this.postService.getPost(postId);
-            sendJSONResponse(res, `success get post (post_id : ${postId})`, result.toJSON());
+            const result = await this.postService.getPost(userId, postId);
+            sendJSONResponse(res, `success get post (post_id : ${postId})`, result);
         } catch (err: any) {
             throw handleError(err);
         }

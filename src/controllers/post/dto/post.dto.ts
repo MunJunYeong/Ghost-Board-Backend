@@ -1,3 +1,4 @@
+import Post from "@models/post/post";
 import { ReportReason } from "@models/post/post_report";
 import { IsBoolean, IsEnum, IsNotEmpty, IsOptional, IsString, MaxLength, MinLength } from "@utils/validation";
 
@@ -58,4 +59,12 @@ export class CreatePostReportReqDTO {
     @IsEnum(ReportReason, { message: "Invalid report reason" }) // ReportReason enum에 속하는지 확인
     @IsNotEmpty({ message: "Report reason is required" })
     reason!: string;
+}
+
+export class GetPostResDTO {
+    post!: Post;
+
+    liked?: boolean;
+
+    likedCount!: number;
 }

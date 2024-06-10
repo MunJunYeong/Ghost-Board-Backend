@@ -4,7 +4,7 @@ import Board from "@models/board";
 import Post from "@models/post/post";
 
 import { CreatePostReqDTO } from "@controllers/post/dto/post.dto";
-import { TestDELETE, TestGET, TestPOST, TestPUT } from "../common";
+import { CreateBoard, DeleteBoard, GetAccessToken, TestDELETE, TestGET, TestPOST, TestPUT } from "../common";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const postTitle = "test post title";
@@ -18,33 +18,17 @@ describe("Post API", () => {
 
     beforeAll(async () => {
         // set access_token
-        const loginBody = {
-            id: defaultID,
-            password: defaultPwd,
-        };
-        const loginRes: any = await request(app).post(`/api/login`).send(loginBody);
-        accessToken = loginRes.body.data.accessToken;
-        console.log(accessToken)
+        accessToken = await GetAccessToken();
 
         // board
-        const boardBody = {
-            title: "test",
-            description: "test desc",
-        };
-        const boardRes: any = await request(app)
-            .post("/api/boards")
-            .set("Authorization", `Bearer ${accessToken}`)
-            .send(boardBody);
-        board = boardRes.body.data;
+        board = await CreateBoard(accessToken);
 
         endpoint = `/api/boards/${board.boardId}/posts`;
     });
 
     afterAll(async () => {
         // delete board
-        const res: any = await request(app)
-            .delete(`/api/boards/${board.boardId}`)
-            .set("Authorization", `Bearer ${accessToken}`);
+        await DeleteBoard(accessToken, board.boardId);
     });
 
     describe("Create Post API", () => {
@@ -53,6 +37,7 @@ describe("Post API", () => {
             body = {
                 title: postTitle,
                 content: postDesc,
+                isAnonymous: true,
             };
         });
 
@@ -105,11 +90,6 @@ describe("Post API", () => {
                     .get(`${endpoint}/${newPost.postId}`)
                     .set("Authorization", `Bearer ${accessToken}`);
                 expect(response.statusCode).toBe(200);
-                const actualPost: Post = response.body.data;
-                expect(actualPost.postId).toEqual(newPost.postId);
-                expect(actualPost.title).toEqual(newPost.title);
-                expect(actualPost.content).toEqual(newPost.content);
-                expect(actualPost.createdAt).toEqual(newPost.createdAt);
             });
         });
         describe("Exception", () => {

@@ -214,6 +214,7 @@ describe("User API", () => {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Change Password
+
     describe("Change Password API - send email", () => {
         const endpoint = "/api/change-password/send-email";
         let body: anonyDTO.EmailReqDTO;
@@ -223,7 +224,7 @@ describe("User API", () => {
             };
         });
         describe("성공", () => {
-            test("Get - api/find-id/:email", async () => {
+            test("Post - api/change-password/send-email", async () => {
                 await TestPOST(endpoint, body, 200);
             });
         });
@@ -278,7 +279,7 @@ describe("User API", () => {
         });
 
         describe("성공", () => {
-            test("Post - api/signup/chnage-email", async () => {
+            test("Post - api/signup/change-email", async () => {
                 await TestPOST(endpoint, body, 200);
             });
         });

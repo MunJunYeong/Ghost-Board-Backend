@@ -56,16 +56,22 @@ export default class PostService {
             throw ErrNotFound;
         }
 
-        let postList: Post[];
+        let posts: Post[];
         if (postId) {
-            postList = await this.postRepo.getPostListAfterCursor(boardId, postId);
+            posts = await this.postRepo.getPostListAfterCursor(boardId, postId);
         } else {
-            postList = await this.postRepo.getPostList(boardId);
+            posts = await this.postRepo.getPostList(boardId);
+        }
+
+        const postList: dto.GetPostResDTO[] = [];
+        for (const post of posts) {
+            const likeCount = await this.postLikeRepo.getPostLikeCount(post.postId);
+            postList.push({ post: post, likedCount: likeCount });
         }
 
         let nextCursor: number = 0;
         if (postList.length > 0) {
-            nextCursor = postList[postList.length - 1].postId;
+            nextCursor = postList[postList.length - 1].post.postId;
         }
 
         return { posts: postList, nextCursor };
@@ -95,13 +101,27 @@ export default class PostService {
         return result;
     };
 
-    getPost = async (postId: any): Promise<Post> => {
+    getPost = async (userId: any, postId: any): Promise<dto.GetPostResDTO> => {
         const post = await this.postRepo.getPost(postId);
         if (!post) {
             logger.error(`cant find post data (post_id - ${postId})`);
             throw ErrNotFound;
         }
-        return post;
+
+        let isUserLiked = false;
+        if (await this.postLikeRepo.getPostLike(userId, postId)) {
+            // 사용자가 like 눌렀을 경우 true로 변경
+            isUserLiked = true;
+        }
+
+        const likeCount = await this.postLikeRepo.getPostLikeCount(postId);
+
+        const result: dto.GetPostResDTO = {
+            post: post,
+            liked: isUserLiked,
+            likedCount: likeCount,
+        };
+        return result;
     };
 
     updatePost = async (postData: dto.UpdatePostReqDTO, postId: any): Promise<Post> => {
@@ -148,7 +168,7 @@ export default class PostService {
         }
 
         // 중복 like check
-        if (await this.postLikeRepo.getPostLike(postId, userId)) {
+        if (await this.postLikeRepo.getPostLike(userId, postId)) {
             logger.error(`Is alreay exist post_like`);
             throw ErrAlreadyExist;
         }

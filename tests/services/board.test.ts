@@ -1,9 +1,9 @@
 import request from "supertest";
 import app from "../setup";
+import { GetAccessToken } from "../common";
 
 import { CreateBoardReqDTO } from "@controllers/board/dto/board.dto";
 import Board from "@models/board";
-import { issueAccessToken } from "@utils/lib/jwt";
 
 const title = "title123";
 const desc = "test title";
@@ -11,13 +11,8 @@ describe("Board API", () => {
     let accessToken: string;
     let newBoard: Board;
     let endpoint: string;
-    beforeAll(() => {
-        accessToken = issueAccessToken({
-            userId: 0,
-            username: "test",
-            id: "test123",
-            email: "test123@test.com",
-        });
+    beforeAll(async () => {
+        accessToken = await GetAccessToken();
 
         endpoint = `/api/boards`;
     });
