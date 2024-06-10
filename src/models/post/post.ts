@@ -68,7 +68,10 @@ export const relationPost = () => {
     // 관계 설정
     Post.belongsTo(User, { foreignKey: "userId" });
     Post.belongsTo(Board, { foreignKey: "boardId" }); // Post는 Board에 속합니다.
-    Post.hasOne(File, { foreignKey: "postId" });
+    Post.hasOne(File, {
+        foreignKey: "postId",
+        onDelete: "CASCADE",
+    });
 };
 
 export default Post;
