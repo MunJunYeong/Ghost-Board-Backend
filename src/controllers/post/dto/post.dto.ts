@@ -1,6 +1,7 @@
 import Post from "@models/post/post";
 import { ReportReason } from "@models/post/post_report";
 import { IsBoolean, IsEnum, IsNotEmpty, IsOptional, IsString, MaxLength, MinLength } from "@utils/validation";
+import { Transform } from "class-transformer";
 
 interface UploadedImage {
     fieldname: string;
@@ -36,6 +37,7 @@ export class CreatePostReqDTO {
     content!: string;
 
     @IsBoolean()
+    @Transform(({ value }) => value === 'true' || value === true)
     isAnonymous!: boolean;
 
     image?: UploadedImage; // Express.Multer.File의 type이 아닌 multer-s3의 type이라서 사전 정의
