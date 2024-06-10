@@ -64,7 +64,7 @@ export class CreatePostReportReqDTO {
 export class GetPostResDTO {
     post!: Post;
 
-    liked!: boolean;
+    liked?: boolean;
 
-    liked_count!: number;
+    likedCount!: number;
 }

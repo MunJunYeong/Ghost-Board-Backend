@@ -56,16 +56,22 @@ export default class PostService {
             throw ErrNotFound;
         }
 
-        let postList: Post[];
+        let posts: Post[];
         if (postId) {
-            postList = await this.postRepo.getPostListAfterCursor(boardId, postId);
+            posts = await this.postRepo.getPostListAfterCursor(boardId, postId);
         } else {
-            postList = await this.postRepo.getPostList(boardId);
+            posts = await this.postRepo.getPostList(boardId);
+        }
+
+        const postList: dto.GetPostResDTO[] = [];
+        for (const post of posts) {
+            const likeCount = await this.postLikeRepo.getPostLikeCount(post.postId);
+            postList.push({ post: post, likedCount: likeCount });
         }
 
         let nextCursor: number = 0;
         if (postList.length > 0) {
-            nextCursor = postList[postList.length - 1].postId;
+            nextCursor = postList[postList.length - 1].post.postId;
         }
 
         return { posts: postList, nextCursor };
@@ -113,7 +119,7 @@ export default class PostService {
         const result: dto.GetPostResDTO = {
             post: post,
             liked: isUserLiked,
-            liked_count: likeCount,
+            likedCount: likeCount,
         };
         return result;
     };
