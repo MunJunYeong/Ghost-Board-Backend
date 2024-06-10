@@ -5,7 +5,17 @@ import Board from "@models/board";
 import Post from "@models/post/post";
 import Comment from "@models/comment/comment";
 import { CreateCommentReqDTO } from "@controllers/comment/dto/comment.dto";
-import { TestDELETE, TestGET, TestPOST, TestPUT } from "../common";
+import {
+    CreateBoard,
+    CreatePost,
+    DeleteBoard,
+    DeletePost,
+    GetAccessToken,
+    TestDELETE,
+    TestGET,
+    TestPOST,
+    TestPUT,
+} from "../common";
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // precondition
@@ -22,47 +32,21 @@ describe("Comment API", () => {
 
     beforeAll(async () => {
         // get accessToken
-        const loginBody = {
-            id: defaultID,
-            password: defaultPwd,
-        };
-        const loginRes: any = await request(app).post(`/api/login`).send(loginBody);
-        accessToken = loginRes.body.data.accessToken;
+        accessToken = await GetAccessToken();
 
         // create Board
-        const boardBody = {
-            title: "test",
-            description: "test desc",
-        };
-        const boardRes: any = await request(app)
-            .post("/api/boards")
-            .set("Authorization", `Bearer ${accessToken}`)
-            .send(boardBody);
-        board = boardRes.body.data;
+        board = await CreateBoard(accessToken);
 
         // create Post
-        const postBody = {
-            title: "test post",
-            content: "test post desc",
-        };
-        const postRes: any = await request(app)
-            .post(`/api/boards/${board.boardId}/posts`)
-            .set("Authorization", `Bearer ${accessToken}`)
-            .send(postBody);
-        post = postRes.body.data;
+        post = await CreatePost(accessToken, board.boardId);
 
+        // set basic endpoint
         endpoint = `/api/boards/${board.boardId}/posts/${post.postId}/comments`;
     });
 
     afterAll(async () => {
-        const deletePostRes: any = await request(app)
-            .delete(`/api/boards/${board.boardId}/posts/${post.postId}`)
-            .set("Authorization", `Bearer ${accessToken}`);
-
-        // delete board
-        const res: any = await request(app)
-            .delete(`/api/boards/${board.boardId}`)
-            .set("Authorization", `Bearer ${accessToken}`);
+        await DeletePost(accessToken, board.boardId, post.postId);
+        await DeleteBoard(accessToken, board.boardId);
     });
 
     describe("Create Comment API", () => {
