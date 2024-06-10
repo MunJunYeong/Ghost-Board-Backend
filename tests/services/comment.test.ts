@@ -71,6 +71,7 @@ describe("Comment API", () => {
             body = {
                 content: fixedContent,
                 parentCommentId: null,
+                isAnonymous: true,
             };
         });
 
@@ -101,6 +102,7 @@ describe("Comment API", () => {
             body = {
                 content: "test comment",
                 parentCommentId: null,
+                isAnonymous: true,
             };
         });
 
@@ -128,6 +130,7 @@ describe("Comment API", () => {
             body = {
                 content: changedContent,
                 parentCommentId: null,
+                isAnonymous: true,
             };
         });
 

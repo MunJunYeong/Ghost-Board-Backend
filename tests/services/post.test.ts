@@ -53,6 +53,7 @@ describe("Post API", () => {
             body = {
                 title: postTitle,
                 content: postDesc,
+                isAnonymous : true
             };
         });
 
