@@ -45,7 +45,7 @@ export default class AnonymousService {
     };
 
     googleLogin = async (id: string, email: string) => {
-        let u = await this.userRepo.getUserByID(id);
+        let u = await this.userRepo.getUserByEmail(email);
 
         // user가 없을 경우 회원가입
         if (!u) {

@@ -119,7 +119,7 @@ export default class AnonymousController {
             this.redis.set(id, result.refreshToken, "EX", 14 * 24 * 60 * 60);
 
             res.redirect(
-                `${process.env.DB_USERNAME}/auth/success?accessToken=${result.accessToken}&refreshToken=${result.refreshToken}`
+                `${process.env.FRONT_URL}/auth/success?accessToken=${result.accessToken}&refreshToken=${result.refreshToken}`
             );
         } catch (err: any) {
             throw handleError(err);

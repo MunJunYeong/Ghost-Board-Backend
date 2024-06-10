@@ -1,4 +1,5 @@
 import User from "@models/user";
+import { compareHashedValue } from "@utils/lib/encryption";
 
 export default class UserRepo {
     constructor() {}
@@ -31,12 +32,17 @@ export default class UserRepo {
         });
     };
 
+    // performance issue - email이 암호화되어져 있어서 모든 user를 순회하며 동일한 email이 있는지 확인해야 함.
     getUserByEmail = async (email: string) => {
-        return await User.findOne({
-            where: {
-                email: email,
-            },
-        });
+        const users = await this.getAllUsers();
+
+        for (const user of users) {
+            const isMatch = await compareHashedValue(email, user.email);
+            if (isMatch) {
+                return user;
+            }
+        }
+        return null; // 일치하는 사용자가 없을 경우 null return
     };
 
     getUserByUsername = async (username: string) => {
