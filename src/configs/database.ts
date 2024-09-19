@@ -12,10 +12,10 @@ import { initCommentReport, relationCommentReport } from "@models/comment/commen
 
 const DBConfigs = {
     username: process.env.DB_USERNAME || "postgres",
-    password: process.env.DB_PASSWORD || "postgres1234",
+    password: process.env.DB_PASSWORD || "postgres",
     database: process.env.DB_DBNAME || "secret",
     host: process.env.DB_HOST || "localhost",
-    port: process.env.DB_PORT || 5432,
+    port: Number(process.env.DB_PORT) || 5432,
     dialect: "postgres",
 };
 
@@ -33,6 +33,7 @@ export default class Database {
                 this.sequelizeInstance = new Sequelize(DBConfigs.database, DBConfigs.username, DBConfigs.password, {
                     host: DBConfigs.host,
                     dialect: DBConfigs.dialect as Dialect,
+                    port : DBConfigs.port,
                     logging: false,
                     define: {
                         underscored: true,
